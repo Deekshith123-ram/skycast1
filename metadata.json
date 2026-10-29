@@ -1,0 +1,6 @@
+{
+  "name": "SkyCast",
+  "description": "Explore real-time satellite cloud formations over Karnataka and India, animate cloud movement, track monsoon precipitation, and access comprehensive weather forecasts for Tumakuru and across India.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
