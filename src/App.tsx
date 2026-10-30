@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { LocationData, WeatherData, WeatherAlert, DistrictRainData } from './types/weather';
-import { DEFAULT_LOCATION, reverseGeocodeLocation } from './services/geocodingService';
+import { DEFAULT_LOCATION, ALL_KARNATAKA_DISTRICTS, reverseGeocodeLocation } from './services/geocodingService';
 import { fetchWeatherData, fetchAllKarnatakaDistrictsRain } from './services/weatherService';
 import { evaluateWeatherAlerts } from './services/alertService';
 import { Language, TRANSLATIONS } from './services/languageService';
@@ -24,6 +24,7 @@ import { WeatherAlerts } from './components/WeatherAlerts';
 import { DataInfoFooter } from './components/DataInfoFooter';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { SettingsModal } from './components/SettingsModal';
+import { AIAssistantModal } from './components/AIAssistantModal';
 import { MobileActionBar } from './components/MobileActionBar';
 import { AndroidDownloadBanner } from './components/AndroidDownloadBanner';
 import { LoadingScreen } from './components/LoadingScreen';
@@ -62,25 +63,49 @@ export default function App() {
 
   const [currentLocation, setCurrentLocation] = useState<LocationData>(() => {
     try {
+      const userSettings = loadUserSettings();
+      // If user configured fixed default district, start directly at that default district!
+      if (userSettings.startupLocationMode === 'default_district') {
+        if (userSettings.defaultDistrictId === 'karnataka-all') {
+          return DEFAULT_LOCATION;
+        }
+        const found = ALL_KARNATAKA_DISTRICTS.find((d) => d.id === userSettings.defaultDistrictId);
+        if (found) return found;
+      }
+
+      // If user prefers current live location, load cached position first so initial render is instant
       const cached = localStorage.getItem('skycast_user_location');
       if (cached) {
         return JSON.parse(cached);
+      }
+
+      // Fallback to saved default district
+      const savedDefault = localStorage.getItem('skycast_default_district');
+      if (savedDefault) {
+        return JSON.parse(savedDefault);
       }
     } catch {}
     return DEFAULT_LOCATION;
   });
 
-  // Automatically detect user's current live location on launch
-  // Once user approves, never ask again. If they don't approve (deny/skip), ask again when they open again.
+  // Startup Location Detection:
+  // Starts at user's current live location (GPS) if mode is 'current_location'.
+  // Starts at user's default district if mode is 'default_district' (without asking for GPS).
+  // Once user approves, browser provides location silently without re-prompting.
+  // If user has not approved (or denied), asks again on app launch as requested.
   useEffect(() => {
-    if (!settings.autoDetectLocation) return;
-
-    const hasApproved = localStorage.getItem('skycast_location_approved') === 'true';
-    if (hasApproved) {
-      // User has already approved; cached location was restored in initial state
+    // 1. If startup mode is set to fixed default district, do not query GPS
+    if (settings.startupLocationMode === 'default_district' || !settings.autoDetectLocation) {
+      if (settings.defaultDistrictId === 'karnataka-all') {
+        setCurrentLocation(DEFAULT_LOCATION);
+      } else {
+        const found = ALL_KARNATAKA_DISTRICTS.find((d) => d.id === settings.defaultDistrictId);
+        if (found) setCurrentLocation(found);
+      }
       return;
     }
 
+    // 2. Startup mode is 'current_location' (Live GPS)
     if (typeof navigator !== 'undefined' && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
@@ -98,11 +123,21 @@ export default function App() {
         },
         (err) => {
           console.log('Location permission was not granted; will ask again when opened next time.', err);
+          // Gracefully fallback to user's saved default district or Karnataka Whole State
+          try {
+            const savedDefault = localStorage.getItem('skycast_default_district');
+            if (savedDefault) {
+              setCurrentLocation(JSON.parse(savedDefault));
+            } else if (settings.defaultDistrictId && settings.defaultDistrictId !== 'karnataka-all') {
+              const found = ALL_KARNATAKA_DISTRICTS.find((d) => d.id === settings.defaultDistrictId);
+              if (found) setCurrentLocation(found);
+            }
+          } catch {}
         },
         { enableHighAccuracy: true, timeout: 8000, maximumAge: 300000 }
       );
     }
-  }, [settings.autoDetectLocation]);
+  }, [settings.startupLocationMode, settings.defaultDistrictId, settings.autoDetectLocation]);
 
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [districtsRainData, setDistrictsRainData] = useState<DistrictRainData[]>([]);
@@ -111,6 +146,7 @@ export default function App() {
   const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isAIOpen, setIsAIOpen] = useState<boolean>(false);
   const [isSearchFocused, setIsSearchFocused] = useState<boolean>(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState<boolean>(false);
   const lastSyncTimestampRef = useRef<number>(Date.now());
@@ -123,7 +159,7 @@ export default function App() {
     startAutoHideTimer,
     clearTimer,
   } = useAutoScrollControls({
-    isBusy: isLoading || isSettingsOpen || isSearchFocused || isHeaderHovered,
+    isBusy: isLoading || isSettingsOpen || isAIOpen || isSearchFocused || isHeaderHovered,
     autoHideDelayMs: 1800,
   });
 
@@ -233,10 +269,12 @@ export default function App() {
     };
   }, [currentLocation, loadWeather, loadDistrictsRain, settings.refreshInterval, settings.syncOnAppResume]);
 
-  // Handle location selection
-  const handleSelectLocation = (loc: LocationData) => {
+  // Handle location selection (only scrolls to top for search/grid, never for map pin clicks)
+  const handleSelectLocation = (loc: LocationData, shouldScrollToTop: boolean = false) => {
     setCurrentLocation(loc);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (shouldScrollToTop) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     showHeader();
   };
 
@@ -254,7 +292,7 @@ export default function App() {
       {/* A. Navigation Header with Smooth Auto-Hiding & Glass Effect */}
       <Navbar
         currentLocation={currentLocation}
-        onSelectLocation={handleSelectLocation}
+        onSelectLocation={(loc) => handleSelectLocation(loc, true)}
         onRefresh={() => {
           loadWeather(currentLocation);
           loadDistrictsRain();
@@ -263,6 +301,7 @@ export default function App() {
         theme={theme}
         setTheme={setTheme}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenAI={() => setIsAIOpen(true)}
         lang={lang}
         isVisible={isHeaderVisible}
         onReveal={showHeader}
@@ -326,7 +365,7 @@ export default function App() {
           <KarnatakaDistrictsRainGrid
             districts={districtsRainData}
             selectedLocation={currentLocation}
-            onSelectDistrict={handleSelectLocation}
+            onSelectDistrict={(loc) => handleSelectLocation(loc, true)}
           />
         )}
 
@@ -345,7 +384,7 @@ export default function App() {
           <SatelliteMap
             currentLocation={currentLocation}
             weatherData={weatherData}
-            onSelectLocation={handleSelectLocation}
+            onSelectLocation={(loc) => handleSelectLocation(loc, false)}
             theme={theme}
             lang={lang}
             defaultLayer={settings.defaultMapLayer}
@@ -406,6 +445,7 @@ export default function App() {
         }}
         isLoading={isLoading}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenAI={() => setIsAIOpen(true)}
         lang={lang}
         isSearchFocused={isSearchFocused}
       />
@@ -425,6 +465,17 @@ export default function App() {
           handleSelectLocation(DEFAULT_LOCATION);
           localStorage.setItem('skycast_user_location', JSON.stringify(DEFAULT_LOCATION));
         }}
+      />
+
+      {/* Bilingual AI Weather Assistant Modal (Gemini 3.8 Flash) */}
+      <AIAssistantModal
+        isOpen={isAIOpen}
+        onClose={() => setIsAIOpen(false)}
+        lang={lang}
+        currentLocation={currentLocation}
+        weatherData={weatherData}
+        districtsRainData={districtsRainData}
+        alerts={alerts}
       />
     </div>
   );

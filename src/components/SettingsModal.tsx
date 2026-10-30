@@ -26,8 +26,9 @@ import {
   Radio,
 } from 'lucide-react';
 import { Language, TRANSLATIONS } from '../services/languageService';
-import { UserSettings, RefreshInterval, SatelliteDefaultLayer } from '../services/settingsService';
+import { UserSettings, RefreshInterval, SatelliteDefaultLayer, StartupLocationMode } from '../services/settingsService';
 import { LocationData } from '../types/weather';
+import { ALL_KARNATAKA_DISTRICTS, KARNATAKA_DEFAULT_LOCATION } from '../services/geocodingService';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -56,6 +57,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const [resetLocationDone, setResetLocationDone] = useState(false);
+  const [defaultDistrictDone, setDefaultDistrictDone] = useState(false);
 
   if (!isOpen) return null;
 
@@ -291,7 +293,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
 
           {/* SECTION 3: LOCATION MANAGEMENT */}
-          <div className="rounded-2xl p-4 bg-[#F8FAFC] dark:bg-slate-900/60 border border-[#D8E4ED] dark:border-slate-800/80 space-y-3">
+          <div className="rounded-2xl p-4 bg-[#F8FAFC] dark:bg-slate-900/60 border border-[#D8E4ED] dark:border-slate-800/80 space-y-3.5">
             <div className="flex items-center gap-2 pb-2 border-b border-[#D8E4ED] dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-[#007A8E] dark:text-cyan-400">
               <MapPin className="w-4 h-4 text-[#00AFCB] dark:text-cyan-400" />
               <span>{t.sectionLocation}</span>
@@ -310,14 +312,133 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   {currentLocation.state}, {currentLocation.country} • {currentLocation.latitude.toFixed(2)}°N, {currentLocation.longitude.toFixed(2)}°E
                 </span>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#E6F8FA] dark:bg-cyan-950 text-[#007A8E] dark:text-cyan-300 border border-[#00AFCB]/30">
-                ACTIVE
-              </span>
+              <div className="flex flex-col items-end gap-1">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#E6F8FA] dark:bg-cyan-950 text-[#007A8E] dark:text-cyan-300 border border-[#00AFCB]/30">
+                  ACTIVE
+                </span>
+                {settings.defaultDistrictId === currentLocation.id && (
+                  <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
+                    ★ {lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಜಿಲ್ಲೆ' : 'Default District'}
+                  </span>
+                )}
+              </div>
             </div>
 
-            {/* Reset to Whole Karnataka Default Button */}
+            {/* A. Startup Location Mode: Current GPS vs Fixed Default District */}
+            <div className="space-y-1.5 pt-1">
+              <label className="font-bold text-xs text-[#172B3A] dark:text-white block">
+                {t.startupMode}
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => updateSettings({ startupLocationMode: 'current_location', autoDetectLocation: true })}
+                  className={`py-2 px-2.5 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-between gap-1.5 text-left ${
+                    settings.startupLocationMode === 'current_location'
+                      ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
+                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
+                  }`}
+                >
+                  <span className="truncate">{t.startupCurrentGPS}</span>
+                  {settings.startupLocationMode === 'current_location' && (
+                    <Check className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400 flex-shrink-0" />
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => updateSettings({ startupLocationMode: 'default_district' })}
+                  className={`py-2 px-2.5 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-between gap-1.5 text-left ${
+                    settings.startupLocationMode === 'default_district'
+                      ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
+                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
+                  }`}
+                >
+                  <span className="truncate">{t.startupDefaultDistrict}</span>
+                  {settings.startupLocationMode === 'default_district' && (
+                    <Check className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400 flex-shrink-0" />
+                  )}
+                </button>
+              </div>
+              <p className="text-[10px] text-[#687D8F] dark:text-slate-400">
+                {settings.startupLocationMode === 'current_location'
+                  ? (lang === 'kn'
+                      ? 'ಆ್ಯಪ್ ತೆರೆದಾಗ ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಜಿಪಿಎಸ್ ಸ್ಥಳವನ್ನು ಪತ್ತೆಮಾಡುತ್ತದೆ (ಅನುಮತಿ ನೀಡಿದ ನಂತರ).'
+                      : 'App starts at your live GPS location on startup (asks only if needed).')
+                  : (lang === 'kn'
+                      ? `ಆ್ಯಪ್ ಯಾವಾಗಲೂ ${settings.defaultDistrictName} ನಲ್ಲಿ ನೇರವಾಗಿ ತೆರೆಯುತ್ತದೆ.`
+                      : `App will always open directly to ${settings.defaultDistrictName}.`)}
+              </p>
+            </div>
+
+            {/* B. Choose Default District Dropdown */}
+            <div className="space-y-1.5 pt-2 border-t border-[#D8E4ED]/60 dark:border-slate-800/60">
+              <label className="font-bold text-xs text-[#172B3A] dark:text-white block">
+                {t.defaultDistrictLabel}
+              </label>
+              <select
+                value={settings.defaultDistrictId || 'karnataka-all'}
+                onChange={(e) => {
+                  const selectedId = e.target.value;
+                  let selectedName = 'Karnataka (Whole State)';
+                  if (selectedId !== 'karnataka-all') {
+                    const match = ALL_KARNATAKA_DISTRICTS.find((d) => d.id === selectedId);
+                    if (match) selectedName = match.name;
+                  }
+                  updateSettings({
+                    defaultDistrictId: selectedId,
+                    defaultDistrictName: selectedName,
+                  });
+                }}
+                className="w-full py-2 px-3 rounded-xl bg-white dark:bg-slate-900 border border-[#D8E4ED] dark:border-slate-700 text-xs text-[#172B3A] dark:text-white font-medium focus:outline-none focus:border-[#00AFCB]"
+              >
+                <option value="karnataka-all">Karnataka (Whole State — All 31 Districts)</option>
+                <optgroup label={lang === 'kn' ? 'ಕರ್ನಾಟಕದ ಎಲ್ಲಾ 31 ಜಿಲ್ಲೆಗಳು' : 'All 31 Karnataka Districts'}>
+                  {ALL_KARNATAKA_DISTRICTS.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name} ({d.region})
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
+            </div>
+
+            {/* C. Quick Action: Set Active Location as Default District */}
             <div className="pt-1">
               <button
+                type="button"
+                onClick={() => {
+                  updateSettings({
+                    defaultDistrictId: currentLocation.id,
+                    defaultDistrictName: currentLocation.name,
+                    startupLocationMode: 'default_district',
+                  });
+                  try {
+                    localStorage.setItem('skycast_default_district', JSON.stringify(currentLocation));
+                  } catch {}
+                  setDefaultDistrictDone(true);
+                  setTimeout(() => setDefaultDistrictDone(false), 2500);
+                }}
+                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#E6F8FA] dark:bg-cyan-950/70 hover:bg-[#D5F5F9] dark:hover:bg-cyan-900 border border-[#00AFCB]/40 dark:border-cyan-500/40 text-[#007A8E] dark:text-cyan-200 text-xs font-bold transition active:scale-95 cursor-pointer shadow-sm"
+              >
+                {defaultDistrictDone ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                    <span className="text-emerald-700 dark:text-emerald-300">{t.defaultDistrictSaved}</span>
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>{t.setAsDefaultDistrict} ({currentLocation.name})</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* D. Reset to Whole Karnataka Default Button */}
+            <div className="pt-1">
+              <button
+                type="button"
                 onClick={handleResetKarnataka}
                 className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold shadow-md transition active:scale-95 cursor-pointer"
               >
@@ -333,19 +454,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   </>
                 )}
               </button>
-              <p className="text-[11px] text-[#687D8F] dark:text-slate-400 mt-1.5 text-center">
+              <p className="text-[10px] text-[#687D8F] dark:text-slate-400 mt-1.5 text-center">
                 {t.defaultKarnatakaDesc}
               </p>
             </div>
 
             {/* Auto Detect on Startup toggle */}
-            <div className="flex items-center justify-between py-1 border-t border-[#D8E4ED]/60 dark:border-slate-800/60 pt-2.5">
+            <div className="flex items-center justify-between py-1 border-t border-[#D8E4ED]/60 dark:border-slate-800/60 pt-2">
               <div className="pr-3">
                 <span className="font-bold text-xs text-[#172B3A] dark:text-white block">
                   {t.autoDetectGPS}
                 </span>
-                <span className="text-[11px] text-[#526779] dark:text-slate-400">
-                  {lang === 'kn' ? 'ಅನುಮತಿ ನೀಡಿದ ನಂತರ ಮಾತ್ರ ಪ್ರಸ್ತುತ ಸ್ಥಳವನ್ನು ಗುರುತಿಸುತ್ತದೆ' : 'Only asks if previously approved; Karnataka default remains preserved'}
+                <span className="text-[10px] text-[#526779] dark:text-slate-400">
+                  {lang === 'kn'
+                    ? 'ಅನುಮೋದಿಸಿದ ನಂತರ ಮಾತ್ರ ಜಿಪಿಎಸ್ ಮೂಲಕ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆಹಚ್ಚುತ್ತದೆ'
+                    : 'Automatically requests GPS if permitted; falls back gracefully to default district'}
                 </span>
               </div>
               <input

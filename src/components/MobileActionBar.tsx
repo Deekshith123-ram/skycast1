@@ -8,6 +8,7 @@ import {
   ChevronUp,
   X,
   Check,
+  Sparkles,
 } from 'lucide-react';
 import { Language, TRANSLATIONS } from '../services/languageService';
 
@@ -17,6 +18,7 @@ interface MobileActionBarProps {
   onRefresh: () => void;
   isLoading: boolean;
   onOpenSettings: () => void;
+  onOpenAI?: () => void;
   lang?: Language;
   isSearchFocused?: boolean;
 }
@@ -34,6 +36,7 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
   onRefresh,
   isLoading,
   onOpenSettings,
+  onOpenAI,
   lang = 'en',
   isSearchFocused = false,
 }) => {
@@ -176,6 +179,23 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
               </div>
             </div>
 
+            {/* AI Assistant Quick Option */}
+            <button
+              onClick={() => {
+                onOpenAI?.();
+                setIsOpen(false);
+              }}
+              className="w-full flex items-center justify-between p-2.5 rounded-xl bg-gradient-to-r from-[#00AFCB]/15 via-cyan-500/15 to-transparent hover:from-[#00AFCB]/25 border border-[#00AFCB]/30 text-xs font-bold text-[#007A8E] dark:text-cyan-300 transition active:scale-98 cursor-pointer shadow-xs"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#00AFCB] dark:text-cyan-400 animate-pulse" />
+                <span>{t.aiAssistant}</span>
+              </div>
+              <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-[#00AFCB]/20 text-[#007A8E] dark:text-cyan-300">
+                Gemini
+              </span>
+            </button>
+
             {/* B. Action Buttons: Refresh & Settings */}
             <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#D8E4ED] dark:border-slate-800">
               <button
@@ -210,35 +230,48 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
         </div>
       )}
 
-      {/* 2. Fixed Control Button with Suitable Glassy Effect (Dark/Light mode selection is inside options) */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        aria-expanded={isOpen}
-        aria-label="Toggle SkyCast control options"
-        className={`group flex items-center gap-2 px-4 py-2 sm:py-2.5 rounded-full backdrop-blur-2xl border transition-all duration-300 cursor-pointer shadow-[0_10px_35px_-5px_rgba(23,43,58,0.18)] dark:shadow-[0_16px_45px_rgba(0,0,0,0.65)] active:scale-95 ${
-          isOpen
-            ? 'bg-[#E6F8FA] dark:bg-[#0a1e3f] border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-2 ring-[#00AFCB]/30'
-            : 'bg-white/85 dark:bg-[#071328]/85 hover:bg-white dark:hover:bg-[#0c2044] border-[#D8E4ED] dark:border-cyan-500/35 text-[#172B3A] dark:text-slate-100 hover:border-[#00AFCB] dark:hover:border-cyan-400'
-        }`}
-      >
-        <span className="p-1 rounded-full bg-[#00AFCB]/15 text-[#00AFCB] dark:text-cyan-400 flex items-center justify-center group-hover:rotate-45 transition-transform duration-300">
-          <SlidersHorizontal className="w-3.5 h-3.5" />
-        </span>
+      {/* 2. Dual Glass Control Bar: Quick AI Assistant + Controls Menu */}
+      <div className="flex items-center gap-2">
+        {/* Direct 1-Tap AI Assistant Pill */}
+        <button
+          onClick={onOpenAI}
+          aria-label="Open SkyCast AI Weather Assistant"
+          className="group flex items-center gap-1.5 px-3.5 py-2 sm:py-2.5 rounded-full backdrop-blur-2xl border transition-all duration-300 cursor-pointer shadow-[0_10px_35px_-5px_rgba(23,43,58,0.18)] dark:shadow-[0_16px_45px_rgba(0,0,0,0.65)] active:scale-95 bg-white/90 dark:bg-[#071328]/90 hover:bg-[#E6F8FA] dark:hover:bg-[#0c2448] border-[#00AFCB]/40 dark:border-cyan-500/40 text-[#007A8E] dark:text-cyan-300"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400 animate-pulse" />
+          <span className="text-xs font-bold tracking-tight">{t.askAI}</span>
+        </button>
 
-        <span className="text-xs font-bold tracking-tight">{t.controls}</span>
-
-        {/* Live sync pulse dot */}
-        <span className="relative flex h-2 w-2 ml-0.5">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-        </span>
-
-        <ChevronUp
-          className={`w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400 transition-transform duration-300 ${
-            isOpen ? 'rotate-180' : 'group-hover:-translate-y-0.5'
+        {/* Controls Center Trigger */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
+          aria-label="Toggle SkyCast control options"
+          className={`group flex items-center gap-2 px-4 py-2 sm:py-2.5 rounded-full backdrop-blur-2xl border transition-all duration-300 cursor-pointer shadow-[0_10px_35px_-5px_rgba(23,43,58,0.18)] dark:shadow-[0_16px_45px_rgba(0,0,0,0.65)] active:scale-95 ${
+            isOpen
+              ? 'bg-[#E6F8FA] dark:bg-[#0a1e3f] border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-2 ring-[#00AFCB]/30'
+              : 'bg-white/85 dark:bg-[#071328]/85 hover:bg-white dark:hover:bg-[#0c2044] border-[#D8E4ED] dark:border-cyan-500/35 text-[#172B3A] dark:text-slate-100 hover:border-[#00AFCB] dark:hover:border-cyan-400'
           }`}
-        />
-      </button>
+        >
+          <span className="p-1 rounded-full bg-[#00AFCB]/15 text-[#00AFCB] dark:text-cyan-400 flex items-center justify-center group-hover:rotate-45 transition-transform duration-300">
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+          </span>
+
+          <span className="text-xs font-bold tracking-tight">{t.controls}</span>
+
+          {/* Live sync pulse dot */}
+          <span className="relative flex h-2 w-2 ml-0.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+
+          <ChevronUp
+            className={`w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400 transition-transform duration-300 ${
+              isOpen ? 'rotate-180' : 'group-hover:-translate-y-0.5'
+            }`}
+          />
+        </button>
+      </div>
     </aside>
   );
 };

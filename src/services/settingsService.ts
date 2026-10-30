@@ -11,6 +11,8 @@ export type PressureUnit = 'hpa' | 'mmhg' | 'inhg';
 export type SatelliteDefaultLayer = 'clouds_satellite' | 'radar_rain' | 'satellite_pure';
 export type RefreshInterval = 60000 | 180000 | 300000 | 0; // 1m, 3m, 5m, manual
 
+export type StartupLocationMode = 'current_location' | 'default_district';
+
 export interface UserSettings {
   // 1. Measurement Units
   tempUnit: TemperatureUnit;
@@ -25,6 +27,9 @@ export interface UserSettings {
 
   // 3. Location Management
   autoDetectLocation: boolean;
+  startupLocationMode: StartupLocationMode;
+  defaultDistrictId: string;
+  defaultDistrictName: string;
 
   // 4. Satellite Map Controls
   defaultMapLayer: SatelliteDefaultLayer;
@@ -50,6 +55,9 @@ export const DEFAULT_SETTINGS: UserSettings = {
   rainThresholdAlerts: true,
   alertSound: false,
   autoDetectLocation: true,
+  startupLocationMode: 'current_location',
+  defaultDistrictId: 'karnataka-all',
+  defaultDistrictName: 'Karnataka (Whole State)',
   defaultMapLayer: 'clouds_satellite',
   defaultCloudOpacity: 0.9,
   showDistrictPinsOnLaunch: true,

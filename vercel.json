@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/open-meteo/:path*",
+      "destination": "https://api.open-meteo.com/:path*"
+    },
+    {
+      "source": "/api/geocoding-open-meteo/:path*",
+      "destination": "https://geocoding-api.open-meteo.com/:path*"
+    },
+    {
+      "source": "/api/rainviewer/:path*",
+      "destination": "https://api.rainviewer.com/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

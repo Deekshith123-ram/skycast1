@@ -101,6 +101,32 @@ export interface Translations {
   refreshIntervalLabel: string;
   syncOnResumeDesc: string;
   lowDataModeDesc: string;
+
+  // Startup location & fullscreen translations
+  startupMode: string;
+  startupCurrentGPS: string;
+  startupDefaultDistrict: string;
+  defaultDistrictLabel: string;
+  setAsDefaultDistrict: string;
+  defaultDistrictSaved: string;
+  fullscreenMap: string;
+  exitFullscreen: string;
+
+  // AI Assistant translations
+  aiAssistant: string;
+  askAI: string;
+  aiAssistantDesc: string;
+  liveVoiceMode: string;
+  speakReplies: string;
+  typePromptPlaceholder: string;
+  listening: string;
+  speaking: string;
+  tapToSpeak: string;
+  aiDisclaimer: string;
+  samplePrompt1: string;
+  samplePrompt2: string;
+  samplePrompt3: string;
+  samplePrompt4: string;
 }
 
 export const TRANSLATIONS: Record<Language, Translations> = {
@@ -205,6 +231,32 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     refreshIntervalLabel: 'Live Sync Telemetry Interval',
     syncOnResumeDesc: 'Auto-Sync when App Opens or Browser Tab Becomes Active',
     lowDataModeDesc: 'Low Data Mode (Optimizes bandwidth for mobile data)',
+
+    // Startup location & fullscreen
+    startupMode: 'App Startup Location',
+    startupCurrentGPS: 'Live Current Location (GPS)',
+    startupDefaultDistrict: 'Fixed Default District',
+    defaultDistrictLabel: 'Choose Default District',
+    setAsDefaultDistrict: 'Set Current Location as My Default District',
+    defaultDistrictSaved: 'Default District Saved!',
+    fullscreenMap: 'Full Screen Map',
+    exitFullscreen: 'Exit Fullscreen',
+
+    // AI Assistant
+    aiAssistant: 'SkyCast AI Assistant',
+    askAI: 'Ask AI',
+    aiAssistantDesc: 'Bilingual weather intelligence grounded in live Karnataka satellite & radar telemetry',
+    liveVoiceMode: 'Live Voice Conversation',
+    speakReplies: 'Speak Replies Aloud',
+    typePromptPlaceholder: 'Ask in English or ಕನ್ನಡ (e.g. Will it rain in Udupi?)...',
+    listening: 'Listening to your voice...',
+    speaking: 'Speaking response...',
+    tapToSpeak: 'Tap to speak',
+    aiDisclaimer: 'Powered by Gemini 3.8 Flash • Real-time SkyCast Grounded',
+    samplePrompt1: 'Which Karnataka districts have high rain today?',
+    samplePrompt2: 'Current weather condition & rain chance here?',
+    samplePrompt3: 'How are the monsoon clouds moving across Karnataka?',
+    samplePrompt4: 'Will it rain in Bengaluru or Tumakuru this evening?',
   },
   kn: {
     appName: 'ಸ್ಕೈಕಾಸ್ಟ್ (SkyCast)',
@@ -307,6 +359,32 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     refreshIntervalLabel: 'ಲೈವ್ ಡೇಟಾ ರಿಫ್ರೆಶ್ ಮಧ್ಯಂತರ',
     syncOnResumeDesc: 'ಆ್ಯಪ್ ತೆರೆದಾಗ ಅಥವಾ ಸಕ್ರಿಯಗೊಂಡಾಗ ಆಟೋ-ಸಿಂಕ್',
     lowDataModeDesc: 'ಕಡಿಮೆ ಡೇಟಾ ಬಳಕೆ ಮೋಡ್',
+
+    // Startup location & fullscreen in Kannada
+    startupMode: 'ಆ್ಯಪ್ ಪ್ರಾರಂಭ ಸ್ಥಳ (Startup Location)',
+    startupCurrentGPS: 'ಲೈವ್ ಪ್ರಸ್ತುತ ಸ್ಥಳ (GPS)',
+    startupDefaultDistrict: 'ನಿಗದಿತ ಡೀಫಾಲ್ಟ್ ಜಿಲ್ಲೆ',
+    defaultDistrictLabel: 'ಡೀಫಾಲ್ಟ್ ಜಿಲ್ಲೆ ಆಯ್ಕೆಮಾಡಿ',
+    setAsDefaultDistrict: 'ಪ್ರಸ್ತುತ ಸ್ಥಳವನ್ನು ಡೀಫಾಲ್ಟ್ ಜಿಲ್ಲೆಯಾಗಿ ಹೊಂದಿಸಿ',
+    defaultDistrictSaved: 'ಡೀಫಾಲ್ಟ್ ಜಿಲ್ಲೆ ಉಳಿಸಲಾಗಿದೆ!',
+    fullscreenMap: 'ಪೂರ್ಣ ಪರದೆ ನಕ್ಷೆ (Full Screen)',
+    exitFullscreen: 'ಪೂರ್ಣ ಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಿ (Exit Fullscreen)',
+
+    // AI Assistant in Kannada
+    aiAssistant: 'ಸ್ಕೈಕಾಸ್ಟ್ ಎಐ ಸಹಾಯಕ (AI Assistant)',
+    askAI: 'ಎಐ ಕೇಳಿ (Ask AI)',
+    aiAssistantDesc: 'ಕರ್ನಾಟಕದ ಉಪಗ್ರಹ ಮತ್ತು ಡಾಪ್ಲರ್ ರೇಡಾರ್ ಡೇಟಾ ಆಧಾರಿತ ದ್ವಿಭಾಷಾ ಹವಾಮಾನ ಬುದ್ಧಿಮತ್ತೆ',
+    liveVoiceMode: 'ನೈಜ ಧ್ವನಿ ಸಂವಾದ (Live Voice)',
+    speakReplies: 'ಧ್ವನಿ ಓದುವಿಕೆ (Speak Replies)',
+    typePromptPlaceholder: 'ಕನ್ನಡ ಅಥವಾ English ನಲ್ಲಿ ಕೇಳಿ (ಉದಾ: ಇಂದು ಉಡುಪಿಯಲ್ಲಿ ಮಳೆಯಾಗಲಿದೆಯೇ?)...',
+    listening: 'ಕೇಳಿಸಿಕೊಳ್ಳುತ್ತಿದೆ...',
+    speaking: 'ಧ್ವನಿಯಲ್ಲಿ ಉತ್ತರಿಸುತ್ತಿದೆ...',
+    tapToSpeak: 'ಮಾತನಾಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ',
+    aiDisclaimer: 'ಜೆಮಿನಿ 3.8 ಫ್ಲ್ಯಾಶ್ ಚಾಲಿತ • ನೈಜ-ಸಮಯದ ಸ್ಕೈಕಾಸ್ಟ್ ಡೇಟಾ ಆಧಾರಿತ',
+    samplePrompt1: 'ಇಂದು ಕರ್ನಾಟಕದ ಯಾವ ಜಿಲ್ಲೆಗಳಲ್ಲಿ ಭಾರೀ ಮಳೆಯಾಗಲಿದೆ?',
+    samplePrompt2: 'ಪ್ರಸ್ತುತ ಸ್ಥಳದ ಹವಾಮಾನ ಸ್ಥಿತಿ ಮತ್ತು ಮಳೆಯ ಸಂಭವನೀಯತೆ ಏನು?',
+    samplePrompt3: 'ಕರ್ನಾಟಕದಾದ್ಯಂತ ಮಾನ್ಸೂನ್ ಮೋಡಗಳ ಚಲನೆ ಹೇಗಿದೆ?',
+    samplePrompt4: 'ಇಂದು ಸಂಜೆ ಬೆಂಗಳೂರು ಅಥವಾ ತುಮಕೂರಿನಲ್ಲಿ ಮಳೆಯಾಗುತ್ತದೆಯೇ?',
   },
 };
 

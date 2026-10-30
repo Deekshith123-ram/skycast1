@@ -31,6 +31,7 @@ interface NavbarProps {
   theme: 'dark' | 'light';
   setTheme: (t: 'dark' | 'light') => void;
   onOpenSettings: () => void;
+  onOpenAI?: () => void;
   lang?: Language;
   isVisible?: boolean;
   onReveal?: () => void;
@@ -46,6 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   theme,
   setTheme,
   onOpenSettings,
+  onOpenAI,
   lang = 'en',
   isVisible = true,
   onReveal,
@@ -288,6 +290,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center gap-2 p-1">
             {/* Download App for Android / Desktop - Hidden once downloaded */}
             <PWAInstallButton />
+
+            {/* Bilingual AI Assistant Button */}
+            <button
+              onClick={onOpenAI}
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[#00AFCB]/15 to-cyan-500/20 hover:from-[#00AFCB]/25 hover:to-cyan-500/30 dark:bg-cyan-500/20 dark:hover:bg-cyan-500/30 border border-[#00AFCB]/40 dark:border-cyan-400/40 text-[#007A8E] dark:text-cyan-300 font-bold text-xs transition active:scale-95 cursor-pointer shadow-sm"
+              title={t.aiAssistant}
+            >
+              <Sparkles className="w-4 h-4 text-[#00AFCB] dark:text-cyan-400 animate-pulse" />
+              <span className="hidden md:inline">{t.askAI}</span>
+            </button>
 
             <button
               onClick={onRefresh}
