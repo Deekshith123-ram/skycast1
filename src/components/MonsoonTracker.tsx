@@ -63,7 +63,7 @@ export const MonsoonTracker: React.FC<MonsoonTrackerProps> = ({ weatherData }) =
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
         {/* Today's Rain Accumulation */}
-        <div className="p-4 rounded-xl bg-white dark:bg-slate-900/60 border border-[#D8E4ED] dark:border-slate-800 flex items-center justify-between shadow-sm">
+        <div className="p-4 rounded-xl bg-white/45 dark:bg-slate-900/35 border border-[#D8E4ED]/70 dark:border-slate-800/60 backdrop-blur-md flex items-center justify-between shadow-sm">
           <div>
             <span className="text-[11px] font-medium text-[#687D8F] dark:text-slate-400 block mb-1">Today's Expected Rain</span>
             <div className="flex items-baseline gap-1.5">
@@ -74,13 +74,13 @@ export const MonsoonTracker: React.FC<MonsoonTrackerProps> = ({ weatherData }) =
               {todayClassification.label}
             </span>
           </div>
-          <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-500/15 text-[#2563EB] dark:text-blue-400 border border-blue-200 dark:border-transparent">
+          <div className="p-3 rounded-xl bg-blue-50/80 dark:bg-blue-500/15 text-[#2563EB] dark:text-blue-400 border border-blue-200/80 dark:border-transparent">
             <Umbrella className="w-6 h-6" />
           </div>
         </div>
 
         {/* 3-Day Forecast Total */}
-        <div className="p-4 rounded-xl bg-white dark:bg-slate-900/60 border border-[#D8E4ED] dark:border-slate-800 flex items-center justify-between shadow-sm">
+        <div className="p-4 rounded-xl bg-white/45 dark:bg-slate-900/35 border border-[#D8E4ED]/70 dark:border-slate-800/60 backdrop-blur-md flex items-center justify-between shadow-sm">
           <div>
             <span className="text-[11px] font-medium text-[#687D8F] dark:text-slate-400 block mb-1">3-Day Cumulative Total</span>
             <div className="flex items-baseline gap-1.5">
@@ -91,13 +91,13 @@ export const MonsoonTracker: React.FC<MonsoonTrackerProps> = ({ weatherData }) =
               Short-term Soil Moisture Fill
             </span>
           </div>
-          <div className="p-3 rounded-xl bg-[#E6F8FA] dark:bg-cyan-500/15 text-[#00AFCB] dark:text-cyan-400 border border-[#00AFCB]/30 dark:border-transparent">
+          <div className="p-3 rounded-xl bg-[#E6F8FA]/80 dark:bg-cyan-500/15 text-[#00AFCB] dark:text-cyan-400 border border-[#00AFCB]/30 dark:border-transparent">
             <TrendingUp className="w-6 h-6" />
           </div>
         </div>
 
         {/* 7-Day Total */}
-        <div className="p-4 rounded-xl bg-white dark:bg-slate-900/60 border border-[#D8E4ED] dark:border-slate-800 flex items-center justify-between shadow-sm">
+        <div className="p-4 rounded-xl bg-white/45 dark:bg-slate-900/35 border border-[#D8E4ED]/70 dark:border-slate-800/60 backdrop-blur-md flex items-center justify-between shadow-sm">
           <div>
             <span className="text-[11px] font-medium text-[#687D8F] dark:text-slate-400 block mb-1">7-Day Synoptic Total</span>
             <div className="flex items-baseline gap-1.5">
@@ -108,14 +108,14 @@ export const MonsoonTracker: React.FC<MonsoonTrackerProps> = ({ weatherData }) =
               Agricultural Basin Accumulation
             </span>
           </div>
-          <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-transparent">
+          <div className="p-3 rounded-xl bg-indigo-50/80 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-200/80 dark:border-transparent">
             <Layers className="w-6 h-6" />
           </div>
         </div>
       </div>
 
       {/* IMD Intensity Scale Bar */}
-      <div className="p-4 rounded-xl bg-white dark:bg-slate-900/40 border border-[#D8E4ED] dark:border-slate-800 mb-5 shadow-sm">
+      <div className="p-4 rounded-xl bg-white/45 dark:bg-slate-900/35 border border-[#D8E4ED]/70 dark:border-slate-800/60 backdrop-blur-md mb-5 shadow-sm">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-bold text-[#172B3A] dark:text-slate-300 uppercase tracking-wider">
             IMD Official 24-Hour Rainfall Intensity Thresholds

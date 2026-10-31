@@ -31,8 +31,8 @@ body {
   :root {
     --bg-primary: #F0F4FA;
     --bg-secondary: #FFFFFF;
-    --bg-card: rgba(255, 255, 255, 0.74);
-    --bg-card-hover: rgba(255, 255, 255, 0.9);
+    --bg-card: rgba(255, 255, 255, 0.44);
+    --bg-card-hover: rgba(255, 255, 255, 0.65);
     --border-color: rgba(209, 224, 238, 0.85);
     --border-highlight: #00AFCB;
     --text-primary: #0F1D2E;
@@ -47,8 +47,8 @@ body {
   .light {
     --bg-primary: #F0F4FA;
     --bg-secondary: #FFFFFF;
-    --bg-card: rgba(255, 255, 255, 0.74);
-    --bg-card-hover: rgba(255, 255, 255, 0.9);
+    --bg-card: rgba(255, 255, 255, 0.44);
+    --bg-card-hover: rgba(255, 255, 255, 0.65);
     --border-color: rgba(209, 224, 238, 0.85);
     --border-highlight: #00AFCB;
     --text-primary: #0F1D2E;
@@ -63,9 +63,9 @@ body {
   .dark {
     --bg-primary: #040816;
     --bg-secondary: #081226;
-    --bg-card: rgba(8, 17, 36, 0.70);
-    --bg-card-hover: rgba(12, 24, 48, 0.85);
-    --border-color: rgba(56, 189, 248, 0.16);
+    --bg-card: rgba(6, 14, 32, 0.38);
+    --bg-card-hover: rgba(10, 22, 46, 0.55);
+    --border-color: rgba(56, 189, 248, 0.18);
     --border-highlight: rgba(56, 189, 248, 0.45);
     --text-primary: #F8FAFC;
     --text-secondary: #94A3B8;
@@ -114,40 +114,40 @@ html.light .app-texture-overlay {
   opacity: 0.35;
 }
 
-/* Slightly Transparent Glass-Style Windows with Gentle Blur, Borders & Soft Shadows */
+/* Very High Transparency Glass-Style Windows with Deep Gentle Blur, Borders & Soft Shadows */
 .glass-panel {
   background: var(--bg-card);
-  backdrop-filter: blur(20px) saturate(170%);
-  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  backdrop-filter: blur(28px) saturate(185%);
+  -webkit-backdrop-filter: blur(28px) saturate(185%);
   border: 1px solid var(--border-color);
   box-shadow: 
-    0 12px 36px -4px rgba(15, 34, 64, 0.08),
+    0 16px 40px -6px rgba(15, 34, 64, 0.08),
     0 4px 12px -2px rgba(15, 34, 64, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 .light .glass-panel,
 html.light .glass-panel {
-  background: rgba(255, 255, 255, 0.74);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border-color: rgba(209, 224, 238, 0.85);
+  background: rgba(255, 255, 255, 0.44);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-color: rgba(255, 255, 255, 0.65);
   box-shadow: 
-    0 12px 34px -4px rgba(15, 34, 64, 0.07),
-    0 4px 12px -2px rgba(15, 34, 64, 0.03),
+    0 16px 36px -6px rgba(15, 34, 64, 0.06),
+    0 4px 12px -2px rgba(15, 34, 64, 0.02),
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 .dark .glass-panel,
 html.dark .glass-panel {
-  background: rgba(8, 17, 36, 0.70);
-  backdrop-filter: blur(20px) saturate(175%);
-  -webkit-backdrop-filter: blur(20px) saturate(175%);
-  border-color: rgba(56, 189, 248, 0.16);
+  background: rgba(6, 14, 32, 0.38);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border-color: rgba(56, 189, 248, 0.18);
   box-shadow: 
-    0 16px 42px -6px rgba(0, 0, 0, 0.52),
-    0 6px 16px -2px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 18px 46px -6px rgba(0, 0, 0, 0.58),
+    0 6px 18px -2px rgba(0, 0, 0, 0.40),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .glass-panel-hover {
@@ -161,20 +161,42 @@ html.dark .glass-panel {
 
 .light .glass-panel-hover:hover,
 html.light .glass-panel-hover:hover {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.65);
   border-color: #00AFCB;
 }
 
 .dark .glass-panel-hover:hover,
 html.dark .glass-panel-hover:hover {
-  background: rgba(12, 24, 48, 0.85);
+  background: rgba(10, 22, 46, 0.55);
   border-color: rgba(56, 189, 248, 0.4);
 }
 
-/* Custom scrollbars */
+/* Ultra-smooth momentum scrolling for all scrollable windows */
+.smooth-scroll,
+.overflow-y-auto,
+.overflow-x-auto {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* MAP CLARITY: Never apply frosted glass blur or milky overlay inside map border covered windows so satellite images & terrain stay 100% crisp */
+.map-interaction-zone,
+[data-map-component],
+.satellite-map-container,
+.insat-satellite-viewer .insat-image-viewport,
+.insat-image-viewport,
+.leaflet-container,
+.leaflet-pane,
+.leaflet-tile-pane {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Custom glassy scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -182,12 +204,23 @@ html.dark .glass-panel-hover:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.35);
+  background: rgba(100, 116, 139, 0.28);
   border-radius: 9999px;
+  backdrop-filter: blur(8px);
+}
+
+.dark ::-webkit-scrollbar-thumb,
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.22);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.6);
+  background: rgba(0, 175, 203, 0.5);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover,
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 189, 248, 0.45);
 }
 
 /* Hide scrollbar while keeping horizontal swipe scrolling */
@@ -199,6 +232,86 @@ html.dark .glass-panel-hover:hover {
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Fluid Water / Liquid Glass Effect for Ask AI Button */
+.water-glass-btn {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    rgba(6, 182, 212, 0.38) 0%,
+    rgba(14, 165, 233, 0.28) 45%,
+    rgba(37, 99, 235, 0.35) 100%
+  );
+  backdrop-filter: blur(16px) saturate(200%);
+  -webkit-backdrop-filter: blur(16px) saturate(200%);
+  border: 1px solid rgba(165, 243, 252, 0.6);
+  box-shadow: 
+    0 8px 24px -4px rgba(6, 182, 212, 0.38),
+    0 2px 8px -1px rgba(14, 165, 233, 0.22),
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -2px 4px 0 rgba(6, 182, 212, 0.32);
+  color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(8, 47, 73, 0.5);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.water-glass-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+.water-glass-btn:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(6, 182, 212, 0.52) 0%,
+    rgba(14, 165, 233, 0.42) 45%,
+    rgba(37, 99, 235, 0.48) 100%
+  );
+  border-color: rgba(207, 250, 254, 0.85);
+  box-shadow: 
+    0 12px 28px -4px rgba(6, 182, 212, 0.52),
+    0 4px 12px -1px rgba(14, 165, 233, 0.32),
+    inset 0 2px 3px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -2px 5px 0 rgba(6, 182, 212, 0.42);
+  transform: translateY(-1px);
+}
+
+.water-glass-btn:hover::before {
+  left: 140%;
+}
+
+.water-glass-btn:active {
+  transform: scale(0.96);
+  box-shadow: 
+    0 4px 12px -2px rgba(6, 182, 212, 0.4),
+    inset 0 2px 4px 0 rgba(8, 47, 73, 0.3);
+}
+
+.light .water-glass-btn,
+html.light .water-glass-btn {
+  background: linear-gradient(
+    135deg,
+    rgba(6, 182, 212, 0.80) 0%,
+    rgba(2, 132, 199, 0.75) 50%,
+    rgba(37, 99, 235, 0.80) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.9);
+  color: #FFFFFF;
 }
 
 /* Leaflet theme overrides */

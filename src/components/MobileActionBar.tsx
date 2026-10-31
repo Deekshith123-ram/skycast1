@@ -232,14 +232,17 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
 
       {/* 2. Dual Glass Control Bar: Quick AI Assistant + Controls Menu */}
       <div className="flex items-center gap-2">
-        {/* Direct 1-Tap AI Assistant Pill */}
+        {/* Direct 1-Tap AI Assistant Pill - Water Glass Effect */}
         <button
           onClick={onOpenAI}
           aria-label="Open SkyCast AI Weather Assistant"
-          className="group flex items-center gap-1.5 px-3.5 py-2 sm:py-2.5 rounded-full backdrop-blur-2xl border transition-all duration-300 cursor-pointer shadow-[0_10px_35px_-5px_rgba(23,43,58,0.18)] dark:shadow-[0_16px_45px_rgba(0,0,0,0.65)] active:scale-95 bg-white/90 dark:bg-[#071328]/90 hover:bg-[#E6F8FA] dark:hover:bg-[#0c2448] border-[#00AFCB]/40 dark:border-cyan-500/40 text-[#007A8E] dark:text-cyan-300"
+          className="water-glass-btn group flex items-center gap-2 px-4 py-2 sm:py-2.5 rounded-full cursor-pointer shadow-lg active:scale-95"
         >
-          <Sparkles className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400 animate-pulse" />
-          <span className="text-xs font-bold tracking-tight">{t.askAI}</span>
+          <div className="relative flex items-center justify-center">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-200 drop-shadow-[0_0_8px_rgba(34,211,238,0.9)] animate-pulse" />
+            <span className="absolute -inset-1 rounded-full bg-cyan-300/30 blur-sm animate-ping pointer-events-none" />
+          </div>
+          <span className="text-xs font-extrabold tracking-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">{t.askAI}</span>
         </button>
 
         {/* Controls Center Trigger */}

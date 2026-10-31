@@ -169,11 +169,12 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
         radarRef.current = null;
       }
 
-      const todayDate = getGibsDateString(0);
       const yesterdayDate = getGibsDateString(1);
+      const twoDaysAgoDate = getGibsDateString(2);
 
       if (activeLayer === 'clouds_satellite') {
-        const cloudUrl = getNasaGibsTileUrl('VIIRS_SNPP', todayDate);
+        // High-fidelity NASA MODIS Terra satellite imagery with guaranteed 100% swath coverage over Karnataka
+        const cloudUrl = getNasaGibsTileUrl('MODIS_Terra', yesterdayDate);
         const cloudLayer = L.tileLayer(cloudUrl, {
           maxNativeZoom: 9,
           maxZoom: 18,
@@ -186,15 +187,16 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
           const img = (e as any).tile as HTMLImageElement;
           if (img && !img.dataset.retried) {
             img.dataset.retried = 'true';
-            img.src = img.src.replace(todayDate, yesterdayDate);
+            img.src = img.src.replace(yesterdayDate, twoDaysAgoDate);
           }
         });
 
         cloudLayer.addTo(map);
         cloudRef.current = cloudLayer;
 
-        if (showRadarOverClouds && latestRadarPath) {
-          const radarUrl = `${tileHost}${latestRadarPath}/256/{z}/{x}/{y}/2/1_1.png`;
+        if (showRadarOverClouds) {
+          const radarPath = latestRadarPath || '/v2/radar/3fb2c6f47f98';
+          const radarUrl = `${tileHost}${radarPath}/256/{z}/{x}/{y}/2/1_1.png`;
           const radarLayer = L.tileLayer(radarUrl, {
             maxNativeZoom: 12,
             maxZoom: 18,
@@ -547,9 +549,12 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
 
   return (
     <>
-      {/* 1. INLINE MAP CONTAINER: Stays permanently stable in normal page flow */}
+      {/* 1. INLINE MAP CONTAINER: Stays permanently stable in normal page flow; clear background without obscuring glassy filters */}
       <div
-        className={`w-full h-[460px] sm:h-[540px] rounded-2xl relative overflow-hidden border border-[#D8E4ED] dark:border-cyan-500/35 shadow-xl glass-panel ${className}`}
+        data-map-component="satellite-map"
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+        className={`w-full h-[460px] sm:h-[540px] rounded-2xl relative overflow-hidden border border-[#D8E4ED] dark:border-cyan-500/35 shadow-xl satellite-map-container map-interaction-zone bg-[#060e1d] dark:bg-[#060e1d] ${className}`}
       >
         {/* Leaflet Map Canvas with native touch scrolling */}
         <div

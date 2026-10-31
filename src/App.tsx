@@ -274,8 +274,8 @@ export default function App() {
     setCurrentLocation(loc);
     if (shouldScrollToTop) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      showHeader();
     }
-    showHeader();
   };
 
   return (
@@ -366,6 +366,7 @@ export default function App() {
             districts={districtsRainData}
             selectedLocation={currentLocation}
             onSelectDistrict={(loc) => handleSelectLocation(loc, true)}
+            theme={theme}
           />
         )}
 

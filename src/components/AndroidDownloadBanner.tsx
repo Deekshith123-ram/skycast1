@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
-import { Download, X, Smartphone, ShieldCheck, Zap } from 'lucide-react';
+import { Download, X, Smartphone, ShieldCheck, Zap, FileDown, Check } from 'lucide-react';
 
 export const AndroidDownloadBanner: React.FC = () => {
   const { isInstallable, isInstalled, isAndroid, install, markAsDownloaded } = usePWAInstall();
@@ -8,17 +8,25 @@ export const AndroidDownloadBanner: React.FC = () => {
     return localStorage.getItem('skycast_banner_dismissed') === 'true';
   });
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [downloadStarted, setDownloadStarted] = useState<boolean>(false);
 
   // If already installed/downloaded or dismissed locally, do NOT show
   if (isInstalled || dismissed) {
     return null;
   }
 
+  const triggerApkDownload = () => {
+    setDownloadStarted(true);
+    const link = document.createElement('a');
+    link.href = '/downloads/SkyCast-Weather-v2.5.apk';
+    link.setAttribute('download', 'SkyCast-Weather-v2.5.apk');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleInstallClick = async () => {
-    if (isInstallable) {
-      const ok = await install();
-      if (ok) return;
-    }
+    triggerApkDownload();
     setShowModal(true);
   };
 
@@ -47,11 +55,11 @@ export const AndroidDownloadBanner: React.FC = () => {
                 Download SkyCast App for Android
               </h4>
               <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/40">
-                PWA APK
+                APK v2.5
               </span>
             </div>
             <p className="text-xs text-slate-300 mt-0.5 font-normal">
-              Launch directly from your Android home screen with instant live cloud maps and offline forecast telemetry.
+              Download the standalone Android APK package. Install directly on your device with instant live cloud maps and offline forecast telemetry.
             </p>
           </div>
         </div>
@@ -62,7 +70,7 @@ export const AndroidDownloadBanner: React.FC = () => {
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg shadow-emerald-950/50 transition active:scale-95 cursor-pointer"
           >
             <Download className="w-4 h-4" />
-            <span>Download App</span>
+            <span>Download APK</span>
           </button>
 
           <button
@@ -87,7 +95,7 @@ export const AndroidDownloadBanner: React.FC = () => {
             <div className="flex items-center justify-between pb-3 border-b border-[#D8E4ED] dark:border-slate-800">
               <div className="flex items-center gap-2">
                 <Download className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                <h3 className="font-display text-base font-bold text-[#172B3A] dark:text-white">Download Android App</h3>
+                <h3 className="font-display text-base font-bold text-[#172B3A] dark:text-white">SkyCast Android Package (.apk)</h3>
               </div>
               <button
                 onClick={() => setShowModal(false)}
@@ -97,35 +105,50 @@ export const AndroidDownloadBanner: React.FC = () => {
               </button>
             </div>
 
-            <p className="text-xs text-[#526779] dark:text-slate-300 mt-3 leading-relaxed font-normal">
-              To install SkyCast onto your Android device:
-            </p>
+            <div className="mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" />
+              <div className="text-xs">
+                <span className="font-semibold text-emerald-700 dark:text-emerald-300">
+                  {downloadStarted ? 'Downloading SkyCast-Weather-v2.5.apk...' : 'Ready to Download'}
+                </span>
+                <p className="text-[11px] text-[#526779] dark:text-slate-400 mt-0.5">Standalone Android Package Installer file</p>
+              </div>
+            </div>
 
-            <div className="mt-3 space-y-2.5 text-xs text-[#172B3A] dark:text-slate-200">
+            <div className="mt-3.5 space-y-2 text-xs text-[#172B3A] dark:text-slate-200">
               <div className="p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-slate-900/60 border border-[#D8E4ED] dark:border-slate-800 flex items-start gap-2">
                 <span className="font-bold text-emerald-700 dark:text-emerald-400">1.</span>
-                <span>In Chrome / your Android browser, tap <strong>(⋮) Three Dots Menu</strong>.</span>
+                <span>Open <strong>SkyCast-Weather-v2.5.apk</strong> in your notifications or phone <strong>Downloads</strong> folder.</span>
               </div>
               <div className="p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-slate-900/60 border border-[#D8E4ED] dark:border-slate-800 flex items-start gap-2">
                 <span className="font-bold text-emerald-700 dark:text-emerald-400">2.</span>
-                <span>Tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</span>
+                <span>If asked to allow install from unknown sources, tap <strong>Settings</strong> & enable <strong>Allow</strong>.</span>
               </div>
               <div className="p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-slate-900/60 border border-[#D8E4ED] dark:border-slate-800 flex items-start gap-2">
                 <span className="font-bold text-emerald-700 dark:text-emerald-400">3.</span>
-                <span>Confirm <strong>Install</strong>. The SkyCast app is now installed on your Android phone!</span>
+                <span>Tap <strong>Install</strong>. SkyCast will install as a native standalone app!</span>
               </div>
             </div>
 
             <div className="mt-5 space-y-2">
+              <button
+                onClick={triggerApkDownload}
+                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg shadow-emerald-950/50 transition cursor-pointer flex items-center justify-center gap-2"
+              >
+                <FileDown className="w-4 h-4" />
+                <span>Download APK Again</span>
+              </button>
+
               {isInstallable && (
                 <button
                   onClick={async () => {
                     await install();
                     setShowModal(false);
                   }}
-                  className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition cursor-pointer shadow-sm"
+                  className="w-full py-2.5 rounded-xl bg-[#00AFCB]/15 hover:bg-[#00AFCB]/25 text-[#00AFCB] dark:text-cyan-300 border border-[#00AFCB]/30 font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Prompt 1-Tap Installation
+                  <Smartphone className="w-4 h-4" />
+                  <span>Or Install as Web App (Direct)</span>
                 </button>
               )}
               <button
@@ -133,9 +156,10 @@ export const AndroidDownloadBanner: React.FC = () => {
                   markAsDownloaded();
                   setShowModal(false);
                 }}
-                className="w-full py-2.5 rounded-xl bg-[#F4F8FC] hover:bg-slate-200 dark:bg-slate-800 text-[#172B3A] dark:text-slate-200 font-bold text-xs transition cursor-pointer border border-[#D8E4ED] dark:border-slate-700"
+                className="w-full py-2 rounded-xl bg-[#F4F8FC] hover:bg-slate-200 dark:bg-slate-800 text-[#172B3A] dark:text-slate-200 font-semibold text-xs transition cursor-pointer border border-[#D8E4ED] dark:border-slate-700 flex items-center justify-center gap-1.5"
               >
-                I Have Installed It (Hide Download Button)
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span>I've Installed The App</span>
               </button>
             </div>
           </div>

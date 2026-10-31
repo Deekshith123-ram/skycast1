@@ -10,7 +10,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = parseInt(process.env.PORT || '3000', 10);
+const isDev = process.env.NODE_ENV !== 'production';
+// In dev mode, AI Studio requires dev server on port 3000. Never listen on 8080 in dev.
+const port = isDev ? 3000 : parseInt(process.env.PORT || '8080', 10);
 
 app.use(express.json({ limit: '5mb' }));
 
@@ -275,12 +277,17 @@ function generateLocalFallbackReply(
     `• Current Temperature: **${temp}°C** (${condition})\n` +
     `• Precipitation Probability: **${rainChance}%** | Humidity: **${humidity}%** | UV Index: **${uvIndex}** | Wind: **${windSpeed} km/h**\n\n` +
     `**Karnataka Districts with High Rain Probability:**\n` +
-    (highRainDistricts.length > 0
-      ? highRainDistricts.map((d) => `• ${d}`).join('\n')
-      : `• Most districts currently show scattered or dry conditions.`) +
     `\n\nFeel free to ask about any specific Karnataka district, hourly trends, or cloud satellite movements!`
   );
 }
+
+// GET /downloads/SkyCast-Weather-v2.5.apk or /api/download-apk
+app.get(['/downloads/SkyCast-Weather-v2.5.apk', '/api/download-apk'], (_req: Request, res: Response) => {
+  const apkPath = path.resolve(__dirname, 'public/downloads/SkyCast-Weather-v2.5.apk');
+  res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+  res.setHeader('Content-Disposition', 'attachment; filename="SkyCast-Weather-v2.5.apk"');
+  res.sendFile(apkPath);
+});
 
 // POST /api/gemini/chat endpoint
 app.post('/api/gemini/chat', async (req: Request, res: Response) => {

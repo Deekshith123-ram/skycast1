@@ -3,33 +3,31 @@ import { DistrictRainData, LocationData } from '../types/weather';
 import {
   Droplets,
   CloudRain,
-  Search,
   ArrowUpDown,
   MapPin,
 } from 'lucide-react';
+
+import { DistrictCardAtmosphereAnimation } from './DistrictCardAtmosphereAnimation';
 
 interface KarnatakaDistrictsRainGridProps {
   districts: DistrictRainData[];
   selectedLocation: LocationData;
   onSelectDistrict: (loc: LocationData) => void;
+  theme?: 'dark' | 'light';
 }
 
 export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProps> = ({
   districts,
   selectedLocation,
   onSelectDistrict,
+  theme = 'dark',
 }) => {
   const [filterRegion, setFilterRegion] = useState<string>('all');
   const [filterRainCategory, setFilterRainCategory] = useState<'all' | 'high' | 'moderate' | 'low'>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'prob_desc' | 'rain_desc' | 'name_asc'>('prob_desc');
 
   // Filter logic
   const filteredDistricts = districts.filter((d) => {
-    const matchesSearch =
-      d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      d.district.toLowerCase().includes(searchQuery.toLowerCase());
-
     const matchesRegion = filterRegion === 'all' || d.region === filterRegion;
 
     const matchesCategory =
@@ -38,7 +36,7 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
       (filterRainCategory === 'moderate' && d.rainProbability >= 30 && d.rainProbability < 60) ||
       (filterRainCategory === 'low' && d.rainProbability < 30);
 
-    return matchesSearch && matchesRegion && matchesCategory;
+    return matchesRegion && matchesCategory;
   });
 
   // Sort logic
@@ -83,20 +81,8 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="mt-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-        {/* Search Input */}
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#00AFCB] dark:text-cyan-400 pointer-events-none" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search Karnataka district (e.g. Tumakuru, Udupi)..."
-            className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white dark:bg-slate-900/80 border border-[#D8E4ED] dark:border-slate-700 focus:border-[#00AFCB] text-xs text-[#172B3A] dark:text-slate-100 placeholder-[#687D8F] focus:outline-none"
-          />
-        </div>
-
+      {/* Filter and Sort Controls (Search completely removed as requested) */}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
         {/* Filter Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
           <button
@@ -174,8 +160,8 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
         ))}
       </div>
 
-      {/* District Cards Grid */}
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-[460px] overflow-y-auto pr-1">
+      {/* District Cards Grid with Ultra-Smooth Scrolling & High Transparency Glass */}
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-[460px] overflow-y-auto pr-1.5 smooth-scroll overscroll-contain">
         {filteredDistricts.map((d) => {
           const isSelected =
             Math.abs(d.latitude - selectedLocation.latitude) < 0.05 &&
@@ -198,59 +184,69 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
                   longitude: d.longitude,
                 })
               }
-              className={`p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
+              className={`p-3.5 rounded-xl border transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between ${
                 isSelected
-                  ? 'bg-[#F0FAFC] dark:bg-cyan-950/40 border-[#00AFCB] dark:border-cyan-400 shadow-md ring-1 ring-[#00AFCB]'
-                  : 'bg-white dark:bg-slate-900/50 border-[#D8E4ED] dark:border-slate-800/90 hover:bg-[#F8FAFC] dark:hover:bg-slate-900/80 hover:border-[#00AFCB] shadow-sm'
+                  ? 'bg-[#F0FAFC]/65 dark:bg-cyan-950/45 border-[#00AFCB] dark:border-cyan-400 shadow-md ring-1 ring-[#00AFCB] backdrop-blur-md'
+                  : 'bg-white/45 dark:bg-slate-900/35 border-[#D8E4ED]/75 dark:border-slate-800/60 hover:bg-white/60 dark:hover:bg-slate-900/50 hover:border-[#00AFCB] dark:hover:border-cyan-500/50 shadow-sm backdrop-blur-md'
               }`}
             >
-              {/* Top row: Name & Region */}
-              <div className="flex items-start justify-between gap-1 mb-2">
-                <div>
-                  <h4 className="font-display text-xs font-bold text-[#172B3A] dark:text-white flex items-center gap-1">
-                    <MapPin className={`w-3 h-3 ${isSelected ? 'text-[#00AFCB] dark:text-cyan-400' : 'text-[#00AFCB]'}`} />
-                    <span>{d.district}</span>
-                  </h4>
-                  <span className="text-[10px] text-[#526779] dark:text-slate-400 block mt-0.5 font-medium">{d.region}</span>
+              {/* Individual Independent Living Atmospheric Weather Animation */}
+              <DistrictCardAtmosphereAnimation
+                weatherCode={d.weatherCode}
+                rainProbability={d.rainProbability}
+                theme={theme}
+              />
+
+              {/* Foreground Card Content with High-Contrast Legibility */}
+              <div className="relative z-10 flex flex-col justify-between h-full pointer-events-auto">
+                {/* Top row: Name & Region */}
+                <div className="flex items-start justify-between gap-1 mb-2">
+                  <div>
+                    <h4 className="font-display text-xs font-bold text-[#172B3A] dark:text-white flex items-center gap-1">
+                      <MapPin className={`w-3 h-3 ${isSelected ? 'text-[#00AFCB] dark:text-cyan-400' : 'text-[#00AFCB]'}`} />
+                      <span>{d.district}</span>
+                    </h4>
+                    <span className="text-[10px] text-[#526779] dark:text-slate-400 block mt-0.5 font-medium">{d.region}</span>
+                  </div>
+
+                  {/* Rain Probability Pill */}
+                  <div
+                    className={`px-2 py-0.5 rounded-full text-xs font-mono font-bold flex items-center gap-1 shadow-sm ${
+                      isHigh
+                        ? 'bg-blue-50 text-[#1E40AF] border border-blue-300 dark:bg-blue-600/30 dark:text-blue-300 dark:border-blue-500/40'
+                        : isMod
+                        ? 'bg-cyan-50 text-[#007A8E] border border-cyan-300 dark:bg-cyan-600/30 dark:text-cyan-300 dark:border-cyan-500/40'
+                        : 'bg-slate-100 text-[#172B3A] border border-[#D8E4ED] dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
+                    }`}
+                  >
+                    <Droplets className="w-3 h-3 text-[#00AFCB] dark:text-cyan-400" />
+                    <span>{d.rainProbability}%</span>
+                  </div>
                 </div>
 
-                {/* Rain Probability Pill */}
-                <div
-                  className={`px-2 py-0.5 rounded-full text-xs font-mono font-bold flex items-center gap-1 shadow-sm ${
-                    isHigh
-                      ? 'bg-blue-50 text-[#1E40AF] border border-blue-300 dark:bg-blue-600/30 dark:text-blue-300 dark:border-blue-500/40'
-                      : isMod
-                      ? 'bg-cyan-50 text-[#007A8E] border border-cyan-300 dark:bg-cyan-600/30 dark:text-cyan-300 dark:border-cyan-500/40'
-                      : 'bg-slate-100 text-[#172B3A] border border-[#D8E4ED] dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
-                  }`}
-                >
-                  <Droplets className="w-3 h-3 text-[#00AFCB] dark:text-cyan-400" />
-                  <span>{d.rainProbability}%</span>
+                {/* Progress bar visual for rain probability */}
+                <div className="w-full h-1.5 rounded-full bg-slate-300 dark:bg-slate-800 overflow-hidden mb-2">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      isHigh
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600'
+                        : isMod
+                        ? 'bg-gradient-to-r from-cyan-400 to-blue-500'
+                        : 'bg-slate-500 dark:bg-slate-600'
+                    }`}
+                    style={{ width: `${Math.max(4, d.rainProbability)}%` }}
+                  />
                 </div>
-              </div>
 
-              {/* Progress bar visual for rain probability */}
-              <div className="w-full h-1.5 rounded-full bg-slate-300 dark:bg-slate-800 overflow-hidden mb-2">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${
-                    isHigh
-                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600'
-                      : isMod
-                      ? 'bg-gradient-to-r from-cyan-400 to-blue-500'
-                      : 'bg-slate-500 dark:bg-slate-600'
-                  }`}
-                  style={{ width: `${Math.max(4, d.rainProbability)}%` }}
-                />
-              </div>
-
-              {/* Bottom details: Expected Rain & Temp */}
-              <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-[#D8E4ED] dark:border-slate-800/80 text-[#526779] dark:text-slate-300">
-                <span className="text-[#526779] dark:text-slate-400 font-medium">
-                  Rain: <strong className="text-[#172B3A] dark:text-white font-mono font-bold">{d.precipitationSum} mm</strong>
-                </span>
-                <span className="text-[#526779] dark:text-slate-400 font-mono font-medium">
-                  {d.tempMin}° / <strong className="text-[#172B3A] dark:text-white font-bold">{d.tempMax}°C</strong>
-                </span>
+                {/* Bottom details: Expected Rain & Temp */}
+                <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-[#D8E4ED]/80 dark:border-slate-800/80 text-[#526779] dark:text-slate-300">
+                  <span className="text-[#526779] dark:text-slate-400 font-medium">
+                    Rain: <strong className="text-[#172B3A] dark:text-white font-mono font-bold">{d.precipitationSum} mm</strong>
+                  </span>
+                  <span className="text-[#526779] dark:text-slate-400 font-mono font-medium">
+                    {d.tempMin}° / <strong className="text-[#172B3A] dark:text-white font-bold">{d.tempMax}°C</strong>
+                  </span>
+                </div>
               </div>
             </div>
           );

@@ -26,7 +26,12 @@ export const INSATSatelliteViewer: React.FC = () => {
   };
 
   return (
-    <div className="w-full glass-panel rounded-2xl border border-[#D8E4ED] dark:border-cyan-500/20 p-4 md:p-6 shadow-2xl">
+    <div
+      data-map-component="insat-viewer"
+      onClick={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
+      className="w-full glass-panel rounded-2xl border border-[#D8E4ED] dark:border-cyan-500/20 p-4 md:p-6 shadow-2xl insat-satellite-viewer map-interaction-zone"
+    >
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#D8E4ED] dark:border-cyan-500/15">
         <div>
@@ -76,8 +81,11 @@ export const INSATSatelliteViewer: React.FC = () => {
 
       {/* Main View Area */}
       <div className="mt-4 grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
-        {/* Left: Interactive Satellite Frame Display */}
-        <div className="lg:col-span-3 relative rounded-xl overflow-hidden bg-[#030712] border border-cyan-500/20 min-h-[360px] md:min-h-[460px] flex items-center justify-center">
+        {/* Left: Interactive Satellite Frame Display without obscuring glassy filters inside map border */}
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="lg:col-span-3 relative rounded-xl overflow-hidden bg-[#030712] border border-cyan-500/20 min-h-[360px] md:min-h-[460px] flex items-center justify-center insat-image-viewport map-interaction-zone backdrop-blur-none"
+        >
           {/* Zoom controls overlay */}
           <div className="absolute top-3 right-3 z-10 flex items-center gap-1 bg-slate-900/80 backdrop-blur-md p-1 rounded-xl border border-cyan-500/20">
             <button

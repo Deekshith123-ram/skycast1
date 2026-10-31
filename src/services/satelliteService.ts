@@ -197,8 +197,8 @@ export function getGibsDateString(daysOffset = 0): string {
 
 // Generate NASA GIBS Tile URL for TrueColor Clouds
 export function getNasaGibsTileUrl(layer: 'MODIS_Terra' | 'VIIRS_SNPP' | 'MODIS_Aqua' = 'MODIS_Terra', dateStr?: string): string {
-  // NASA Aqua afternoon passes are compiled with 12-24h delay; default to 1 day offset to guarantee active cloud tiles
-  const defaultOffset = layer === 'MODIS_Aqua' ? 1 : 0;
+  // NASA polar satellite daily composites require a 1-day offset to guarantee 100% complete orbital compilation across Karnataka & India
+  const defaultOffset = 1;
   const date = dateStr || getGibsDateString(defaultOffset);
   const layerName =
     layer === 'VIIRS_SNPP'

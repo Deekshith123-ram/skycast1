@@ -21,7 +21,11 @@ export default defineConfig(() => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
+        eventemitter3: path.resolve(__dirname, 'node_modules/eventemitter3/dist/eventemitter3.esm.js'),
       },
+    },
+    optimizeDeps: {
+      include: ['recharts', 'eventemitter3'],
     },
     server: {
       port: 3000,

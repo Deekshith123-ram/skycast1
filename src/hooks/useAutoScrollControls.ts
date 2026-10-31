@@ -145,7 +145,7 @@ export function useAutoScrollControls({
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
-      // Don't toggle on interactive elements, modals, header, or floating controls
+      // Don't toggle or show header on interactive elements, modals, header, or floating controls
       if (
         target.closest('button') ||
         target.closest('a') ||
@@ -160,7 +160,17 @@ export function useAutoScrollControls({
         target.closest('.karnataka-district-rain-pin') ||
         target.closest('header') ||
         target.closest('aside') ||
-        target.closest('nav')
+        target.closest('nav') ||
+        // CRITICAL: Both maps (Leaflet Satellite Map & INSAT Observatory Viewer)
+        // Never reveal or toggle top searching header when tapped on maps
+        target.closest('.leaflet-container') ||
+        target.closest('[data-map-component]') ||
+        target.closest('.satellite-map-container') ||
+        target.closest('.insat-satellite-viewer') ||
+        target.closest('[data-map="insat-viewer"]') ||
+        target.closest('.map-interaction-zone') ||
+        target.closest('.leaflet-pane') ||
+        target.closest('.insat-image-viewport')
       ) {
         // If clicking inside header, reset/pause the auto-hide timer so user can interact
         if (target.closest('header')) {

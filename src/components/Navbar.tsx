@@ -291,14 +291,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Download App for Android / Desktop - Hidden once downloaded */}
             <PWAInstallButton />
 
-            {/* Bilingual AI Assistant Button */}
+            {/* Bilingual AI Assistant Button - Water Glass Effect */}
             <button
               onClick={onOpenAI}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[#00AFCB]/15 to-cyan-500/20 hover:from-[#00AFCB]/25 hover:to-cyan-500/30 dark:bg-cyan-500/20 dark:hover:bg-cyan-500/30 border border-[#00AFCB]/40 dark:border-cyan-400/40 text-[#007A8E] dark:text-cyan-300 font-bold text-xs transition active:scale-95 cursor-pointer shadow-sm"
+              className="water-glass-btn flex items-center gap-1.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 shadow-md"
               title={t.aiAssistant}
             >
-              <Sparkles className="w-4 h-4 text-[#00AFCB] dark:text-cyan-400 animate-pulse" />
-              <span className="hidden md:inline">{t.askAI}</span>
+              <div className="relative flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-cyan-200 drop-shadow-[0_0_8px_rgba(34,211,238,0.9)] animate-pulse" />
+                <span className="absolute -inset-1 rounded-full bg-cyan-300/30 blur-sm animate-ping pointer-events-none" />
+              </div>
+              <span className="tracking-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)] hidden md:inline">{t.askAI}</span>
             </button>
 
             <button
