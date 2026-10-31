@@ -90,10 +90,10 @@ export const WeatherCharts: React.FC<WeatherChartsProps> = ({ hourly }) => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer shadow-sm ${
+              className={`water-droplet-pill flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer shadow-sm ${
                 activeTab === tab.id
-                  ? 'bg-[#E6F8FA] dark:bg-cyan-500/25 text-[#007A8E] dark:text-cyan-200 border border-[#00AFCB] dark:border-cyan-500/40 ring-1 ring-[#00AFCB]'
-                  : 'bg-white dark:bg-slate-900/60 hover:bg-[#F4F8FC] dark:hover:bg-slate-800 text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-slate-200 border border-[#D8E4ED] dark:border-slate-800'
+                  ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200'
+                  : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-slate-200'
               }`}
             >
               {tab.icon}

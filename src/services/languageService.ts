@@ -106,9 +106,14 @@ export interface Translations {
   startupMode: string;
   startupCurrentGPS: string;
   startupDefaultDistrict: string;
+  startupDefaultLocality: string;
   defaultDistrictLabel: string;
   setAsDefaultDistrict: string;
   defaultDistrictSaved: string;
+  defaultLocalityLabel: string;
+  setAsDefaultLocality: string;
+  defaultLocalitySaved: string;
+  defaultLocalityBadge: string;
   fullscreenMap: string;
   exitFullscreen: string;
 
@@ -236,9 +241,14 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     startupMode: 'App Startup Location',
     startupCurrentGPS: 'Live Current Location (GPS)',
     startupDefaultDistrict: 'Fixed Default District',
+    startupDefaultLocality: 'Fixed Default Locality',
     defaultDistrictLabel: 'Choose Default District',
     setAsDefaultDistrict: 'Set Current Location as My Default District',
     defaultDistrictSaved: 'Default District Saved!',
+    defaultLocalityLabel: 'Choose Default Locality',
+    setAsDefaultLocality: 'Set Current Location as My Default Locality',
+    defaultLocalitySaved: 'Default Locality Saved!',
+    defaultLocalityBadge: 'Default Locality',
     fullscreenMap: 'Full Screen Map',
     exitFullscreen: 'Exit Fullscreen',
 
@@ -364,9 +374,14 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     startupMode: 'ಆ್ಯಪ್ ಪ್ರಾರಂಭ ಸ್ಥಳ (Startup Location)',
     startupCurrentGPS: 'ಲೈವ್ ಪ್ರಸ್ತುತ ಸ್ಥಳ (GPS)',
     startupDefaultDistrict: 'ನಿಗದಿತ ಡೀಫಾಲ್ಟ್ ಜಿಲ್ಲೆ',
+    startupDefaultLocality: 'ನಿಗದಿತ ಡೀಫಾಲ್ಟ್ ಸ್ಥಳೀಯ ಪ್ರದೇಶ',
     defaultDistrictLabel: 'ಡೀಫಾಲ್ಟ್ ಜಿಲ್ಲೆ ಆಯ್ಕೆಮಾಡಿ',
     setAsDefaultDistrict: 'ಪ್ರಸ್ತುತ ಸ್ಥಳವನ್ನು ಡೀಫಾಲ್ಟ್ ಜಿಲ್ಲೆಯಾಗಿ ಹೊಂದಿಸಿ',
     defaultDistrictSaved: 'ಡೀಫಾಲ್ಟ್ ಜಿಲ್ಲೆ ಉಳಿಸಲಾಗಿದೆ!',
+    defaultLocalityLabel: 'ಡೀಫಾಲ್ಟ್ ಸ್ಥಳೀಯ ಪ್ರದೇಶ ಆಯ್ಕೆಮಾಡಿ',
+    setAsDefaultLocality: 'ಪ್ರಸ್ತುತ ಸ್ಥಳವನ್ನು ಡೀಫಾಲ್ಟ್ ಸ್ಥಳವಾಗಿ ಹೊಂದಿಸಿ',
+    defaultLocalitySaved: 'ಡೀಫಾಲ್ಟ್ ಸ್ಥಳ ಉಳಿಸಲಾಗಿದೆ!',
+    defaultLocalityBadge: 'ಡೀಫಾಲ್ಟ್ ಸ್ಥಳ',
     fullscreenMap: 'ಪೂರ್ಣ ಪರದೆ ನಕ್ಷೆ (Full Screen)',
     exitFullscreen: 'ಪೂರ್ಣ ಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಿ (Exit Fullscreen)',
 

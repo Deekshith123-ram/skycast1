@@ -566,7 +566,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
         {/* Top Floating Bar: Status, Layer Switcher, and Fit Button */}
         <div className="absolute top-3 inset-x-3 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
           {/* Left: Live Status Chip */}
-          <div className="pointer-events-auto flex items-center gap-2 bg-white/90 dark:bg-[#061022]/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-[#D8E4ED] dark:border-cyan-500/35 text-xs shadow-md">
+          <div className="water-droplet-pill pointer-events-auto flex items-center gap-2 px-3 py-1.5 rounded-full text-xs shadow-md">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -586,7 +586,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
             <button
               type="button"
               onClick={fitKarnataka}
-              className="flex items-center gap-1 bg-white/90 dark:bg-[#061022]/90 backdrop-blur-md hover:bg-slate-100 dark:hover:bg-slate-800 border border-[#D8E4ED] dark:border-cyan-500/35 px-2.5 py-1.5 rounded-xl text-xs font-bold text-[#172B3A] dark:text-slate-200 shadow-sm transition active:scale-95 cursor-pointer"
+              className="water-droplet-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-[#172B3A] dark:text-slate-200 shadow-sm transition cursor-pointer"
               title={lang === 'kn' ? 'ಸಂಪೂರ್ಣ ಕರ್ನಾಟಕ ವೀಕ್ಷಣೆಗೆ ಹೊಂದಿಸಿ' : 'Reset view to fit whole Karnataka'}
             >
               <RotateCcw className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
@@ -597,10 +597,10 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
             <button
               type="button"
               onClick={() => setShowDistrictRainPins(!showDistrictRainPins)}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold border shadow-sm transition active:scale-95 cursor-pointer ${
+              className={`water-droplet-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm transition cursor-pointer ${
                 showDistrictRainPins
-                  ? 'bg-cyan-600 border-cyan-400 text-white shadow-cyan-900/30'
-                  : 'bg-white/90 dark:bg-[#061022]/90 border-[#D8E4ED] dark:border-slate-700 text-[#526779] dark:text-slate-300'
+                  ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-extrabold'
+                  : 'text-[#526779] dark:text-slate-300'
               }`}
               title={lang === 'kn' ? 'ಎಲ್ಲಾ 31 ಜಿಲ್ಲೆಗಳ ಮಳೆ % ಪಿನ್‌ಗಳನ್ನು ಟಾಗಲ್ ಮಾಡಿ' : 'Toggle All 31 Karnataka District Rain % Pins'}
             >
@@ -612,10 +612,10 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
             <button
               type="button"
               onClick={() => setShowLayerMenu(true)}
-              className="flex items-center gap-1.5 bg-gradient-to-r from-[#00AFCB] to-[#2563EB] hover:from-[#0096AD] hover:to-blue-600 border border-cyan-400/70 px-3 py-1.5 rounded-xl text-xs font-bold text-white shadow-md cursor-pointer transition active:scale-95"
+              className="water-droplet-btn flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-[#172B3A] dark:text-white shadow-md cursor-pointer transition"
               title={t.layers}
             >
-              <Layers className="w-3.5 h-3.5" />
+              <Layers className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
               <span>{t.layers}</span>
             </button>
 
@@ -627,7 +627,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                 e.stopPropagation();
                 setIsFullscreen(true);
               }}
-              className="bg-white/90 dark:bg-[#061022]/90 backdrop-blur-md px-2.5 py-1.5 rounded-xl border border-[#D8E4ED] dark:border-cyan-400/40 text-[#172B3A] dark:text-cyan-300 hover:bg-slate-100 dark:hover:bg-cyan-950 transition shadow-md cursor-pointer flex items-center gap-1.5 text-xs font-bold"
+              className="water-droplet-btn px-3 py-1.5 rounded-full text-[#172B3A] dark:text-cyan-300 transition shadow-md cursor-pointer flex items-center gap-1.5 text-xs font-bold"
               title={t.fullscreenMap}
               aria-label={t.fullscreenMap}
             >
@@ -719,7 +719,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                 <button
                   type="button"
                   onClick={fitKarnatakaFs}
-                  className="flex items-center gap-1 bg-white/90 dark:bg-slate-900 border border-[#D8E4ED] dark:border-cyan-500/35 px-2.5 py-1.5 rounded-xl text-xs font-bold text-[#172B3A] dark:text-slate-200 shadow-sm transition active:scale-95 cursor-pointer"
+                  className="water-droplet-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-[#172B3A] dark:text-slate-200 shadow-sm transition cursor-pointer"
                   title={t.fitKarnataka}
                 >
                   <RotateCcw className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
@@ -730,10 +730,10 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowDistrictRainPins(!showDistrictRainPins)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold border shadow-sm transition active:scale-95 cursor-pointer ${
+                  className={`water-droplet-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm transition cursor-pointer ${
                     showDistrictRainPins
-                      ? 'bg-cyan-600 border-cyan-400 text-white shadow-cyan-900/30'
-                      : 'bg-white/90 dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-700 text-[#526779] dark:text-slate-300'
+                      ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-extrabold'
+                      : 'text-[#526779] dark:text-slate-300'
                   }`}
                   title={t.pins31}
                 >
@@ -745,10 +745,10 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowLayerMenu(true)}
-                  className="flex items-center gap-1.5 bg-gradient-to-r from-[#00AFCB] to-[#2563EB] hover:from-[#0096AD] hover:to-blue-600 border border-cyan-400/70 px-3 py-1.5 rounded-xl text-xs font-bold text-white shadow-md cursor-pointer transition active:scale-95"
+                  className="water-droplet-btn flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-[#172B3A] dark:text-white shadow-md cursor-pointer transition"
                   title={t.layers}
                 >
-                  <Layers className="w-3.5 h-3.5" />
+                  <Layers className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
                   <span>{t.layers}</span>
                 </button>
 
@@ -760,7 +760,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                     e.stopPropagation();
                     setIsFullscreen(false);
                   }}
-                  className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-md cursor-pointer transition active:scale-95"
+                  className="water-droplet-btn flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-rose-600 dark:text-rose-400 shadow-md cursor-pointer transition"
                   title={t.exitFullscreen}
                   aria-label={t.exitFullscreen}
                 >
@@ -859,7 +859,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowLayerMenu(false)}
-                  className="p-1.5 rounded-lg text-[#687D8F] hover:text-[#172B3A] dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition cursor-pointer"
+                  className="water-droplet-btn p-1.5 rounded-full text-[#687D8F] hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
                   title="Close"
                   aria-label="Close"
                 >
@@ -888,10 +888,10 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                         onClick={() => {
                           setActiveLayer(opt.id);
                         }}
-                        className={`w-full text-left p-3.5 rounded-xl border transition-all cursor-pointer flex items-start justify-between gap-3 ${
+                        className={`water-droplet-pill w-full text-left p-3.5 rounded-2xl cursor-pointer flex items-start justify-between gap-3 ${
                           isCurrent
-                            ? 'bg-[#E6F8FA] dark:bg-cyan-950/70 border-[#00AFCB] dark:border-cyan-400 ring-2 ring-[#00AFCB]/40 shadow-sm'
-                            : 'bg-[#F8FAFC] dark:bg-slate-900/60 border-[#D8E4ED] dark:border-slate-800 hover:border-[#00AFCB] dark:hover:border-cyan-500/60'
+                            ? 'water-droplet-pill-active ring-2 ring-[#00AFCB]/40'
+                            : ''
                         }`}
                       >
                         <div>
@@ -899,7 +899,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                             <span className="font-bold text-xs sm:text-sm text-[#172B3A] dark:text-white">
                               {opt.name}
                             </span>
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-[#00AFCB]/15 text-[#007A8E] dark:text-cyan-300 border border-[#00AFCB]/30">
+                            <span className="px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-[#00AFCB]/15 text-[#007A8E] dark:text-cyan-300 border border-[#00AFCB]/30">
                               {opt.tag}
                             </span>
                           </div>
@@ -964,7 +964,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowLayerMenu(false)}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#00AFCB] to-[#2563EB] hover:from-[#0096AD] hover:to-blue-600 text-white text-xs font-bold shadow-md cursor-pointer transition active:scale-95"
+                  className="water-droplet-btn px-5 py-2 rounded-full text-xs font-bold text-[#172B3A] dark:text-white shadow-md cursor-pointer transition"
                 >
                   {lang === 'kn' ? 'ಮುಗಿದಿದೆ (Done)' : 'Done'}
                 </button>

@@ -8,6 +8,9 @@ export interface LocationData {
   longitude: number;
   elevation?: number;
   isDefault?: boolean;
+  locality?: string;
+  isLocality?: boolean;
+  isEstimate?: boolean;
 }
 
 export interface DistrictRainData {
@@ -89,6 +92,7 @@ export interface WeatherData {
   daily: DailyForecastItem[];
   lastUpdated: string;
   isStale?: boolean;
+  isEstimate?: boolean;
 }
 
 export type MapLayerType =

@@ -234,84 +234,391 @@ html.dark ::-webkit-scrollbar-thumb:hover {
   display: none;
 }
 
-/* Fluid Water / Liquid Glass Effect for Ask AI Button */
+/* ==========================================================================
+   CRYSTAL-CLEAR WATER DROPLET & LIQUID GLASS EFFECT SYSTEM
+   Physical water simulation with transparent liquid surface, realistic meniscus
+   rim reflections, refractive backdrop, curved glossy highlights, and touch ripples.
+   Nearly colorless & crystal-clear in both Dark Mode and Light Mode.
+   ========================================================================== */
+
+@keyframes water-droplet-shimmer {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+@keyframes water-droplet-ripple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6), inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.9);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.15), inset 0 2px 3px 0 rgba(255, 255, 255, 1);
+  }
+  100% {
+    box-shadow: 0 0 0 12px rgba(255, 255, 255, 0), inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.85);
+  }
+}
+
+/* 1. REALISTIC WATER DROPLET BUTTON */
+.water-droplet-btn,
 .water-glass-btn {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(
-    135deg,
-    rgba(6, 182, 212, 0.38) 0%,
-    rgba(14, 165, 233, 0.28) 45%,
-    rgba(37, 99, 235, 0.35) 100%
+  background: radial-gradient(
+    130% 120% at 50% -10%,
+    rgba(255, 255, 255, 0.13) 0%,
+    rgba(255, 255, 255, 0.04) 55%,
+    rgba(255, 255, 255, 0.01) 100%
   );
-  backdrop-filter: blur(16px) saturate(200%);
-  -webkit-backdrop-filter: blur(16px) saturate(200%);
-  border: 1px solid rgba(165, 243, 252, 0.6);
+  backdrop-filter: blur(14px) saturate(180%) brightness(1.06);
+  -webkit-backdrop-filter: blur(14px) saturate(180%) brightness(1.06);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   box-shadow: 
-    0 8px 24px -4px rgba(6, 182, 212, 0.38),
-    0 2px 8px -1px rgba(14, 165, 233, 0.22),
-    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.75),
-    inset 0 -2px 4px 0 rgba(6, 182, 212, 0.32);
-  color: #FFFFFF;
-  text-shadow: 0 1px 2px rgba(8, 47, 73, 0.5);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    0 6px 20px -2px rgba(0, 0, 0, 0.45),
+    0 2px 6px -1px rgba(0, 0, 0, 0.25),
+    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.20),
+    inset 1px 0 2px 0 rgba(255, 255, 255, 0.15);
+  color: inherit;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Curved glossy dome highlight (simulates light refraction across curved liquid droplet) */
+.water-droplet-btn::before,
 .water-glass-btn::before {
   content: '';
   position: absolute;
   top: 0;
-  left: -120%;
-  width: 100%;
+  left: 12%;
+  right: 12%;
+  height: 44%;
+  border-radius: 9999px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.10) 75%,
+    transparent 100%
+  );
+  pointer-events: none;
+  opacity: 0.9;
+  transition: opacity 0.25s ease;
+}
+
+/* Delicate reflective shimmer moving across the surface */
+.water-droplet-btn::after,
+.water-glass-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
   height: 100%;
   background: linear-gradient(
     90deg,
-    transparent,
-    rgba(255, 255, 255, 0.45),
-    transparent
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
   );
-  transform: skewX(-20deg);
-  transition: left 0.6s ease;
+  transform: translateX(-150%) skewX(-20deg);
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
+.water-droplet-btn:hover,
 .water-glass-btn:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(6, 182, 212, 0.52) 0%,
-    rgba(14, 165, 233, 0.42) 45%,
-    rgba(37, 99, 235, 0.48) 100%
+  background: radial-gradient(
+    130% 120% at 50% -10%,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.08) 55%,
+    rgba(255, 255, 255, 0.02) 100%
   );
-  border-color: rgba(207, 250, 254, 0.85);
+  border-color: rgba(255, 255, 255, 0.45);
   box-shadow: 
-    0 12px 28px -4px rgba(6, 182, 212, 0.52),
-    0 4px 12px -1px rgba(14, 165, 233, 0.32),
-    inset 0 2px 3px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -2px 5px 0 rgba(6, 182, 212, 0.42);
-  transform: translateY(-1px);
+    0 10px 24px -2px rgba(0, 0, 0, 0.50),
+    0 4px 10px -1px rgba(0, 0, 0, 0.30),
+    inset 0 2px 2px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -2px 3px 0 rgba(255, 255, 255, 0.30),
+    inset 1px 0 2px 0 rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px) scale(1.01);
 }
 
-.water-glass-btn:hover::before {
-  left: 140%;
+.water-droplet-btn:hover::after,
+.water-glass-btn:hover::after {
+  opacity: 1;
+  animation: water-droplet-shimmer 0.85s ease-out;
 }
 
+/* Tap / Click Liquid Ripple & Compression Response */
+.water-droplet-btn:active,
 .water-glass-btn:active {
-  transform: scale(0.96);
+  transform: scale(0.95) translateY(0.5px);
   box-shadow: 
-    0 4px 12px -2px rgba(6, 182, 212, 0.4),
-    inset 0 2px 4px 0 rgba(8, 47, 73, 0.3);
+    0 2px 8px -1px rgba(0, 0, 0, 0.40),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.90),
+    inset 0 2px 5px 0 rgba(0, 0, 0, 0.30);
+  transition-duration: 0.1s;
 }
 
+/* Light Theme Adaptive Water Droplet */
+.light .water-droplet-btn,
+html.light .water-droplet-btn,
 .light .water-glass-btn,
 html.light .water-glass-btn {
-  background: linear-gradient(
-    135deg,
-    rgba(6, 182, 212, 0.80) 0%,
-    rgba(2, 132, 199, 0.75) 50%,
-    rgba(37, 99, 235, 0.80) 100%
+  background: radial-gradient(
+    130% 120% at 50% -10%,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.68) 60%,
+    rgba(255, 255, 255, 0.45) 100%
   );
-  border-color: rgba(255, 255, 255, 0.9);
-  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 
+    0 6px 16px -2px rgba(15, 29, 46, 0.10),
+    0 2px 5px -1px rgba(15, 29, 46, 0.05),
+    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.98),
+    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.50),
+    inset 1px 0 2px 0 rgba(255, 255, 255, 0.30);
+}
+
+.light .water-droplet-btn:hover,
+html.light .water-droplet-btn:hover,
+.light .water-glass-btn:hover,
+html.light .water-glass-btn:hover {
+  background: radial-gradient(
+    130% 120% at 50% -10%,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.82) 60%,
+    rgba(255, 255, 255, 0.55) 100%
+  );
+  border-color: rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 10px 22px -2px rgba(15, 29, 46, 0.14),
+    0 4px 8px -1px rgba(15, 29, 46, 0.08),
+    inset 0 2px 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 3px 0 rgba(255, 255, 255, 0.65);
+}
+
+.light .water-droplet-btn:active,
+html.light .water-droplet-btn:active,
+.light .water-glass-btn:active,
+html.light .water-glass-btn:active {
+  box-shadow: 
+    0 2px 6px -1px rgba(15, 29, 46, 0.12),
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.95),
+    inset 0 2px 4px 0 rgba(15, 29, 46, 0.10);
+}
+
+/* 2. TOP SEARCH WINDOW – CURVED TRANSPARENT LIQUID GLASS */
+.water-droplet-search {
+  position: relative;
+  background: radial-gradient(
+    125% 120% at 50% 0%,
+    rgba(255, 255, 255, 0.10) 0%,
+    rgba(15, 23, 42, 0.38) 60%,
+    rgba(6, 14, 32, 0.22) 100%
+  );
+  backdrop-filter: blur(14px) saturate(180%) brightness(1.05);
+  -webkit-backdrop-filter: blur(14px) saturate(180%) brightness(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 24px -4px rgba(0, 0, 0, 0.35),
+    0 2px 6px -1px rgba(0, 0, 0, 0.20),
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.72),
+    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.16);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Thin upper specular gleam across curved liquid window */
+.water-droplet-search::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 40%;
+  border-radius: 9999px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.40) 0%,
+    rgba(255, 255, 255, 0.05) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.water-droplet-search:focus-within {
+  background: radial-gradient(
+    125% 120% at 50% 0%,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(15, 23, 42, 0.42) 60%,
+    rgba(6, 14, 32, 0.25) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow: 
+    0 12px 30px -4px rgba(0, 0, 0, 0.45),
+    0 0 0 2px rgba(255, 255, 255, 0.20),
+    inset 0 2px 2.5px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -2px 3px 0 rgba(255, 255, 255, 0.28);
+}
+
+.light .water-droplet-search,
+html.light .water-droplet-search {
+  background: radial-gradient(
+    125% 120% at 50% 0%,
+    rgba(255, 255, 255, 0.88) 0%,
+    rgba(255, 255, 255, 0.62) 65%,
+    rgba(240, 244, 250, 0.42) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.88);
+  box-shadow: 
+    0 8px 22px -4px rgba(23, 43, 58, 0.09),
+    0 2px 6px -1px rgba(23, 43, 58, 0.05),
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.98),
+    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.45);
+}
+
+.light .water-droplet-search:focus-within,
+html.light .water-droplet-search:focus-within {
+  background: radial-gradient(
+    125% 120% at 50% 0%,
+    rgba(255, 255, 255, 0.96) 0%,
+    rgba(255, 255, 255, 0.78) 65%,
+    rgba(240, 244, 250, 0.55) 100%
+  );
+  border-color: rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 12px 28px -4px rgba(23, 43, 58, 0.12),
+    0 0 0 2px rgba(0, 175, 203, 0.25),
+    inset 0 2px 2.5px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 3px 0 rgba(255, 255, 255, 0.60);
+}
+
+/* 3. WATER DROPLET AUTOCOMPLETE DROPDOWN */
+.water-droplet-dropdown {
+  background: rgba(7, 16, 34, 0.72);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 20px 45px -8px rgba(0, 0, 0, 0.65),
+    0 6px 16px -2px rgba(0, 0, 0, 0.40),
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.45);
+}
+
+.light .water-droplet-dropdown,
+html.light .water-droplet-dropdown {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.90);
+  box-shadow: 
+    0 18px 40px -8px rgba(23, 43, 58, 0.18),
+    0 6px 14px -2px rgba(23, 43, 58, 0.08),
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 1);
+}
+
+/* 4. WATER DROPLET PILL (Quick Districts, Filter Switches, Badges) */
+.water-droplet-pill {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(
+    130% 120% at 50% 0%,
+    rgba(255, 255, 255, 0.10) 0%,
+    rgba(255, 255, 255, 0.03) 65%,
+    transparent 100%
+  );
+  backdrop-filter: blur(12px) saturate(175%);
+  -webkit-backdrop-filter: blur(12px) saturate(175%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 
+    0 3px 10px -1px rgba(0, 0, 0, 0.30),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.70),
+    inset 0 -1px 1.5px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.water-droplet-pill:hover {
+  background: radial-gradient(
+    130% 120% at 50% 0%,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.06) 65%,
+    transparent 100%
+  );
+  border-color: rgba(255, 255, 255, 0.38);
+  box-shadow: 
+    0 5px 14px -1px rgba(0, 0, 0, 0.38),
+    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 2px 0 rgba(255, 255, 255, 0.22);
+  transform: translateY(-0.5px);
+}
+
+.water-droplet-pill:active {
+  transform: scale(0.96);
+}
+
+/* Active / Selected Water Pill */
+.water-droplet-pill-active {
+  background: radial-gradient(
+    130% 120% at 50% -10%,
+    rgba(255, 255, 255, 0.24) 0%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0.02) 100%
+  ) !important;
+  border-color: rgba(255, 255, 255, 0.60) !important;
+  box-shadow: 
+    0 6px 18px -2px rgba(0, 0, 0, 0.45),
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.35) !important;
+}
+
+.light .water-droplet-pill,
+html.light .water-droplet-pill {
+  background: radial-gradient(
+    130% 120% at 50% 0%,
+    rgba(255, 255, 255, 0.85) 0%,
+    rgba(255, 255, 255, 0.60) 65%,
+    rgba(240, 244, 250, 0.30) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 
+    0 3px 8px -1px rgba(23, 43, 58, 0.08),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1.5px 0 rgba(255, 255, 255, 0.40);
+}
+
+.light .water-droplet-pill:hover,
+html.light .water-droplet-pill:hover {
+  background: radial-gradient(
+    130% 120% at 50% 0%,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 255, 255, 0.75) 65%,
+    rgba(240, 244, 250, 0.40) 100%
+  );
+  border-color: rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 5px 12px -1px rgba(23, 43, 58, 0.12),
+    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 2px 0 rgba(255, 255, 255, 0.50);
+}
+
+.light .water-droplet-pill-active,
+html.light .water-droplet-pill-active {
+  background: radial-gradient(
+    130% 120% at 50% -10%,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.85) 60%,
+    rgba(255, 255, 255, 0.70) 100%
+  ) !important;
+  border-color: rgba(255, 255, 255, 1) !important;
+  box-shadow: 
+    0 6px 14px -2px rgba(23, 43, 58, 0.14),
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.60) !important;
 }
 
 /* Leaflet theme overrides */

@@ -67,7 +67,7 @@ export const AndroidDownloadBanner: React.FC = () => {
         <div className="flex items-center gap-2 self-end sm:self-center z-10">
           <button
             onClick={handleInstallClick}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg shadow-emerald-950/50 transition active:scale-95 cursor-pointer"
+            className="water-droplet-btn flex items-center gap-1.5 px-4 py-2 rounded-full text-emerald-300 font-bold text-xs shadow-md cursor-pointer"
           >
             <Download className="w-4 h-4" />
             <span>Download APK</span>
@@ -75,7 +75,7 @@ export const AndroidDownloadBanner: React.FC = () => {
 
           <button
             onClick={handleDismiss}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition cursor-pointer"
+            className="water-droplet-btn p-2 rounded-full text-slate-400 hover:text-white cursor-pointer"
             title="Dismiss banner"
           >
             <X className="w-4 h-4" />

@@ -118,11 +118,11 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
     >
       {/* 1. Expanded Glass Options Card (Appears when Control Button is tapped) */}
       {isOpen && (
-        <div className="mb-2.5 p-3 sm:p-3.5 rounded-2xl bg-white/95 dark:bg-[#071328]/95 backdrop-blur-2xl border border-[#D8E4ED] dark:border-cyan-500/35 shadow-[0_16px_50px_rgba(23,43,58,0.22)] dark:shadow-[0_20px_55px_rgba(0,0,0,0.75)] animate-in zoom-in-95 fade-in slide-in-from-bottom-3 duration-200 max-w-sm sm:max-w-md w-[calc(100vw-2rem)] sm:w-auto">
+        <div className="water-droplet-dropdown mb-2.5 p-3 sm:p-3.5 rounded-2xl animate-in zoom-in-95 fade-in slide-in-from-bottom-3 duration-200 max-w-sm sm:max-w-md w-[calc(100vw-2rem)] sm:w-auto">
           {/* Header inside options */}
-          <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-[#D8E4ED] dark:border-slate-800">
+          <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-[#D8E4ED]/60 dark:border-white/10">
             <div className="flex items-center gap-2">
-              <span className="p-1 rounded-lg bg-[#E6F8FA] dark:bg-cyan-500/20 text-[#00AFCB] dark:text-cyan-400">
+              <span className="p-1 rounded-full bg-[#E6F8FA] dark:bg-cyan-500/20 text-[#00AFCB] dark:text-cyan-400">
                 <SlidersHorizontal className="w-3.5 h-3.5" />
               </span>
               <span className="text-xs font-bold text-[#172B3A] dark:text-white">
@@ -131,7 +131,7 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-[#687D8F] hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
+              className="water-droplet-btn p-1.5 rounded-full text-[#687D8F] hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
               title="Close options"
               aria-label="Close options"
             >
@@ -145,15 +145,15 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
               <span className="text-[10px] uppercase font-bold text-[#687D8F] dark:text-slate-400 tracking-wider block mb-1.5">
                 {t.theme}
               </span>
-              <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-[#F4F8FC] dark:bg-slate-900/90 border border-[#D8E4ED] dark:border-slate-800">
+              <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-white/40 dark:bg-black/20 border border-white/30 dark:border-white/10">
                 <button
                   onClick={() => {
                     setTheme('dark');
                   }}
                   aria-pressed={theme === 'dark'}
-                  className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition cursor-pointer ${
+                  className={`water-droplet-pill flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition cursor-pointer ${
                     theme === 'dark'
-                      ? 'bg-cyan-500/25 text-cyan-300 shadow-sm border border-cyan-400/35 ring-1 ring-cyan-400/20'
+                      ? 'water-droplet-pill-active text-cyan-300'
                       : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
                   }`}
                 >
@@ -166,9 +166,9 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
                     setTheme('light');
                   }}
                   aria-pressed={theme === 'light'}
-                  className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition cursor-pointer ${
+                  className={`water-droplet-pill flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition cursor-pointer ${
                     theme === 'light'
-                      ? 'bg-white text-amber-700 shadow-sm border border-[#D8E4ED] ring-1 ring-amber-500/20'
+                      ? 'water-droplet-pill-active text-amber-700 dark:text-amber-300'
                       : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
                   }`}
                 >
@@ -185,25 +185,25 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
                 onOpenAI?.();
                 setIsOpen(false);
               }}
-              className="w-full flex items-center justify-between p-2.5 rounded-xl bg-gradient-to-r from-[#00AFCB]/15 via-cyan-500/15 to-transparent hover:from-[#00AFCB]/25 border border-[#00AFCB]/30 text-xs font-bold text-[#007A8E] dark:text-cyan-300 transition active:scale-98 cursor-pointer shadow-xs"
+              className="water-droplet-btn w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-bold text-[#172B3A] dark:text-white transition cursor-pointer shadow-sm"
             >
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#00AFCB] dark:text-cyan-400 animate-pulse" />
                 <span>{t.aiAssistant}</span>
               </div>
-              <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-[#00AFCB]/20 text-[#007A8E] dark:text-cyan-300">
+              <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-[#00AFCB]/20 text-[#007A8E] dark:text-cyan-300 font-bold">
                 Gemini
               </span>
             </button>
 
             {/* B. Action Buttons: Refresh & Settings */}
-            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#D8E4ED] dark:border-slate-800">
+            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#D8E4ED]/60 dark:border-white/10">
               <button
                 onClick={() => {
                   onRefresh();
                 }}
                 disabled={isLoading}
-                className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#F8FAFC] dark:bg-slate-900/80 hover:bg-[#E6F8FA] dark:hover:bg-cyan-950/50 border border-[#D8E4ED] dark:border-slate-800 text-xs font-bold text-[#172B3A] dark:text-slate-200 hover:text-[#00AFCB] dark:hover:text-cyan-300 transition active:scale-95 cursor-pointer shadow-sm"
+                className="water-droplet-btn flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold text-[#172B3A] dark:text-slate-200 hover:text-[#00AFCB] dark:hover:text-cyan-300 transition cursor-pointer shadow-sm"
                 title={t.refresh}
               >
                 <RefreshCw
@@ -219,7 +219,7 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
                   onOpenSettings();
                   setIsOpen(false);
                 }}
-                className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#F8FAFC] dark:bg-slate-900/80 hover:bg-[#E6F8FA] dark:hover:bg-cyan-950/50 border border-[#D8E4ED] dark:border-slate-800 text-xs font-bold text-[#172B3A] dark:text-slate-200 hover:text-[#00AFCB] dark:hover:text-cyan-300 transition active:scale-95 cursor-pointer shadow-sm"
+                className="water-droplet-btn flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold text-[#172B3A] dark:text-slate-200 hover:text-[#00AFCB] dark:hover:text-cyan-300 transition cursor-pointer shadow-sm"
                 title={t.settings}
               >
                 <Settings className="w-3.5 h-3.5 text-[#00AFCB]" />
@@ -232,28 +232,28 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
 
       {/* 2. Dual Glass Control Bar: Quick AI Assistant + Controls Menu */}
       <div className="flex items-center gap-2">
-        {/* Direct 1-Tap AI Assistant Pill - Water Glass Effect */}
+        {/* Direct 1-Tap AI Assistant Pill - Water Droplet Effect */}
         <button
           onClick={onOpenAI}
           aria-label="Open SkyCast AI Weather Assistant"
-          className="water-glass-btn group flex items-center gap-2 px-4 py-2 sm:py-2.5 rounded-full cursor-pointer shadow-lg active:scale-95"
+          className="water-droplet-btn group flex items-center gap-2 px-4 py-2 sm:py-2.5 rounded-full cursor-pointer shadow-lg"
         >
           <div className="relative flex items-center justify-center">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-200 drop-shadow-[0_0_8px_rgba(34,211,238,0.9)] animate-pulse" />
-            <span className="absolute -inset-1 rounded-full bg-cyan-300/30 blur-sm animate-ping pointer-events-none" />
+            <Sparkles className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-200 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] animate-pulse" />
+            <span className="absolute -inset-1 rounded-full bg-cyan-300/20 blur-xs animate-ping pointer-events-none" />
           </div>
-          <span className="text-xs font-extrabold tracking-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">{t.askAI}</span>
+          <span className="text-xs font-extrabold tracking-tight text-[#172B3A] dark:text-white">{t.askAI}</span>
         </button>
 
-        {/* Controls Center Trigger */}
+        {/* Controls Center Trigger - Water Droplet Effect */}
         <button
           onClick={() => setIsOpen(!isOpen)}
           aria-expanded={isOpen}
           aria-label="Toggle SkyCast control options"
-          className={`group flex items-center gap-2 px-4 py-2 sm:py-2.5 rounded-full backdrop-blur-2xl border transition-all duration-300 cursor-pointer shadow-[0_10px_35px_-5px_rgba(23,43,58,0.18)] dark:shadow-[0_16px_45px_rgba(0,0,0,0.65)] active:scale-95 ${
+          className={`water-droplet-btn group flex items-center gap-2 px-4 py-2 sm:py-2.5 rounded-full transition-all duration-300 cursor-pointer shadow-lg ${
             isOpen
-              ? 'bg-[#E6F8FA] dark:bg-[#0a1e3f] border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-2 ring-[#00AFCB]/30'
-              : 'bg-white/85 dark:bg-[#071328]/85 hover:bg-white dark:hover:bg-[#0c2044] border-[#D8E4ED] dark:border-cyan-500/35 text-[#172B3A] dark:text-slate-100 hover:border-[#00AFCB] dark:hover:border-cyan-400'
+              ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 ring-2 ring-[#00AFCB]/40'
+              : 'text-[#172B3A] dark:text-slate-100'
           }`}
         >
           <span className="p-1 rounded-full bg-[#00AFCB]/15 text-[#00AFCB] dark:text-cyan-400 flex items-center justify-center group-hover:rotate-45 transition-transform duration-300">

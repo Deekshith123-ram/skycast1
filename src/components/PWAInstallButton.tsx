@@ -34,7 +34,7 @@ export const PWAInstallButton: React.FC = () => {
     <>
       <button
         onClick={handleDownloadClick}
-        className="flex-shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-emerald-900/30 transition-all active:scale-95 cursor-pointer ring-1 ring-emerald-400/40"
+        className="water-droplet-btn flex-shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold text-emerald-700 dark:text-emerald-300 shadow-md cursor-pointer"
         title="Download SkyCast App APK for Android"
       >
         {/* Android Robot SVG Icon */}

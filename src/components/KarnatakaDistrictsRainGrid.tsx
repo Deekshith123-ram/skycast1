@@ -87,40 +87,40 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
           <button
             onClick={() => setFilterRainCategory('all')}
-            className={`px-2.5 py-1 rounded-lg font-medium transition cursor-pointer ${
+            className={`water-droplet-pill px-3 py-1 rounded-full font-medium transition cursor-pointer ${
               filterRainCategory === 'all'
-                ? 'bg-[#E6F8FA] dark:bg-cyan-500/25 text-[#007A8E] dark:text-cyan-200 border border-[#00AFCB] font-bold'
-                : 'bg-white dark:bg-slate-900/70 text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white border border-[#D8E4ED] dark:border-slate-800'
+                ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-bold'
+                : 'text-[#526779] dark:text-slate-400'
             }`}
           >
             All Probabilities
           </button>
           <button
             onClick={() => setFilterRainCategory('high')}
-            className={`px-2.5 py-1 rounded-lg font-medium transition cursor-pointer ${
+            className={`water-droplet-pill px-3 py-1 rounded-full font-medium transition cursor-pointer ${
               filterRainCategory === 'high'
-                ? 'bg-blue-50 dark:bg-blue-600/30 text-[#1E40AF] dark:text-blue-300 border border-[#2563EB] font-bold'
-                : 'bg-white dark:bg-slate-900/70 text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white border border-[#D8E4ED] dark:border-slate-800'
+                ? 'water-droplet-pill-active text-[#1E40AF] dark:text-blue-300 font-bold ring-1 ring-blue-500/40'
+                : 'text-[#526779] dark:text-slate-400'
             }`}
           >
             🌧️ High (&ge;60%)
           </button>
           <button
             onClick={() => setFilterRainCategory('moderate')}
-            className={`px-2.5 py-1 rounded-lg font-medium transition cursor-pointer ${
+            className={`water-droplet-pill px-3 py-1 rounded-full font-medium transition cursor-pointer ${
               filterRainCategory === 'moderate'
-                ? 'bg-cyan-50 dark:bg-cyan-600/30 text-[#007A8E] dark:text-cyan-300 border border-[#00AFCB] font-bold'
-                : 'bg-white dark:bg-slate-900/70 text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white border border-[#D8E4ED] dark:border-slate-800'
+                ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-300 font-bold ring-1 ring-[#00AFCB]/40'
+                : 'text-[#526779] dark:text-slate-400'
             }`}
           >
             🌦️ Moderate (30–59%)
           </button>
           <button
             onClick={() => setFilterRainCategory('low')}
-            className={`px-2.5 py-1 rounded-lg font-medium transition cursor-pointer ${
+            className={`water-droplet-pill px-3 py-1 rounded-full font-medium transition cursor-pointer ${
               filterRainCategory === 'low'
-                ? 'bg-emerald-50 dark:bg-emerald-600/30 text-emerald-800 dark:text-emerald-300 border border-emerald-500 font-bold'
-                : 'bg-white dark:bg-slate-900/70 text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white border border-[#D8E4ED] dark:border-slate-800'
+                ? 'water-droplet-pill-active text-emerald-800 dark:text-emerald-300 font-bold ring-1 ring-emerald-500/40'
+                : 'text-[#526779] dark:text-slate-400'
             }`}
           >
             🌤️ Low (&lt;30%)

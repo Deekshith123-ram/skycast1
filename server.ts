@@ -289,6 +289,70 @@ app.get(['/downloads/SkyCast-Weather-v2.5.apk', '/api/download-apk'], (_req: Req
   res.sendFile(apkPath);
 });
 
+// GET /api/reverse-geocode endpoint for high-accuracy locality detection
+app.get('/api/reverse-geocode', async (req: Request, res: Response) => {
+  const lat = parseFloat(req.query.lat as string);
+  const lon = parseFloat(req.query.lon as string);
+
+  if (isNaN(lat) || isNaN(lon)) {
+    res.status(400).json({ error: 'Valid lat and lon query parameters are required' });
+    return;
+  }
+
+  try {
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1&zoom=18`;
+    const osmRes = await fetch(url, {
+      headers: {
+        'User-Agent': 'SkyCastWeatherApp/2.5 (Karnataka-Live-Weather)',
+        'Accept-Language': 'en',
+      },
+    });
+
+    if (!osmRes.ok) {
+      throw new Error(`Nominatim reverse returned status ${osmRes.status}`);
+    }
+
+    const data = await osmRes.json();
+    res.json(data);
+  } catch (err: any) {
+    console.warn('Server reverse geocoding notice:', err?.message || err);
+    res.status(502).json({ error: err?.message || 'Reverse geocoding unavailable' });
+  }
+});
+
+// GET /api/search-localities endpoint for searching Karnataka localities, villages, and towns
+app.get('/api/search-localities', async (req: Request, res: Response) => {
+  const q = ((req.query.q as string) || '').trim();
+  if (!q) {
+    res.json([]);
+    return;
+  }
+
+  try {
+    const queryTerm = q.toLowerCase().includes('karnataka') ? q : `${q}, Karnataka`;
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+      queryTerm
+    )}&format=json&addressdetails=1&limit=10&countrycodes=in`;
+
+    const osmRes = await fetch(url, {
+      headers: {
+        'User-Agent': 'SkyCastWeatherApp/2.5 (Karnataka-Live-Weather)',
+        'Accept-Language': 'en',
+      },
+    });
+
+    if (!osmRes.ok) {
+      throw new Error(`Nominatim search returned status ${osmRes.status}`);
+    }
+
+    const data = await osmRes.json();
+    res.json(data);
+  } catch (err: any) {
+    console.warn('Server locality search notice:', err?.message || err);
+    res.status(502).json({ error: err?.message || 'Locality search unavailable' });
+  }
+});
+
 // POST /api/gemini/chat endpoint
 app.post('/api/gemini/chat', async (req: Request, res: Response) => {
   try {

@@ -7,11 +7,13 @@
 export type TemperatureUnit = 'celsius' | 'fahrenheit';
 export type WindSpeedUnit = 'kmh' | 'ms' | 'mph';
 export type PrecipitationUnit = 'mm' | 'inch';
+import { LocationData } from '../types/weather';
+
 export type PressureUnit = 'hpa' | 'mmhg' | 'inhg';
 export type SatelliteDefaultLayer = 'clouds_satellite' | 'radar_rain' | 'satellite_pure';
 export type RefreshInterval = 60000 | 180000 | 300000 | 0; // 1m, 3m, 5m, manual
 
-export type StartupLocationMode = 'current_location' | 'default_district';
+export type StartupLocationMode = 'current_location' | 'default_district' | 'default_locality';
 
 export interface UserSettings {
   // 1. Measurement Units
@@ -30,6 +32,9 @@ export interface UserSettings {
   startupLocationMode: StartupLocationMode;
   defaultDistrictId: string;
   defaultDistrictName: string;
+  defaultLocalityId?: string;
+  defaultLocalityName?: string;
+  defaultLocation?: LocationData;
 
   // 4. Satellite Map Controls
   defaultMapLayer: SatelliteDefaultLayer;
@@ -58,6 +63,8 @@ export const DEFAULT_SETTINGS: UserSettings = {
   startupLocationMode: 'current_location',
   defaultDistrictId: 'karnataka-all',
   defaultDistrictName: 'Karnataka (Whole State)',
+  defaultLocalityId: 'locality-vasanth-nagar',
+  defaultLocalityName: 'Vasanth Nagar',
   defaultMapLayer: 'clouds_satellite',
   defaultCloudOpacity: 0.9,
   showDistrictPinsOnLaunch: true,
@@ -128,3 +135,30 @@ export function formatPressure(hpa: number, unit: PressureUnit): { value: number
   }
   return { value: Math.round(hpa), unitLabel: 'hPa' };
 }
+
+export function saveDefaultLocality(loc: LocationData): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('skycast_default_locality', JSON.stringify(loc));
+    const currentSettings = loadUserSettings();
+    saveUserSettings({
+      ...currentSettings,
+      defaultLocalityId: loc.id,
+      defaultLocalityName: loc.name,
+      defaultLocation: loc,
+      startupLocationMode: 'default_locality',
+    });
+  } catch (err) {
+    console.warn('Failed to save default locality:', err);
+  }
+}
+
+export function loadDefaultLocality(): LocationData | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem('skycast_default_locality');
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return null;
+}
+

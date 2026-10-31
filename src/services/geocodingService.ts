@@ -436,157 +436,317 @@ export const POPULAR_INDIAN_LOCATIONS: LocationData[] = [
   },
 ];
 
-// Search Indian locations with local fuzzy match and Open-Meteo Geocoding
+import { KARNATAKA_LOCALITIES } from './karnatakaLocalities';
+
+export { KARNATAKA_LOCALITIES };
+
+// Helper to determine the closest Karnataka district to any given coordinate
+export function findClosestKarnatakaDistrict(lat: number, lon: number): (LocationData & { region: DistrictRainData['region'] }) {
+  let closest = ALL_KARNATAKA_DISTRICTS[0];
+  let minDistance = Infinity;
+
+  for (const d of ALL_KARNATAKA_DISTRICTS) {
+    const dist = Math.hypot(d.latitude - lat, d.longitude - lon);
+    if (dist < minDistance) {
+      minDistance = dist;
+      closest = d;
+    }
+  }
+
+  return closest;
+}
+
+// Search Karnataka localities, towns, villages, and all 31 districts
 export async function searchLocations(query: string): Promise<LocationData[]> {
   const cleanQuery = query.trim().toLowerCase();
   if (!cleanQuery) {
-    return [KARNATAKA_DEFAULT_LOCATION, ...ALL_KARNATAKA_DISTRICTS.slice(0, 7)];
+    return [KARNATAKA_DEFAULT_LOCATION, ...ALL_KARNATAKA_DISTRICTS.slice(0, 10)];
   }
 
-  // 1. Fast match against Karnataka districts & popular Indian places
-  const localMatches = POPULAR_INDIAN_LOCATIONS.filter(
+  // 1. Fast local match against Karnataka districts & popular Indian cities
+  const localDistrictMatches = POPULAR_INDIAN_LOCATIONS.filter(
     (loc) =>
       loc.name.toLowerCase().includes(cleanQuery) ||
-      loc.district.toLowerCase().includes(cleanQuery) ||
-      loc.state.toLowerCase().includes(cleanQuery)
+      loc.district.toLowerCase().includes(cleanQuery)
   );
 
-  // 2. Fetch from Open-Meteo Geocoding API prioritizing India
+  // 2. Fast local match against curated Karnataka localities and neighborhoods
+  const localLocalityMatches = KARNATAKA_LOCALITIES.filter(
+    (loc) =>
+      loc.name.toLowerCase().includes(cleanQuery) ||
+      (loc.locality && loc.locality.toLowerCase().includes(cleanQuery)) ||
+      loc.district.toLowerCase().includes(cleanQuery)
+  );
+
+  const localCombined: LocationData[] = [...localDistrictMatches];
+  for (const item of localLocalityMatches) {
+    const exists = localCombined.some((c) => c.name.toLowerCase() === item.name.toLowerCase());
+    if (!exists) {
+      localCombined.push(item);
+    }
+  }
+
+  // 3. Remote search: Query server endpoint /api/search-localities (falls back to Nominatim and Open-Meteo)
+  const remoteResults: LocationData[] = [];
+
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3500);
+    const timeout = setTimeout(() => controller.abort(), 3800);
 
-    const targetUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
-      cleanQuery
-    )}&count=10&language=en&format=json`;
-    const proxyUrl = targetUrl.replace('https://geocoding-api.open-meteo.com', '/api/geocoding-open-meteo');
-
-    let res: Response;
+    // A. Query proxy or Nominatim for Karnataka localities, towns, and villages
+    let osmItems: any[] = [];
     try {
-      res = await fetch(proxyUrl, { signal: controller.signal });
-      if (!res.ok) res = await fetch(targetUrl, { signal: controller.signal });
+      const serverProxyUrl = `/api/search-localities?q=${encodeURIComponent(cleanQuery)}`;
+      const proxyRes = await fetch(serverProxyUrl, { signal: controller.signal });
+      if (proxyRes.ok) {
+        osmItems = await proxyRes.json();
+      } else {
+        throw new Error('Proxy status ' + proxyRes.status);
+      }
     } catch {
-      res = await fetch(targetUrl, { signal: controller.signal });
+      // Direct client fallback to Nominatim
+      try {
+        const queryTerm = cleanQuery.includes('karnataka') ? cleanQuery : `${cleanQuery}, Karnataka`;
+        const directUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          queryTerm
+        )}&format=json&addressdetails=1&limit=8&countrycodes=in`;
+        const directRes = await fetch(directUrl, {
+          headers: { 'User-Agent': 'SkyCastWeatherApp/2.5' },
+          signal: controller.signal,
+        });
+        if (directRes.ok) {
+          osmItems = await directRes.json();
+        }
+      } catch {}
     }
-    clearTimeout(timeout);
 
-    if (res.ok) {
-      const data = await res.json();
-      if (data.results && Array.isArray(data.results)) {
-        const remoteResults: LocationData[] = data.results
-          .filter((item: any) => item.country_code === 'IN' || item.country === 'India')
-          .map((item: any) => ({
-            id: `${item.id || item.name.toLowerCase()}-${item.latitude}`,
-            name: item.name,
-            district: item.admin2 || item.admin3 || item.admin1 || item.name,
-            state: item.admin1 || 'India',
-            country: 'India',
-            latitude: Number(item.latitude),
-            longitude: Number(item.longitude),
-            elevation: item.elevation ? Number(item.elevation) : undefined,
-          }));
+    if (Array.isArray(osmItems)) {
+      for (const item of osmItems) {
+        const addr = item.address || {};
+        const lat = parseFloat(item.lat);
+        const lon = parseFloat(item.lon);
+        if (isNaN(lat) || isNaN(lon)) continue;
 
-        // Merge without duplicates
-        const combined = [...localMatches];
-        for (const item of remoteResults) {
-          const exists = combined.some(
-            (c) =>
-              Math.abs(c.latitude - item.latitude) < 0.05 &&
-              Math.abs(c.longitude - item.longitude) < 0.05
-          );
-          if (!exists) {
-            combined.push(item);
+        // Extract most specific locality name
+        const localityName =
+          addr.suburb ||
+          addr.neighbourhood ||
+          addr.residential ||
+          addr.quarter ||
+          addr.city_district ||
+          addr.village ||
+          addr.hamlet ||
+          addr.town ||
+          item.name;
+
+        const closestDist = findClosestKarnatakaDistrict(lat, lon);
+        const districtName = addr.state_district || addr.county || addr.city || closestDist.district;
+        const stateName = addr.state || 'Karnataka';
+
+        remoteResults.push({
+          id: `osm-loc-${item.place_id || lat.toFixed(3) + '-' + lon.toFixed(3)}`,
+          name: localityName || item.name || 'Karnataka Locality',
+          locality: localityName || item.name,
+          district: districtName,
+          state: stateName,
+          country: 'India',
+          latitude: Number(lat.toFixed(4)),
+          longitude: Number(lon.toFixed(4)),
+          elevation: closestDist.elevation ?? 750,
+          isLocality: true,
+        });
+      }
+    }
+
+    // B. Also query Open-Meteo geocoding to cover standard town and city names
+    try {
+      const omUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
+        cleanQuery
+      )}&count=8&language=en&format=json`;
+      const omRes = await fetch(omUrl, { signal: controller.signal });
+      if (omRes.ok) {
+        const omData = await omRes.json();
+        if (omData.results && Array.isArray(omData.results)) {
+          for (const item of omData.results) {
+            if (item.country_code !== 'IN' && item.country !== 'India') continue;
+            const lat = Number(item.latitude);
+            const lon = Number(item.longitude);
+            const closestDist = findClosestKarnatakaDistrict(lat, lon);
+            const isKa = item.admin1 === 'Karnataka' || Math.hypot(closestDist.latitude - lat, closestDist.longitude - lon) < 1.8;
+
+            remoteResults.push({
+              id: `om-${item.id || item.name.toLowerCase()}-${lat.toFixed(3)}`,
+              name: item.name,
+              locality: item.name,
+              district: item.admin2 || item.admin3 || closestDist.district,
+              state: item.admin1 || (isKa ? 'Karnataka' : 'India'),
+              country: 'India',
+              latitude: Number(lat.toFixed(4)),
+              longitude: Number(lon.toFixed(4)),
+              elevation: item.elevation ? Number(item.elevation) : closestDist.elevation,
+              isLocality: isKa && item.name.toLowerCase() !== closestDist.district.toLowerCase(),
+            });
           }
         }
-        return combined.slice(0, 12);
       }
-    }
+    } catch {}
+
+    clearTimeout(timeout);
   } catch (err) {
-    console.warn('Geocoding search network error, falling back to local database:', err);
+    console.warn('Remote geocoding notice:', err);
   }
 
-  return localMatches.length > 0 ? localMatches : ALL_KARNATAKA_DISTRICTS.slice(0, 8);
+  // Merge and deduplicate (by coordinates distance < 2km or identical name in same district)
+  const merged: LocationData[] = [...localCombined];
+
+  for (const item of remoteResults) {
+    const isDuplicate = merged.some(
+      (m) =>
+        (Math.abs(m.latitude - item.latitude) < 0.02 && Math.abs(m.longitude - item.longitude) < 0.02) ||
+        (m.name.toLowerCase() === item.name.toLowerCase() && m.district.toLowerCase() === item.district.toLowerCase())
+    );
+    if (!isDuplicate) {
+      merged.push(item);
+    }
+  }
+
+  // Sort: Exact name matches first, then Karnataka localities, then districts
+  merged.sort((a, b) => {
+    const aNameMatch = a.name.toLowerCase() === cleanQuery;
+    const bNameMatch = b.name.toLowerCase() === cleanQuery;
+    if (aNameMatch && !bNameMatch) return -1;
+    if (!aNameMatch && bNameMatch) return 1;
+
+    const aStarts = a.name.toLowerCase().startsWith(cleanQuery);
+    const bStarts = b.name.toLowerCase().startsWith(cleanQuery);
+    if (aStarts && !bStarts) return -1;
+    if (!aStarts && bStarts) return 1;
+
+    return 0;
+  });
+
+  return merged.slice(0, 15);
 }
 
-// Reverse geocode latitude and longitude to a user-friendly LocationData
+// Reverse geocode latitude and longitude to detect the user's PRECISE locality
 export async function reverseGeocodeLocation(lat: number, lon: number): Promise<LocationData> {
-  // 1. Check if the user is within ~35km of a predefined Karnataka district or city
-  let closest: LocationData | null = null;
-  let minDistance = Infinity;
+  const closestDistrict = findClosestKarnatakaDistrict(lat, lon);
 
-  for (const loc of POPULAR_INDIAN_LOCATIONS) {
-    if (loc.id === 'karnataka-all') continue;
-    const dLat = loc.latitude - lat;
-    const dLon = loc.longitude - lon;
-    const dist = Math.hypot(dLat, dLon);
-    if (dist < minDistance) {
-      minDistance = dist;
-      closest = loc;
-    }
-  }
-
-  // If within ~35km (~0.35 deg) of a known Karnataka district/city, snap to that location
-  if (closest && minDistance < 0.35) {
-    return {
-      ...closest,
-      latitude: Number(lat.toFixed(4)),
-      longitude: Number(lon.toFixed(4)),
-    };
-  }
-
-  // 2. Fetch from OpenStreetMap Nominatim reverse geocoder
+  // 1. Try high-accuracy reverse geocoding via server endpoint or OpenStreetMap Nominatim
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 4000);
+    const timeout = setTimeout(() => controller.abort(), 4500);
 
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
-      {
-        headers: { 'User-Agent': 'SkyCastWeatherApp/1.0' },
-        signal: controller.signal,
+    let data: any = null;
+
+    // A. Query server proxy
+    try {
+      const proxyUrl = `/api/reverse-geocode?lat=${lat}&lon=${lon}`;
+      const res = await fetch(proxyUrl, { signal: controller.signal });
+      if (res.ok) {
+        data = await res.json();
       }
-    );
+    } catch {}
+
+    // B. Direct client fallback if proxy failed
+    if (!data || !data.address) {
+      try {
+        const directUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1&zoom=18`;
+        const directRes = await fetch(directUrl, {
+          headers: { 'User-Agent': 'SkyCastWeatherApp/2.5' },
+          signal: controller.signal,
+        });
+        if (directRes.ok) {
+          data = await directRes.json();
+        }
+      } catch {}
+    }
+
     clearTimeout(timeout);
 
-    if (res.ok) {
-      const data = await res.json();
-      const addr = data.address || {};
-      const cityName =
-        addr.city ||
-        addr.town ||
-        addr.village ||
+    if (data && data.address) {
+      const addr = data.address;
+
+      // Extract the most specific locality name (e.g. Vasanth Nagar, Maragondanahalli, Indiranagar)
+      const localityName =
         addr.suburb ||
+        addr.neighbourhood ||
+        addr.residential ||
+        addr.quarter ||
+        addr.city_district ||
+        addr.village ||
+        addr.hamlet ||
+        addr.isolated_dwelling ||
+        addr.town ||
         addr.municipality ||
+        addr.city ||
+        data.name;
+
+      // Determine parent district and city
+      const districtName =
+        addr.state_district ||
         addr.county ||
-        data.name ||
-        'Current Location';
-      const districtName = addr.county || addr.state_district || cityName;
-      const stateName = addr.state || 'Local Region';
+        closestDistrict.district ||
+        addr.city ||
+        'Karnataka';
+
+      const stateName = addr.state || 'Karnataka';
       const countryName = addr.country || 'India';
+      const isLocality = Boolean(localityName && localityName !== districtName);
 
       return {
-        id: `current-loc-${lat.toFixed(3)}-${lon.toFixed(3)}`,
-        name: cityName,
+        id: `detected-locality-${lat.toFixed(4)}-${lon.toFixed(4)}`,
+        name: localityName || closestDistrict.name,
+        locality: localityName || undefined,
         district: districtName,
         state: stateName,
         country: countryName,
         latitude: Number(lat.toFixed(4)),
         longitude: Number(lon.toFixed(4)),
+        elevation: closestDistrict.elevation ?? 750,
+        isLocality,
+        isEstimate: false,
       };
     }
   } catch (err) {
-    console.warn('Reverse geocoding network lookup failed:', err);
+    console.warn('Reverse geocoding network lookup notice:', err);
   }
 
-  // 3. Fallback
+  // 2. Offline fallback: Check if user is within ~6km of any curated Karnataka locality
+  let nearestLocality: LocationData | null = null;
+  let minLocDist = Infinity;
+
+  for (const loc of KARNATAKA_LOCALITIES) {
+    const dist = Math.hypot(loc.latitude - lat, loc.longitude - lon);
+    if (dist < minLocDist) {
+      minLocDist = dist;
+      nearestLocality = loc;
+    }
+  }
+
+  // If within ~6km (~0.055 deg) of a curated locality, use that locality
+  if (nearestLocality && minLocDist < 0.055) {
+    return {
+      ...nearestLocality,
+      latitude: Number(lat.toFixed(4)),
+      longitude: Number(lon.toFixed(4)),
+      isEstimate: minLocDist > 0.02, // Mark as estimate if slightly away
+    };
+  }
+
+  // 3. Fallback to closest district with user's exact coordinates and estimate indicator
   return {
-    id: `current-loc-${lat.toFixed(3)}-${lon.toFixed(3)}`,
-    name: closest ? closest.name : 'Current Location',
-    district: closest ? closest.district : 'Local Area',
-    state: closest ? closest.state : 'Karnataka',
-    country: closest ? closest.country : 'India',
+    id: `gps-loc-${lat.toFixed(4)}-${lon.toFixed(4)}`,
+    name: closestDistrict.name,
+    locality: closestDistrict.name,
+    district: closestDistrict.district,
+    state: closestDistrict.state,
+    country: closestDistrict.country,
     latitude: Number(lat.toFixed(4)),
     longitude: Number(lon.toFixed(4)),
+    elevation: closestDistrict.elevation,
+    isLocality: false,
+    isEstimate: true,
   };
 }
 

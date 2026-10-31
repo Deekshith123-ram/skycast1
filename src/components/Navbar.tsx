@@ -134,7 +134,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         setIsLocating(false);
         console.warn('Location permission denied, retaining Karnataka focus.', err);
       },
-      { timeout: 8000 }
+      { timeout: 8000, enableHighAccuracy: true, maximumAge: 60000 }
     );
   };
 
@@ -171,7 +171,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <header
         onMouseEnter={() => onHeaderHover?.(true)}
         onMouseLeave={() => onHeaderHover?.(false)}
-        className={`fixed top-0 inset-x-0 z-40 w-full pt-[env(safe-area-inset-top)] bg-white/80 dark:bg-[#050b18]/80 backdrop-blur-2xl border-b border-[#D8E4ED]/80 dark:border-cyan-500/20 shadow-[0_4px_30px_rgba(23,43,58,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300 ease-out ${
+        className={`fixed top-0 inset-x-0 z-40 w-full pt-[env(safe-area-inset-top)] bg-white/65 dark:bg-[#050b18]/65 backdrop-blur-2xl border-b border-[#D8E4ED]/60 dark:border-cyan-500/20 shadow-[0_4px_30px_rgba(23,43,58,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300 ease-out ${
           isVisible || isDropdownOpen
             ? 'translate-y-0 opacity-100 pointer-events-auto'
             : '-translate-y-full opacity-0 pointer-events-none'
@@ -207,9 +207,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          {/* Search Bar with Autocomplete Dropdown */}
+          {/* Search Bar with Autocomplete Dropdown - Transparent Liquid Glass Surface */}
           <div ref={searchContainerRef} className="relative order-2 w-full sm:w-auto sm:flex-1 sm:max-w-md sm:mx-4">
-            <div className="relative flex items-center">
+            <div className="water-droplet-search relative flex items-center px-1">
               <Search className="absolute left-3.5 w-4 h-4 text-[#00AFCB] dark:text-cyan-400 pointer-events-none" />
               <input
                 type="text"
@@ -217,12 +217,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setDropdownOpen(true)}
                 placeholder={t.searchPlaceholder}
-                className="w-full pl-9 pr-16 sm:pr-20 py-2 sm:py-2.5 rounded-xl bg-white dark:bg-slate-900/80 border border-[#D8E4ED] dark:border-cyan-500/25 focus:border-[#00AFCB] text-xs sm:text-sm text-[#172B3A] dark:text-slate-100 placeholder-[#687D8F] focus:outline-none transition shadow-sm"
+                className="w-full pl-9 pr-16 sm:pr-20 py-2 sm:py-2.5 bg-transparent border-none text-xs sm:text-sm text-[#172B3A] dark:text-slate-100 placeholder-[#687D8F] focus:outline-none"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-9 sm:right-10 p-1 text-[#687D8F] hover:text-[#172B3A] dark:hover:text-white cursor-pointer"
+                  className="water-droplet-btn absolute right-9 sm:right-10 p-1 rounded-full text-[#687D8F] hover:text-[#172B3A] dark:hover:text-white cursor-pointer"
+                  title="Clear search"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -230,18 +231,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={handleRequestUserLocation}
                 disabled={isLocating}
-                className="absolute right-2.5 p-1 rounded-lg text-[#007A8E] dark:text-cyan-400 hover:text-[#005B6A] dark:hover:text-cyan-200 transition cursor-pointer"
+                className="water-droplet-btn absolute right-2 p-1.5 rounded-full text-[#007A8E] dark:text-cyan-400 hover:text-[#005B6A] dark:hover:text-cyan-200 transition cursor-pointer"
                 title={lang === 'kn' ? 'ನನ್ನ ಸ್ಥಳ ಪತ್ತೆಮಾಡಿ' : 'Detect My Location'}
               >
                 <Navigation className={`w-3.5 h-3.5 ${isLocating ? 'animate-spin' : ''}`} />
               </button>
             </div>
 
-            {/* Dropdown Menu */}
+            {/* Dropdown Menu - Floating Crystal-Clear Water Pool */}
             {isDropdownOpen && (
-              <div className="absolute left-0 right-0 mt-2 max-h-80 overflow-y-auto rounded-xl bg-white dark:bg-[#09152b] border border-[#D8E4ED] dark:border-cyan-500/30 shadow-2xl p-2 z-50 animate-in fade-in">
-                <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#007A8E] dark:text-cyan-400 flex items-center justify-between border-b border-[#D8E4ED] dark:border-slate-800">
-                  <span>{searchQuery ? (lang === 'kn' ? 'ಹುಡುಕಾಟದ ಫಲಿತಾಂಶಗಳು' : 'Search Results') : (lang === 'kn' ? 'ಕರ್ನಾಟಕ 31 ಜಿಲ್ಲೆಗಳು' : 'Karnataka 31 Districts & Hotspots')}</span>
+              <div className="water-droplet-dropdown absolute left-0 right-0 mt-2 max-h-80 overflow-y-auto rounded-2xl p-2 z-50 animate-in fade-in">
+                <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#007A8E] dark:text-cyan-400 flex items-center justify-between border-b border-[#D8E4ED]/40 dark:border-white/10">
+                  <span>{searchQuery ? (lang === 'kn' ? 'ಹುಡುಕಾಟದ ಫಲಿತಾಂಶಗಳು' : 'Search Results (Localities & Districts)') : (lang === 'kn' ? 'ಕರ್ನಾಟಕ 31 ಜಿಲ್ಲೆಗಳು & ಸ್ಥಳೀಯ ಪ್ರದೇಶಗಳು' : 'Karnataka Districts & Localities')}</span>
                   {isSearching && <span className="text-[#00AFCB] dark:text-cyan-400 animate-pulse">{t.syncing}</span>}
                 </div>
 
@@ -259,18 +260,25 @@ export const Navbar: React.FC<NavbarProps> = ({
                           setDropdownOpen(false);
                           setSearchQuery('');
                         }}
-                        className={`w-full text-left px-3 py-2 rounded-lg flex items-center justify-between text-xs transition cursor-pointer ${
+                        className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs transition cursor-pointer ${
                           isSelected
-                            ? 'bg-[#E6F8FA] dark:bg-cyan-500/20 text-[#007A8E] dark:text-cyan-300 font-semibold'
-                            : 'hover:bg-[#F4F8FC] dark:hover:bg-slate-800 text-[#172B3A] dark:text-slate-200'
+                            ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-300 font-semibold'
+                            : 'hover:bg-white/40 dark:hover:bg-white/10 text-[#172B3A] dark:text-slate-200'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
                           <MapPin className={`w-3.5 h-3.5 ${isSelected ? 'text-[#00AFCB] dark:text-cyan-400' : 'text-[#687D8F]'}`} />
                           <div>
-                            <span className="font-display font-medium block">{loc.name}</span>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="font-display font-medium block">{loc.name}</span>
+                              {loc.isLocality && (
+                                <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-[#E6F8FA] text-[#007A8E] dark:bg-cyan-950/80 dark:text-cyan-300 font-semibold border border-[#00AFCB]/30">
+                                  {lang === 'kn' ? 'ಸ್ಥಳೀಯ' : 'Locality'}
+                                </span>
+                              )}
+                            </div>
                             <span className="text-[10px] text-[#526779] dark:text-slate-400 font-normal">
-                              {loc.district}, {loc.state}
+                              {loc.district && loc.district !== loc.name ? `${loc.district}, ` : ''}{loc.state}
                             </span>
                           </div>
                         </div>
@@ -284,30 +292,31 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          {/* Right Action Icons: Download App, Live Refresh, Theme Toggle, Settings
+          {/* Right Action Icons: Crystal-Clear Water Droplet Buttons
               On phones these move to the fixed bottom MobileActionBar */}
           <div className="hidden sm:block order-3 flex-none">
           <div className="flex items-center gap-2 p-1">
             {/* Download App for Android / Desktop - Hidden once downloaded */}
             <PWAInstallButton />
 
-            {/* Bilingual AI Assistant Button - Water Glass Effect */}
+            {/* Bilingual AI Assistant Button - Crystal-Clear Water Droplet */}
             <button
               onClick={onOpenAI}
-              className="water-glass-btn flex items-center gap-1.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 shadow-md"
+              className="water-droplet-btn flex items-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs font-bold cursor-pointer transition shadow-md"
               title={t.aiAssistant}
             >
               <div className="relative flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-cyan-200 drop-shadow-[0_0_8px_rgba(34,211,238,0.9)] animate-pulse" />
-                <span className="absolute -inset-1 rounded-full bg-cyan-300/30 blur-sm animate-ping pointer-events-none" />
+                <Sparkles className="w-4 h-4 text-[#00AFCB] dark:text-cyan-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.7)] animate-pulse" />
+                <span className="absolute -inset-1 rounded-full bg-cyan-400/20 blur-xs animate-ping pointer-events-none" />
               </div>
-              <span className="tracking-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)] hidden md:inline">{t.askAI}</span>
+              <span className="tracking-tight text-[#172B3A] dark:text-white hidden md:inline">{t.askAI}</span>
             </button>
 
+            {/* Refresh Button - Water Droplet */}
             <button
               onClick={onRefresh}
               disabled={isLoading}
-              className="p-2 sm:p-2.5 rounded-xl bg-white hover:bg-[#F4F8FC] dark:bg-slate-900/80 dark:hover:bg-cyan-950 border border-[#D8E4ED] dark:border-slate-800 text-[#172B3A] dark:text-slate-300 hover:text-[#007A8E] dark:hover:text-cyan-300 transition active:scale-95 cursor-pointer shadow-sm relative"
+              className="water-droplet-btn p-2 sm:p-2.5 rounded-full text-[#172B3A] dark:text-slate-200 hover:text-[#007A8E] dark:hover:text-cyan-300 transition cursor-pointer shadow-sm relative"
               title={t.refresh}
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-[#00AFCB] dark:text-cyan-400' : ''}`} />
@@ -317,17 +326,19 @@ export const Navbar: React.FC<NavbarProps> = ({
               </span>
             </button>
 
+            {/* Theme Toggle Button - Water Droplet */}
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 sm:p-2.5 rounded-xl bg-white hover:bg-[#F4F8FC] dark:bg-slate-900/80 dark:hover:bg-cyan-950 border border-[#D8E4ED] dark:border-slate-800 text-[#172B3A] dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-300 transition active:scale-95 cursor-pointer shadow-sm"
+              className="water-droplet-btn p-2 sm:p-2.5 rounded-full text-[#172B3A] dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-300 transition cursor-pointer shadow-sm"
               title={theme === 'dark' ? t.lightTheme : t.darkTheme}
             >
               {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-[#00AFCB]" />}
             </button>
 
+            {/* Settings Button - Water Droplet */}
             <button
               onClick={onOpenSettings}
-              className="p-2 sm:p-2.5 rounded-xl bg-white hover:bg-[#F4F8FC] dark:bg-slate-900/80 dark:hover:bg-cyan-950 border border-[#D8E4ED] dark:border-slate-800 text-[#172B3A] dark:text-slate-300 hover:text-[#007A8E] dark:hover:text-cyan-300 transition active:scale-95 cursor-pointer shadow-sm"
+              className="water-droplet-btn p-2 sm:p-2.5 rounded-full text-[#172B3A] dark:text-slate-200 hover:text-[#007A8E] dark:hover:text-cyan-300 transition cursor-pointer shadow-sm"
               title={t.settings}
             >
               <Settings className="w-4 h-4" />
@@ -336,8 +347,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Quick Karnataka District Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto py-2 no-scrollbar text-xs border-t border-[#D8E4ED] dark:border-slate-800/60">
+        {/* Quick Karnataka District Pills - Water Droplet Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto py-2 no-scrollbar text-xs border-t border-[#D8E4ED]/60 dark:border-white/10">
           <span className="text-[10px] text-[#007A8E] dark:text-cyan-400 uppercase tracking-wider font-bold mr-1 flex-shrink-0 flex items-center gap-1">
             <Sparkles className="w-3 h-3" />
             {t.quickPillsLabel}
@@ -351,10 +362,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 key={loc.id}
                 onClick={() => onSelectLocation(loc)}
-                className={`flex-shrink-0 px-2.5 py-1 rounded-lg transition cursor-pointer text-xs ${
+                className={`water-droplet-pill flex-shrink-0 px-3 py-1 rounded-full text-xs cursor-pointer ${
                   isCurrent
-                    ? 'bg-[#E6F8FA] dark:bg-cyan-500/25 text-[#007A8E] dark:text-cyan-300 border border-[#00AFCB] font-bold shadow-sm'
-                    : 'bg-white dark:bg-slate-900/60 hover:bg-[#F4F8FC] hover:border-[#00AFCB] dark:hover:bg-slate-800 text-[#172B3A] dark:text-slate-300 font-semibold border border-[#D8E4ED] dark:border-slate-800'
+                    ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-bold'
+                    : 'text-[#172B3A] dark:text-slate-300 font-medium'
                 }`}
               >
                 {loc.name}

@@ -60,19 +60,19 @@ export const INSATSatelliteViewer: React.FC = () => {
       </div>
 
       {/* Satellite Product Channel Selector */}
-      <div className="flex items-center gap-2 overflow-x-auto py-3 no-scrollbar border-b border-[#D8E4ED] dark:border-slate-800/80">
+      <div className="flex items-center gap-2 overflow-x-auto py-3 no-scrollbar border-b border-[#D8E4ED]/60 dark:border-white/10">
         {INSAT_PRODUCTS.map((prod) => (
           <button
             key={prod.id}
             onClick={() => handleSelectProduct(prod)}
-            className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm ${
+            className={`water-droplet-pill flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm ${
               selectedProduct.id === prod.id
-                ? 'bg-gradient-to-r from-[#00AFCB] to-[#2563EB] text-white shadow-md shadow-cyan-900/30 border border-[#00AFCB] ring-1 ring-[#00AFCB]'
-                : 'bg-white dark:bg-slate-900/50 hover:bg-[#F4F8FC] dark:hover:bg-slate-800 text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-slate-200 border border-[#D8E4ED] dark:border-slate-800'
+                ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200'
+                : 'text-[#526779] dark:text-slate-300'
             }`}
           >
             <span>{prod.channel}</span>
-            <span className="text-[10px] px-1 py-0.2 rounded bg-black/20 dark:bg-black/30 font-mono text-cyan-100 dark:text-cyan-200">
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/10 dark:bg-white/10 font-mono text-[#007A8E] dark:text-cyan-300">
               {prod.satellite}
             </span>
           </button>
@@ -87,18 +87,18 @@ export const INSATSatelliteViewer: React.FC = () => {
           className="lg:col-span-3 relative rounded-xl overflow-hidden bg-[#030712] border border-cyan-500/20 min-h-[360px] md:min-h-[460px] flex items-center justify-center insat-image-viewport map-interaction-zone backdrop-blur-none"
         >
           {/* Zoom controls overlay */}
-          <div className="absolute top-3 right-3 z-10 flex items-center gap-1 bg-slate-900/80 backdrop-blur-md p-1 rounded-xl border border-cyan-500/20">
+          <div className="water-droplet-pill absolute top-3 right-3 z-10 flex items-center gap-1.5 p-1 rounded-full">
             <button
               onClick={() => setZoomLevel((z) => Math.min(2.5, z + 0.25))}
-              className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white cursor-pointer"
+              className="water-droplet-btn p-1.5 rounded-full text-slate-300 hover:text-white cursor-pointer"
               title="Zoom In"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
-            <span className="text-[10px] font-mono text-cyan-400 px-1">{Math.round(zoomLevel * 100)}%</span>
+            <span className="text-[10px] font-mono text-cyan-300 px-1 font-bold">{Math.round(zoomLevel * 100)}%</span>
             <button
               onClick={() => setZoomLevel((z) => Math.max(0.75, z - 0.25))}
-              className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white cursor-pointer"
+              className="water-droplet-btn p-1.5 rounded-full text-slate-300 hover:text-white cursor-pointer"
               title="Zoom Out"
             >
               <ZoomOut className="w-3.5 h-3.5" />

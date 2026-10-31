@@ -199,6 +199,7 @@ export async function fetchWeatherData(location: LocationData): Promise<WeatherD
       daily: dailyList,
       lastUpdated: now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) + ' IST',
       isStale: false,
+      isEstimate: location.isEstimate ?? false,
     };
 
     // Cache locally
@@ -218,6 +219,7 @@ export async function fetchWeatherData(location: LocationData): Promise<WeatherD
       if (cached) {
         const parsed = JSON.parse(cached) as WeatherData;
         parsed.isStale = true;
+        parsed.isEstimate = true;
         return parsed;
       }
     } catch {
@@ -228,6 +230,7 @@ export async function fetchWeatherData(location: LocationData): Promise<WeatherD
     const now = new Date();
     return {
       location,
+      isEstimate: true,
       current: {
         temperature: 28,
         apparentTemperature: 29,

@@ -15,6 +15,8 @@ import {
   ArrowDown,
   Clock,
   Compass,
+  MapPin,
+  Star,
 } from 'lucide-react';
 import { WeatherAtmosphereAnimation } from './WeatherAtmosphereAnimation';
 import { Language, TRANSLATIONS, translateWeatherDesc } from '../services/languageService';
@@ -33,6 +35,8 @@ interface CurrentWeatherProps {
   tempUnit?: TemperatureUnit;
   pressureUnit?: PressureUnit;
   showAtmosphereAnimation?: boolean;
+  isDefaultLocality?: boolean;
+  onSetDefaultLocality?: () => void;
 }
 
 export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
@@ -43,6 +47,8 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
   tempUnit = 'celsius',
   pressureUnit = 'hpa',
   showAtmosphereAnimation = true,
+  isDefaultLocality = false,
+  onSetDefaultLocality,
 }) => {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
   const { current, daily, location, lastUpdated } = data;
@@ -86,35 +92,75 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
         {/* Top Banner: Location Name and clean state tag */}
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#D8E4ED] dark:border-cyan-500/15">
           <div>
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5 flex-wrap">
               <h1 className="font-display text-2xl md:text-3xl font-bold text-[#172B3A] dark:text-white tracking-tight">
                 {location.name}
               </h1>
+              {location.isLocality && (
+                <span className="px-2.5 py-0.5 rounded-full bg-[#E6F8FA] dark:bg-cyan-950/80 text-[#007A8E] dark:text-cyan-300 text-xs font-bold border border-[#00AFCB]/40 dark:border-cyan-500/30 shadow-xs flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-[#00AFCB] dark:text-cyan-400" />
+                  <span>{lang === 'kn' ? 'ಸ್ಥಳೀಯ ಪ್ರದೇಶ' : 'Locality'}</span>
+                </span>
+              )}
+              {onSetDefaultLocality && (
+                <button
+                  type="button"
+                  onClick={onSetDefaultLocality}
+                  className={`water-droplet-btn px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm ${
+                    isDefaultLocality
+                      ? 'water-droplet-pill-active text-amber-700 dark:text-amber-300 ring-1 ring-amber-400/40'
+                      : 'text-[#526779] dark:text-slate-300 hover:text-[#007A8E] dark:hover:text-cyan-300'
+                  }`}
+                  title={isDefaultLocality ? (lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಸ್ಥಳ' : 'Default Locality') : (lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಸ್ಥಳವಾಗಿ ಹೊಂದಿಸಿ' : 'Set as Default Locality')}
+                >
+                  <Star className={`w-3.5 h-3.5 ${isDefaultLocality ? 'fill-amber-400 text-amber-500' : 'text-[#687D8F]'}`} />
+                  <span>
+                    {isDefaultLocality
+                      ? (lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಸ್ಥಳ' : 'Default Locality')
+                      : (lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಮಾಡಿ' : 'Set as Default')}
+                  </span>
+                </button>
+              )}
               <span className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[#172B3A] dark:text-slate-200 text-xs font-semibold border border-[#D8E4ED] dark:border-slate-700 shadow-sm">
-                {location.state}, {location.country}
+                {location.district && location.district !== location.name ? `${location.district}, ` : ''}{location.state}, {location.country}
               </span>
             </div>
-            <div className="flex items-center gap-2 mt-1 text-xs text-[#526779] dark:text-slate-400 font-normal">
+            <div className="flex items-center gap-2 mt-1 text-xs text-[#526779] dark:text-slate-400 font-normal flex-wrap">
               <span className="flex items-center gap-1 font-mono">
                 <Compass className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
                 {location.latitude.toFixed(4)}°N, {location.longitude.toFixed(4)}°E
               </span>
               <span>•</span>
               <span>{t.elevation}: ~{location.elevation ?? 650} m</span>
+              {(location.isEstimate || data.isEstimate) && (
+                <>
+                  <span>•</span>
+                  <span className="text-amber-600 dark:text-amber-400 font-semibold">
+                    ({lang === 'kn' ? 'ಅಂದಾಜು ಹವಾಮಾನ' : 'Estimated Weather'})
+                  </span>
+                </>
+              )}
             </div>
           </div>
 
           <div className="flex items-center gap-2.5">
-            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold border border-emerald-300 dark:border-emerald-500/30 shadow-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            {(location.isEstimate || data.isEstimate) ? (
+              <span className="water-droplet-pill flex items-center gap-1.5 px-3 py-1 rounded-full text-amber-700 dark:text-amber-300 text-xs font-bold shadow-sm" title="Weather data estimated from closest meteorological station/model">
+                <span className="h-2 w-2 rounded-full bg-amber-500" />
+                <span>{lang === 'kn' ? 'ಅಂದಾಜು' : 'Estimate'}</span>
               </span>
-              <span>{t.live}</span>
-            </span>
+            ) : (
+              <span className="water-droplet-pill flex items-center gap-1.5 px-3 py-1 rounded-full text-emerald-700 dark:text-emerald-300 text-xs font-bold shadow-sm">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>{t.live}</span>
+              </span>
+            )}
 
             {/* Expanded Updated Time Option with balanced alignment */}
-            <div className="flex items-center gap-1.5 text-xs text-[#526779] dark:text-slate-300 bg-white/80 dark:bg-slate-900/80 px-3.5 py-1.5 rounded-xl border border-[#D8E4ED] dark:border-slate-800 shadow-sm">
+            <div className="water-droplet-pill flex items-center gap-1.5 text-xs text-[#526779] dark:text-slate-300 px-3.5 py-1 rounded-full shadow-sm">
               <Clock className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400 flex-shrink-0" />
               <span>{t.updated}: <strong className="text-[#172B3A] dark:text-slate-100 font-bold font-mono">{lastUpdated}</strong></span>
             </div>

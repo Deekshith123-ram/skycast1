@@ -43,6 +43,15 @@
     </script>
   </head>
   <body class="bg-[#F0F4FA] text-[#0F1D2E] dark:bg-[#040816] dark:text-slate-100 min-h-screen font-body font-normal antialiased selection:bg-cyan-500/30 selection:text-cyan-600 dark:selection:text-cyan-200 transition-colors duration-200">
+    <!-- Invisible SVG filter for physical liquid refraction & optical distortion -->
+    <svg class="sr-only" aria-hidden="true" width="0" height="0" style="position: absolute; pointer-events: none; width: 0; height: 0;">
+      <defs>
+        <filter id="liquid-refraction" x="-10%" y="-10%" width="120%" height="120%" filterUnits="objectBoundingBox">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04 0.04" numOctaves="2" result="noise" seed="38" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5" xChannelSelector="R" yChannelSelector="G" result="displaced" />
+        </filter>
+      </defs>
+    </svg>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

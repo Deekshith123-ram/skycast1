@@ -399,14 +399,14 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
 
           <div className="flex items-center gap-1 sm:gap-2">
             {/* Language Selection Buttons (Visible on Mobile & Desktop) */}
-            <div className="flex items-center p-0.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-[#D8E4ED] dark:border-slate-800 text-[10px] font-semibold">
+            <div className="flex items-center p-0.5 rounded-full bg-slate-100/70 dark:bg-black/20 border border-white/20 text-[10px] font-semibold">
               <button
                 type="button"
                 onClick={() => setSelectedLangMode('auto')}
-                className={`px-1.5 sm:px-2 py-1 rounded-lg transition cursor-pointer ${
+                className={`water-droplet-pill px-2 py-1 rounded-full transition cursor-pointer ${
                   selectedLangMode === 'auto'
-                    ? 'bg-[#00AFCB] text-white shadow-sm'
-                    : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
+                    ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200'
+                    : 'text-[#526779] dark:text-slate-400'
                 }`}
                 title="Auto-detect language"
               >
@@ -415,10 +415,10 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedLangMode('en')}
-                className={`px-1.5 sm:px-2 py-1 rounded-lg transition cursor-pointer ${
+                className={`water-droplet-pill px-2 py-1 rounded-full transition cursor-pointer ${
                   selectedLangMode === 'en'
-                    ? 'bg-[#00AFCB] text-white shadow-sm'
-                    : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
+                    ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200'
+                    : 'text-[#526779] dark:text-slate-400'
                 }`}
               >
                 English
@@ -426,10 +426,10 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedLangMode('kn')}
-                className={`px-1.5 sm:px-2 py-1 rounded-lg transition cursor-pointer ${
+                className={`water-droplet-pill px-2 py-1 rounded-full transition cursor-pointer ${
                   selectedLangMode === 'kn'
-                    ? 'bg-[#00AFCB] text-white shadow-sm'
-                    : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
+                    ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200'
+                    : 'text-[#526779] dark:text-slate-400'
                 }`}
               >
                 ಕನ್ನಡ
@@ -440,7 +440,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
             <button
               type="button"
               onClick={handleClearChat}
-              className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
+              className="water-droplet-btn p-2 rounded-full text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
               title="Reset conversation"
             >
               <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -450,7 +450,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
+              className="water-droplet-btn p-2 rounded-full text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
               title={t.close}
               aria-label={t.close}
             >
@@ -656,7 +656,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
               key={idx}
               onClick={() => handleSendMessage(promptText)}
               disabled={isLoading}
-              className="px-2.5 py-1 rounded-full text-[11px] bg-[#F4F8FC] dark:bg-slate-900 hover:bg-[#E6F8FA] dark:hover:bg-cyan-950/70 border border-[#D8E4ED] dark:border-slate-800 text-[#172B3A] dark:text-slate-300 hover:text-[#007A8E] dark:hover:text-cyan-300 whitespace-nowrap transition cursor-pointer"
+              className="water-droplet-pill px-3 py-1 rounded-full text-[11px] text-[#172B3A] dark:text-slate-200 whitespace-nowrap cursor-pointer shadow-xs"
             >
               {promptText}
             </button>
@@ -664,7 +664,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
         </div>
 
         {/* Input Bar */}
-        <div className="p-3 sm:p-4 border-t border-[#D8E4ED] dark:border-slate-800 bg-white/95 dark:bg-[#071328]/95 backdrop-blur-md flex-shrink-0">
+        <div className="p-3 sm:p-4 border-t border-[#D8E4ED]/60 dark:border-white/10 bg-white/60 dark:bg-[#071328]/60 backdrop-blur-md flex-shrink-0">
           {/* Active Voice Listening Banner if mic is recording */}
           {isListening && (
             <div className="mb-2 p-2 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-300 dark:border-cyan-500/40 flex items-center justify-between text-xs text-[#007A8E] dark:text-cyan-300 animate-pulse">
@@ -702,10 +702,10 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                   startSpeechRecognition(false);
                 }
               }}
-              className={`p-2.5 sm:p-3 rounded-2xl transition cursor-pointer ${
+              className={`water-droplet-btn p-2.5 sm:p-3 rounded-full transition cursor-pointer ${
                 isListening
                   ? 'bg-rose-500 text-white animate-pulse shadow-lg shadow-rose-500/30'
-                  : 'bg-[#F4F8FC] dark:bg-slate-900 hover:bg-[#E6F8FA] dark:hover:bg-cyan-950/60 border border-[#D8E4ED] dark:border-slate-800 text-[#00AFCB] dark:text-cyan-400'
+                  : 'text-[#00AFCB] dark:text-cyan-300'
               }`}
               title={isListening ? 'Stop listening' : t.tapToSpeak}
               aria-label={isListening ? 'Stop listening' : t.tapToSpeak}
@@ -713,14 +713,14 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
               {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
             </button>
 
-            {/* Input Field */}
-            <div className="relative flex-1">
+            {/* Input Field - Liquid Glass */}
+            <div className="water-droplet-search relative flex-1 px-3 py-1">
               <input
                 type="text"
                 value={inputQuery}
                 onChange={(e) => setInputQuery(e.target.value)}
                 placeholder={t.typePromptPlaceholder}
-                className="w-full py-2.5 sm:py-3 pl-3.5 pr-10 rounded-2xl bg-[#F4F8FC] dark:bg-slate-900 border border-[#D8E4ED] dark:border-slate-800 text-[#172B3A] dark:text-white placeholder-[#8B9EA8] dark:placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-[#00AFCB] dark:focus:border-cyan-400 transition"
+                className="w-full py-1.5 sm:py-2 bg-transparent border-none text-[#172B3A] dark:text-white placeholder-[#8B9EA8] dark:placeholder-slate-400 text-xs sm:text-sm focus:outline-none"
               />
             </div>
 
@@ -728,10 +728,10 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
             <button
               type="submit"
               disabled={!inputQuery.trim() || isLoading}
-              className={`p-2.5 sm:p-3 rounded-2xl font-bold transition flex items-center justify-center cursor-pointer ${
+              className={`water-droplet-btn p-2.5 sm:p-3 rounded-full font-bold transition flex items-center justify-center cursor-pointer ${
                 inputQuery.trim() && !isLoading
-                  ? 'bg-gradient-to-r from-[#00AFCB] to-[#0092AB] text-white shadow-md shadow-cyan-500/25 active:scale-95'
-                  : 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+                  ? 'text-[#00AFCB] dark:text-cyan-300 shadow-md'
+                  : 'opacity-40 cursor-not-allowed text-slate-400'
               }`}
               title="Send question"
               aria-label="Send question"

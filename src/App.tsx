@@ -5,11 +5,11 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { LocationData, WeatherData, WeatherAlert, DistrictRainData } from './types/weather';
-import { DEFAULT_LOCATION, ALL_KARNATAKA_DISTRICTS, reverseGeocodeLocation } from './services/geocodingService';
+import { DEFAULT_LOCATION, ALL_KARNATAKA_DISTRICTS, KARNATAKA_LOCALITIES, reverseGeocodeLocation } from './services/geocodingService';
 import { fetchWeatherData, fetchAllKarnatakaDistrictsRain } from './services/weatherService';
 import { evaluateWeatherAlerts } from './services/alertService';
 import { Language, TRANSLATIONS } from './services/languageService';
-import { UserSettings, loadUserSettings, saveUserSettings } from './services/settingsService';
+import { UserSettings, loadUserSettings, saveUserSettings, saveDefaultLocality } from './services/settingsService';
 import { Navbar } from './components/Navbar';
 import { CurrentWeather } from './components/CurrentWeather';
 import { SatelliteMap } from './components/SatelliteMap';
@@ -64,6 +64,19 @@ export default function App() {
   const [currentLocation, setCurrentLocation] = useState<LocationData>(() => {
     try {
       const userSettings = loadUserSettings();
+      // If user configured fixed default locality, start directly at that default locality!
+      if (userSettings.startupLocationMode === 'default_locality') {
+        if (userSettings.defaultLocation) {
+          return userSettings.defaultLocation;
+        }
+        const savedDefaultLocality = localStorage.getItem('skycast_default_locality');
+        if (savedDefaultLocality) {
+          return JSON.parse(savedDefaultLocality);
+        }
+        const foundLoc = KARNATAKA_LOCALITIES.find((l) => l.id === userSettings.defaultLocalityId);
+        if (foundLoc) return foundLoc;
+      }
+
       // If user configured fixed default district, start directly at that default district!
       if (userSettings.startupLocationMode === 'default_district') {
         if (userSettings.defaultDistrictId === 'karnataka-all') {
@@ -79,6 +92,12 @@ export default function App() {
         return JSON.parse(cached);
       }
 
+      // Fallback to saved default locality
+      const savedLoc = localStorage.getItem('skycast_default_locality');
+      if (savedLoc) {
+        return JSON.parse(savedLoc);
+      }
+
       // Fallback to saved default district
       const savedDefault = localStorage.getItem('skycast_default_district');
       if (savedDefault) {
@@ -88,13 +107,41 @@ export default function App() {
     return DEFAULT_LOCATION;
   });
 
+  // Handler to set the user's default locality
+  const handleSetDefaultLocality = (loc: LocationData) => {
+    saveDefaultLocality(loc);
+    updateSettings({
+      defaultLocalityId: loc.id,
+      defaultLocalityName: loc.name,
+      defaultLocation: loc,
+      startupLocationMode: 'default_locality',
+    });
+  };
+
   // Startup Location Detection:
-  // Starts at user's current live location (GPS) if mode is 'current_location'.
-  // Starts at user's default district if mode is 'default_district' (without asking for GPS).
-  // Once user approves, browser provides location silently without re-prompting.
-  // If user has not approved (or denied), asks again on app launch as requested.
+  // Starts at user's default locality if mode is 'default_locality'.
+  // Starts at user's default district if mode is 'default_district'.
+  // Starts at user's live GPS if mode is 'current_location'.
   useEffect(() => {
-    // 1. If startup mode is set to fixed default district, do not query GPS
+    // 1. If startup mode is set to fixed default locality
+    if (settings.startupLocationMode === 'default_locality') {
+      if (settings.defaultLocation) {
+        setCurrentLocation(settings.defaultLocation);
+        return;
+      }
+      const savedLoc = localStorage.getItem('skycast_default_locality');
+      if (savedLoc) {
+        setCurrentLocation(JSON.parse(savedLoc));
+        return;
+      }
+      const foundLoc = KARNATAKA_LOCALITIES.find((l) => l.id === settings.defaultLocalityId);
+      if (foundLoc) {
+        setCurrentLocation(foundLoc);
+        return;
+      }
+    }
+
+    // 2. If startup mode is set to fixed default district, do not query GPS
     if (settings.startupLocationMode === 'default_district' || !settings.autoDetectLocation) {
       if (settings.defaultDistrictId === 'karnataka-all') {
         setCurrentLocation(DEFAULT_LOCATION);
@@ -105,7 +152,7 @@ export default function App() {
       return;
     }
 
-    // 2. Startup mode is 'current_location' (Live GPS)
+    // 3. Startup mode is 'current_location' (Live GPS)
     if (typeof navigator !== 'undefined' && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
@@ -122,12 +169,18 @@ export default function App() {
           }
         },
         (err) => {
-          console.log('Location permission was not granted; will ask again when opened next time.', err);
-          // Gracefully fallback to user's saved default district or Karnataka Whole State
+          console.log('Location permission was not granted; will fallback to default locality or district.', err);
           try {
+            const savedLoc = localStorage.getItem('skycast_default_locality');
+            if (savedLoc) {
+              setCurrentLocation(JSON.parse(savedLoc));
+              return;
+            }
             const savedDefault = localStorage.getItem('skycast_default_district');
             if (savedDefault) {
               setCurrentLocation(JSON.parse(savedDefault));
+            } else if (settings.defaultLocation) {
+              setCurrentLocation(settings.defaultLocation);
             } else if (settings.defaultDistrictId && settings.defaultDistrictId !== 'karnataka-all') {
               const found = ALL_KARNATAKA_DISTRICTS.find((d) => d.id === settings.defaultDistrictId);
               if (found) setCurrentLocation(found);
@@ -137,7 +190,7 @@ export default function App() {
         { enableHighAccuracy: true, timeout: 8000, maximumAge: 300000 }
       );
     }
-  }, [settings.startupLocationMode, settings.defaultDistrictId, settings.autoDetectLocation]);
+  }, [settings.startupLocationMode, settings.defaultDistrictId, settings.defaultLocalityId, settings.defaultLocation, settings.autoDetectLocation]);
 
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [districtsRainData, setDistrictsRainData] = useState<DistrictRainData[]>([]);
@@ -353,6 +406,12 @@ export default function App() {
             tempUnit={settings.tempUnit}
             pressureUnit={settings.pressureUnit}
             showAtmosphereAnimation={settings.showAtmosphereAnimation}
+            isDefaultLocality={
+              settings.defaultLocalityId === currentLocation.id ||
+              settings.defaultLocation?.id === currentLocation.id ||
+              Boolean(settings.startupLocationMode === 'default_locality' && settings.defaultLocalityName === currentLocation.name)
+            }
+            onSetDefaultLocality={() => handleSetDefaultLocality(currentLocation)}
           />
         ) : (
           <div className="h-44 rounded-2xl glass-panel animate-pulse flex items-center justify-center text-[#00AFCB] dark:text-cyan-400">

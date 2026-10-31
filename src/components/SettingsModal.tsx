@@ -24,11 +24,13 @@ import {
   Volume2,
   CloudRain,
   Radio,
+  Star,
+  Navigation,
 } from 'lucide-react';
 import { Language, TRANSLATIONS } from '../services/languageService';
-import { UserSettings, RefreshInterval, SatelliteDefaultLayer, StartupLocationMode } from '../services/settingsService';
+import { UserSettings, RefreshInterval, SatelliteDefaultLayer, StartupLocationMode, saveDefaultLocality } from '../services/settingsService';
 import { LocationData } from '../types/weather';
-import { ALL_KARNATAKA_DISTRICTS, KARNATAKA_DEFAULT_LOCATION } from '../services/geocodingService';
+import { ALL_KARNATAKA_DISTRICTS, KARNATAKA_DEFAULT_LOCATION, KARNATAKA_LOCALITIES } from '../services/geocodingService';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -58,6 +60,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [copied, setCopied] = useState(false);
   const [resetLocationDone, setResetLocationDone] = useState(false);
   const [defaultDistrictDone, setDefaultDistrictDone] = useState(false);
+  const [defaultLocalityDone, setDefaultLocalityDone] = useState(false);
 
   if (!isOpen) return null;
 
@@ -106,7 +109,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 text-[#687D8F] hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
+            className="water-droplet-btn p-2 rounded-full text-[#687D8F] hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
             title="Close"
             aria-label="Close"
           >
@@ -316,6 +319,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#E6F8FA] dark:bg-cyan-950 text-[#007A8E] dark:text-cyan-300 border border-[#00AFCB]/30">
                   ACTIVE
                 </span>
+                {(settings.defaultLocalityId === currentLocation.id || settings.defaultLocation?.id === currentLocation.id) && (
+                  <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
+                    <span>{t.defaultLocalityBadge}</span>
+                  </span>
+                )}
                 {settings.defaultDistrictId === currentLocation.id && (
                   <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
                     ★ {lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಜಿಲ್ಲೆ' : 'Default District'}
@@ -324,40 +333,49 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
             </div>
 
-            {/* A. Startup Location Mode: Current GPS vs Fixed Default District */}
+            {/* A. Startup Location Mode: Current GPS vs Default Locality vs Default District */}
             <div className="space-y-1.5 pt-1">
               <label className="font-bold text-xs text-[#172B3A] dark:text-white block">
                 {t.startupMode}
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={() => updateSettings({ startupLocationMode: 'current_location', autoDetectLocation: true })}
-                  className={`py-2 px-2.5 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-between gap-1.5 text-left ${
+                  className={`py-2 px-1.5 rounded-xl border text-[11px] font-bold transition cursor-pointer flex flex-col items-center justify-center gap-1 text-center ${
                     settings.startupLocationMode === 'current_location'
                       ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
                       : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
                   }`}
                 >
-                  <span className="truncate">{t.startupCurrentGPS}</span>
-                  {settings.startupLocationMode === 'current_location' && (
-                    <Check className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400 flex-shrink-0" />
-                  )}
+                  <Navigation className="w-3.5 h-3.5" />
+                  <span>{lang === 'kn' ? 'ಲೈವ್ ಜಿಪಿಎಸ್' : 'Live GPS'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => updateSettings({ startupLocationMode: 'default_locality' })}
+                  className={`py-2 px-1.5 rounded-xl border text-[11px] font-bold transition cursor-pointer flex flex-col items-center justify-center gap-1 text-center ${
+                    settings.startupLocationMode === 'default_locality'
+                      ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-400 text-amber-800 dark:text-amber-200 ring-1 ring-amber-400/30'
+                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
+                  }`}
+                >
+                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                  <span>{lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಸ್ಥಳ' : 'Default Locality'}</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => updateSettings({ startupLocationMode: 'default_district' })}
-                  className={`py-2 px-2.5 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-between gap-1.5 text-left ${
+                  className={`py-2 px-1.5 rounded-xl border text-[11px] font-bold transition cursor-pointer flex flex-col items-center justify-center gap-1 text-center ${
                     settings.startupLocationMode === 'default_district'
                       ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
                       : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
                   }`}
                 >
-                  <span className="truncate">{t.startupDefaultDistrict}</span>
-                  {settings.startupLocationMode === 'default_district' && (
-                    <Check className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400 flex-shrink-0" />
-                  )}
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>{lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಜಿಲ್ಲೆ' : 'Default District'}</span>
                 </button>
               </div>
               <p className="text-[10px] text-[#687D8F] dark:text-slate-400">
@@ -365,13 +383,70 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   ? (lang === 'kn'
                       ? 'ಆ್ಯಪ್ ತೆರೆದಾಗ ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಜಿಪಿಎಸ್ ಸ್ಥಳವನ್ನು ಪತ್ತೆಮಾಡುತ್ತದೆ (ಅನುಮತಿ ನೀಡಿದ ನಂತರ).'
                       : 'App starts at your live GPS location on startup (asks only if needed).')
+                  : settings.startupLocationMode === 'default_locality'
+                  ? (lang === 'kn'
+                      ? `ಆ್ಯಪ್ ಯಾವಾಗಲೂ ${settings.defaultLocalityName || 'ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸ್ಥಳೀಯ ಪ್ರದೇಶ'}ದಲ್ಲಿ ನೇರವಾಗಿ ತೆರೆಯುತ್ತದೆ.`
+                      : `App will always open directly to ${settings.defaultLocalityName || 'your default locality'}.`)
                   : (lang === 'kn'
                       ? `ಆ್ಯಪ್ ಯಾವಾಗಲೂ ${settings.defaultDistrictName} ನಲ್ಲಿ ನೇರವಾಗಿ ತೆರೆಯುತ್ತದೆ.`
                       : `App will always open directly to ${settings.defaultDistrictName}.`)}
               </p>
             </div>
 
-            {/* B. Choose Default District Dropdown */}
+            {/* B. Choose Default Locality Dropdown */}
+            <div className="space-y-1.5 pt-2 border-t border-[#D8E4ED]/60 dark:border-slate-800/60">
+              <label className="font-bold text-xs text-[#172B3A] dark:text-white flex items-center justify-between">
+                <span>{t.defaultLocalityLabel}</span>
+                {settings.defaultLocalityName && (
+                  <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
+                    {settings.defaultLocalityName}
+                  </span>
+                )}
+              </label>
+              <select
+                value={settings.defaultLocalityId || (currentLocation.isLocality ? currentLocation.id : 'locality-vasanth-nagar')}
+                onChange={(e) => {
+                  const selectedId = e.target.value;
+                  if (currentLocation.isLocality && selectedId === currentLocation.id) {
+                    saveDefaultLocality(currentLocation);
+                    updateSettings({
+                      defaultLocalityId: currentLocation.id,
+                      defaultLocalityName: currentLocation.name,
+                      defaultLocation: currentLocation,
+                      startupLocationMode: 'default_locality',
+                    });
+                    return;
+                  }
+                  const match = KARNATAKA_LOCALITIES.find((l) => l.id === selectedId);
+                  if (match) {
+                    saveDefaultLocality(match);
+                    updateSettings({
+                      defaultLocalityId: match.id,
+                      defaultLocalityName: match.name,
+                      defaultLocation: match,
+                      startupLocationMode: 'default_locality',
+                    });
+                  }
+                }}
+                className="w-full py-2 px-3 rounded-xl bg-white dark:bg-slate-900 border border-[#D8E4ED] dark:border-slate-700 text-xs text-[#172B3A] dark:text-white font-medium focus:outline-none focus:border-[#00AFCB]"
+              >
+                {currentLocation.isLocality && (
+                  <option value={currentLocation.id}>
+                    📍 {currentLocation.name} ({currentLocation.district}) — Current Locality
+                  </option>
+                )}
+                <optgroup label={lang === 'kn' ? 'ಕರ್ನಾಟಕದ ಪ್ರಮುಖ ಸ್ಥಳೀಯ ಪ್ರದೇಶಗಳು' : 'Prominent Karnataka Localities & Towns'}>
+                  {KARNATAKA_LOCALITIES.map((loc) => (
+                    <option key={loc.id} value={loc.id}>
+                      {loc.name} ({loc.district})
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
+            </div>
+
+            {/* C. Choose Default District Dropdown */}
             <div className="space-y-1.5 pt-2 border-t border-[#D8E4ED]/60 dark:border-slate-800/60">
               <label className="font-bold text-xs text-[#172B3A] dark:text-white block">
                 {t.defaultDistrictLabel}
@@ -403,8 +478,36 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </select>
             </div>
 
-            {/* C. Quick Action: Set Active Location as Default District */}
-            <div className="pt-1">
+            {/* D. Quick Actions: Set Active Location as Default Locality or District */}
+            <div className="space-y-2 pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  saveDefaultLocality(currentLocation);
+                  updateSettings({
+                    defaultLocalityId: currentLocation.id,
+                    defaultLocalityName: currentLocation.name,
+                    defaultLocation: currentLocation,
+                    startupLocationMode: 'default_locality',
+                  });
+                  setDefaultLocalityDone(true);
+                  setTimeout(() => setDefaultLocalityDone(false), 2500);
+                }}
+                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/60 border border-amber-300 dark:border-amber-500/40 text-amber-800 dark:text-amber-200 text-xs font-bold transition active:scale-95 cursor-pointer shadow-sm"
+              >
+                {defaultLocalityDone ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                    <span className="text-emerald-700 dark:text-emerald-300">{t.defaultLocalitySaved}</span>
+                  </>
+                ) : (
+                  <>
+                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                    <span>{t.setAsDefaultLocality} ({currentLocation.name})</span>
+                  </>
+                )}
+              </button>
+
               <button
                 type="button"
                 onClick={() => {
@@ -429,13 +532,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 ) : (
                   <>
                     <Check className="w-3.5 h-3.5" />
-                    <span>{t.setAsDefaultDistrict} ({currentLocation.name})</span>
+                    <span>{t.setAsDefaultDistrict} ({currentLocation.district && currentLocation.district !== currentLocation.name ? currentLocation.district : currentLocation.name})</span>
                   </>
                 )}
               </button>
             </div>
 
-            {/* D. Reset to Whole Karnataka Default Button */}
+            {/* E. Reset to Whole Karnataka Default Button */}
             <div className="pt-1">
               <button
                 type="button"
@@ -738,7 +841,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </span>
               <button
                 onClick={handleCopyLink}
-                className="flex items-center gap-1 text-[11px] font-bold text-[#007A8E] dark:text-cyan-400 hover:underline cursor-pointer"
+                className="water-droplet-pill flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold text-[#007A8E] dark:text-cyan-300 cursor-pointer shadow-xs"
               >
                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? t.copied : t.copyLink}</span>
@@ -766,7 +869,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <div className="px-5 py-3 border-t border-[#D8E4ED] dark:border-cyan-500/20 bg-slate-50/90 dark:bg-[#050e1f]/95 flex items-center justify-end flex-shrink-0">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#00AFCB] to-[#2563EB] hover:from-[#0096AD] hover:to-blue-600 text-white text-xs font-bold shadow-md cursor-pointer transition active:scale-95"
+            className="water-droplet-btn px-6 py-2 rounded-full text-xs font-bold text-[#172B3A] dark:text-white shadow-md cursor-pointer transition"
           >
             {lang === 'kn' ? 'ಮುಗಿದಿದೆ (Done)' : 'Done'}
           </button>
