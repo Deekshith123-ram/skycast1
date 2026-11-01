@@ -41,7 +41,7 @@ export const DailyForecast: React.FC<DailyForecastProps> = ({ daily }) => {
             <span className="w-2.5 h-2.5 rounded-full bg-[#00AFCB] dark:bg-cyan-400"></span>
             7-Day Synoptic Outlook
           </h2>
-          <p className="text-xs text-[#526779] dark:text-slate-400 mt-0.5 font-normal">
+          <p className="text-xs text-slate-700 dark:text-slate-300 mt-0.5 font-medium">
             Medium-range numerical weather model predictions & monsoon progression
           </p>
         </div>
@@ -67,10 +67,10 @@ export const DailyForecast: React.FC<DailyForecastProps> = ({ daily }) => {
             >
               {/* Day & Date */}
               <div className="w-full md:w-36 flex items-center justify-between md:justify-start gap-3">
-                <span className="text-xs font-semibold text-[#172B3A] dark:text-white">
+                <span className="text-xs font-bold text-[#172B3A] dark:text-white">
                   {item.dayName}
                 </span>
-                <span className="text-[11px] text-[#687D8F] dark:text-slate-400 font-mono font-normal">
+                <span className="text-[11px] text-slate-700 dark:text-slate-300 font-mono font-medium">
                   {item.formattedDate}
                 </span>
                 {idx === 0 && (
@@ -83,7 +83,7 @@ export const DailyForecast: React.FC<DailyForecastProps> = ({ daily }) => {
               {/* Weather description & Icon */}
               <div className="flex items-center gap-2.5 w-full md:w-56">
                 <div className="p-1 rounded-lg bg-[#F8FAFC] dark:bg-slate-800/60 border border-[#D8E4ED] dark:border-slate-700/60">{getDailyIcon(item.weatherCode)}</div>
-                <span className="text-xs text-[#526779] dark:text-slate-200 truncate capitalize font-medium">
+                <span className="text-xs text-slate-800 dark:text-slate-200 truncate capitalize font-semibold">
                   {item.weatherDescription}
                 </span>
               </div>
@@ -95,17 +95,17 @@ export const DailyForecast: React.FC<DailyForecastProps> = ({ daily }) => {
                   <span>{item.precipitationProbabilityMax}%</span>
                 </div>
                 {item.precipitationSum > 0 ? (
-                  <span className="text-[11px] text-[#2563EB] dark:text-blue-300 font-mono font-bold">
+                  <span className="text-[11px] text-[#1E40AF] dark:text-blue-300 font-mono font-bold">
                     ({item.precipitationSum} mm)
                   </span>
                 ) : (
-                  <span className="text-[11px] text-[#526779] dark:text-slate-500 font-medium">Dry</span>
+                  <span className="text-[11px] text-slate-700 dark:text-slate-400 font-medium">Dry</span>
                 )}
               </div>
 
               {/* Temperature Bar */}
               <div className="w-full md:w-64 flex items-center gap-3">
-                <span className="text-xs font-mono font-semibold text-[#172B3A] dark:text-slate-400 w-8 text-right">
+                <span className="text-xs font-mono font-semibold text-slate-800 dark:text-slate-300 w-8 text-right">
                   {item.tempMin}°
                 </span>
                 <div className="relative flex-1 h-2 rounded-full bg-slate-300 dark:bg-slate-800 overflow-hidden">
@@ -123,9 +123,9 @@ export const DailyForecast: React.FC<DailyForecastProps> = ({ daily }) => {
               </div>
 
               {/* Wind Conditions */}
-              <div className="w-full md:w-32 flex items-center gap-1.5 text-xs text-[#526779] dark:text-slate-400 font-mono justify-end">
-                <Wind className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
-                <span className="font-semibold text-[#172B3A] dark:text-slate-400">{item.windSpeedMax} km/h</span>
+              <div className="w-full md:w-32 flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 font-mono justify-end">
+                <Wind className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
+                <span className="font-semibold text-slate-900 dark:text-slate-200">{item.windSpeedMax} km/h</span>
               </div>
             </div>
           );

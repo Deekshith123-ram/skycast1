@@ -58,11 +58,11 @@ export const WeatherCharts: React.FC<WeatherChartsProps> = ({ hourly }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white dark:bg-[#09152b] border border-[#D8E4ED] dark:border-cyan-500/30 p-2.5 rounded-xl shadow-xl text-xs">
-          <p className="font-bold text-[#172B3A] dark:text-slate-300 mb-1 font-mono">{label}</p>
+          <p className="font-bold text-[#0F1D2E] dark:text-white mb-1 font-mono">{label}</p>
           {payload.map((entry: any, index: number) => (
             <p key={`item-${index}`} style={{ color: entry.color }} className="font-mono flex items-center gap-1.5 text-xs font-semibold">
               <span>{entry.name}:</span>
-              <strong className="text-[#172B3A] dark:text-white font-bold">{entry.value}</strong>
+              <strong className="text-[#0F1D2E] dark:text-white font-bold">{entry.value}</strong>
             </p>
           ))}
         </div>
@@ -70,6 +70,8 @@ export const WeatherCharts: React.FC<WeatherChartsProps> = ({ hourly }) => {
     }
     return null;
   };
+
+  const axisTickStyle = { fontSize: 11, fill: 'var(--text-primary, #0F1D2E)', fontWeight: 600 };
 
   return (
     <div className="w-full glass-panel rounded-2xl p-5 border border-[#D8E4ED] dark:border-cyan-500/20 shadow-xl">
@@ -79,7 +81,7 @@ export const WeatherCharts: React.FC<WeatherChartsProps> = ({ hourly }) => {
             <Activity className="w-4 h-4 text-[#00AFCB] dark:text-cyan-400" />
             Detailed Meteorological Analysis Charts
           </h2>
-          <p className="text-xs text-[#526779] dark:text-slate-400 mt-0.5 font-normal">
+          <p className="text-xs text-slate-700 dark:text-slate-300 mt-0.5 font-medium">
             Granular 24-hour sensor trends and atmospheric profiles
           </p>
         </div>
@@ -93,7 +95,7 @@ export const WeatherCharts: React.FC<WeatherChartsProps> = ({ hourly }) => {
               className={`water-droplet-pill flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer shadow-sm ${
                 activeTab === tab.id
                   ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200'
-                  : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-slate-200'
+                  : 'text-slate-800 dark:text-slate-200 hover:text-[#172B3A] dark:hover:text-white'
               }`}
             >
               {tab.icon}
@@ -119,8 +121,8 @@ export const WeatherCharts: React.FC<WeatherChartsProps> = ({ hourly }) => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#D8E4ED" opacity={0.9} />
-              <XAxis dataKey="time" stroke="#526779" tick={{ fontSize: 11, fill: '#172B3A', fontWeight: 600 }} />
-              <YAxis stroke="#526779" domain={['dataMin - 2', 'dataMax + 2']} tick={{ fontSize: 11, fill: '#172B3A', fontWeight: 600 }} />
+              <XAxis dataKey="time" stroke="#526779" tick={axisTickStyle} />
+              <YAxis stroke="#526779" domain={['dataMin - 2', 'dataMax + 2']} tick={axisTickStyle} />
               <Tooltip content={<CustomTooltip />} />
               <Area type="monotone" dataKey="temp" name="Temperature (°C)" stroke="#00AFCB" strokeWidth={2.5} fillOpacity={1} fill="url(#tempGrad)" />
               <Area type="monotone" dataKey="feelsLike" name="Feels Like (°C)" stroke="#d97706" strokeWidth={1.5} strokeDasharray="4 4" fillOpacity={1} fill="url(#feelsGrad)" />
@@ -128,8 +130,8 @@ export const WeatherCharts: React.FC<WeatherChartsProps> = ({ hourly }) => {
           ) : activeTab === 'rainfall' ? (
             <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#D8E4ED" opacity={0.9} />
-              <XAxis dataKey="time" stroke="#526779" tick={{ fontSize: 11, fill: '#172B3A', fontWeight: 600 }} />
-              <YAxis stroke="#526779" tick={{ fontSize: 11, fill: '#172B3A', fontWeight: 600 }} />
+              <XAxis dataKey="time" stroke="#526779" tick={axisTickStyle} />
+              <YAxis stroke="#526779" tick={axisTickStyle} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="precip" name="Rainfall (mm)" fill="#2563EB" radius={[4, 4, 0, 0]} />
               <Line type="monotone" dataKey="precipProb" name="Rain Probability (%)" stroke="#6366f1" strokeWidth={2} />
@@ -143,8 +145,8 @@ export const WeatherCharts: React.FC<WeatherChartsProps> = ({ hourly }) => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#D8E4ED" opacity={0.9} />
-              <XAxis dataKey="time" stroke="#526779" tick={{ fontSize: 11, fill: '#172B3A', fontWeight: 600 }} />
-              <YAxis stroke="#526779" tick={{ fontSize: 11, fill: '#172B3A', fontWeight: 600 }} />
+              <XAxis dataKey="time" stroke="#526779" tick={axisTickStyle} />
+              <YAxis stroke="#526779" tick={axisTickStyle} />
               <Tooltip content={<CustomTooltip />} />
               <Area type="monotone" dataKey="wind" name="Wind Speed (km/h)" stroke="#0d9488" strokeWidth={2.5} fillOpacity={1} fill="url(#windGrad)" />
             </AreaChart>
@@ -157,8 +159,8 @@ export const WeatherCharts: React.FC<WeatherChartsProps> = ({ hourly }) => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#D8E4ED" opacity={0.9} />
-              <XAxis dataKey="time" stroke="#526779" tick={{ fontSize: 11, fill: '#172B3A', fontWeight: 600 }} />
-              <YAxis stroke="#526779" domain={[0, 100]} tick={{ fontSize: 11, fill: '#172B3A', fontWeight: 600 }} />
+              <XAxis dataKey="time" stroke="#526779" tick={axisTickStyle} />
+              <YAxis stroke="#526779" domain={[0, 100]} tick={axisTickStyle} />
               <Tooltip content={<CustomTooltip />} />
               <Area type="monotone" dataKey="cloud" name="Cloud Cover (%)" stroke="#475569" strokeWidth={2} fillOpacity={1} fill="url(#cloudGrad)" />
             </AreaChart>
@@ -171,8 +173,8 @@ export const WeatherCharts: React.FC<WeatherChartsProps> = ({ hourly }) => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#D8E4ED" opacity={0.9} />
-              <XAxis dataKey="time" stroke="#526779" tick={{ fontSize: 11, fill: '#172B3A', fontWeight: 600 }} />
-              <YAxis stroke="#526779" domain={[0, 100]} tick={{ fontSize: 11, fill: '#172B3A', fontWeight: 600 }} />
+              <XAxis dataKey="time" stroke="#526779" tick={axisTickStyle} />
+              <YAxis stroke="#526779" domain={[0, 100]} tick={axisTickStyle} />
               <Tooltip content={<CustomTooltip />} />
               <Area type="monotone" dataKey="humidity" name="Relative Humidity (%)" stroke="#4338ca" strokeWidth={2.5} fillOpacity={1} fill="url(#humidGrad)" />
             </AreaChart>
@@ -185,8 +187,8 @@ export const WeatherCharts: React.FC<WeatherChartsProps> = ({ hourly }) => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#D8E4ED" opacity={0.9} />
-              <XAxis dataKey="time" stroke="#526779" tick={{ fontSize: 11, fill: '#172B3A', fontWeight: 600 }} />
-              <YAxis stroke="#526779" domain={[0, 12]} tick={{ fontSize: 11, fill: '#172B3A', fontWeight: 600 }} />
+              <XAxis dataKey="time" stroke="#526779" tick={axisTickStyle} />
+              <YAxis stroke="#526779" domain={[0, 12]} tick={axisTickStyle} />
               <Tooltip content={<CustomTooltip />} />
               <Area type="monotone" dataKey="uv" name="UV Radiation Index" stroke="#d97706" strokeWidth={2.5} fillOpacity={1} fill="url(#uvGrad)" />
             </AreaChart>

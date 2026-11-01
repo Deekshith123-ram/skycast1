@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { WeatherData } from '../types/weather';
 import {
   determineWeatherBackground,
@@ -17,10 +17,20 @@ export const DynamicWeatherBackground: React.FC<DynamicWeatherBackgroundProps> =
   weather,
   theme,
 }) => {
-  // Determine current active background based strictly on current location's live weather telemetry
+  const [tick, setTick] = useState<number>(0);
+
+  // Time-to-time sync: heartbeat every 30s so sunrise/sunset & day-to-night transitions update smoothly in real time
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTick((t) => t + 1);
+    }, 30000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Determine current active background based strictly on current location's live weather telemetry and current time
   const activeType = useMemo(() => {
     return determineWeatherBackground(weather);
-  }, [weather]);
+  }, [weather, tick]);
 
   return (
     <div

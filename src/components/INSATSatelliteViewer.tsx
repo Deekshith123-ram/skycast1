@@ -41,7 +41,7 @@ export const INSATSatelliteViewer: React.FC = () => {
               INSAT-3D & 3DR Geostationary Satellite Observatory
             </h2>
           </div>
-          <p className="text-xs text-[#526779] dark:text-slate-400 mt-1 font-normal">
+          <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 font-medium">
             Official Indian Meteorological Department (IMD) space-borne meteorological imaging for Karnataka, Arabian Sea & Indian Subcontinent.
           </p>
         </div>
@@ -66,11 +66,11 @@ export const INSATSatelliteViewer: React.FC = () => {
             className={`water-droplet-pill flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm ${
               selectedProduct.id === prod.id
                 ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200'
-                : 'text-[#526779] dark:text-slate-300'
+                : 'text-slate-800 dark:text-slate-200'
             }`}
           >
             <span>{prod.channel}</span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/10 dark:bg-white/10 font-mono text-[#007A8E] dark:text-cyan-300">
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/10 dark:bg-white/10 font-mono text-[#007A8E] dark:text-cyan-300 font-bold">
               {prod.satellite}
             </span>
           </button>
@@ -148,37 +148,37 @@ export const INSATSatelliteViewer: React.FC = () => {
               <ShieldCheck className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
               <span>Channel Science Specification</span>
             </div>
-            <p className="text-xs text-[#526779] dark:text-slate-300 leading-relaxed font-normal">
+            <p className="text-xs text-slate-800 dark:text-slate-200 leading-relaxed font-normal">
               {selectedProduct.description}
             </p>
           </div>
 
-          <div className="rounded-xl bg-white dark:bg-slate-900/60 border border-[#D8E4ED] dark:border-slate-800 p-3.5 space-y-2.5 text-xs text-[#526779] dark:text-slate-300 shadow-sm">
+          <div className="rounded-xl bg-white dark:bg-slate-900/60 border border-[#D8E4ED] dark:border-slate-800 p-3.5 space-y-2.5 text-xs text-slate-800 dark:text-slate-200 shadow-sm">
             <div className="flex items-center justify-between pb-1.5 border-b border-[#D8E4ED] dark:border-slate-800">
-              <span className="text-[#687D8F] dark:text-slate-400 font-medium">Sensor & Satellite:</span>
+              <span className="text-slate-700 dark:text-slate-300 font-semibold">Sensor & Satellite:</span>
               <span className="font-bold text-[#172B3A] dark:text-white">{selectedProduct.satellite} Imager</span>
             </div>
             <div className="flex items-center justify-between pb-1.5 border-b border-[#D8E4ED] dark:border-slate-800">
-              <span className="text-[#687D8F] dark:text-slate-400 font-medium">Channel Type:</span>
+              <span className="text-slate-700 dark:text-slate-300 font-semibold">Channel Type:</span>
               <span className="font-bold text-[#007A8E] dark:text-cyan-300">{selectedProduct.channel}</span>
             </div>
             <div className="flex items-center justify-between pb-1.5 border-b border-[#D8E4ED] dark:border-slate-800">
-              <span className="text-[#687D8F] dark:text-slate-400 font-medium">Spatial Nadir Res:</span>
+              <span className="text-slate-700 dark:text-slate-300 font-semibold">Spatial Nadir Res:</span>
               <span className="font-mono font-semibold text-[#172B3A] dark:text-slate-200">{selectedProduct.resolution}</span>
             </div>
             <div className="flex items-center justify-between pb-1.5 border-b border-[#D8E4ED] dark:border-slate-800">
-              <span className="text-[#687D8F] dark:text-slate-400 font-medium">Cadence / Refresh:</span>
+              <span className="text-slate-700 dark:text-slate-300 font-semibold">Cadence / Refresh:</span>
               <span className="text-[#172B3A] dark:text-slate-200 font-semibold">{selectedProduct.updateFrequency}</span>
             </div>
             <div>
-              <span className="text-[#687D8F] dark:text-slate-400 block mb-1 font-medium">Key Meteorological Utility:</span>
-              <span className="text-[11px] text-[#007A8E] dark:text-cyan-200 bg-[#E6F8FA] dark:bg-cyan-950/60 p-2.5 rounded-lg border border-[#00AFCB]/30 dark:border-cyan-500/20 block font-medium">
+              <span className="text-slate-700 dark:text-slate-300 block mb-1 font-semibold">Key Meteorological Utility:</span>
+              <span className="text-[11px] text-cyan-950 dark:text-cyan-200 bg-[#E6F8FA] dark:bg-cyan-950/60 p-2.5 rounded-lg border border-[#00AFCB]/30 dark:border-cyan-500/20 block font-semibold">
                 {selectedProduct.recommendedUse}
               </span>
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-[#E6F8FA]/70 dark:bg-cyan-950/30 border border-[#00AFCB]/30 dark:border-cyan-500/20 text-[11px] text-[#526779] dark:text-cyan-300/90 leading-normal flex items-start gap-2 shadow-sm">
+          <div className="p-3 rounded-xl bg-[#E6F8FA]/70 dark:bg-cyan-950/30 border border-[#00AFCB]/30 dark:border-cyan-500/20 text-[11px] text-slate-800 dark:text-cyan-200 leading-normal flex items-start gap-2 shadow-sm font-medium">
             <Info className="w-4 h-4 text-[#00AFCB] dark:text-cyan-400 flex-shrink-0 mt-0.5" />
             <span>
               Real-time images are streamed directly from IMD's National Satellite Meteorological Centre (NSMC), New Delhi, and ISRO MOSDAC telemetry archives.

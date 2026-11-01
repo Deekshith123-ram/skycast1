@@ -131,7 +131,7 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="water-droplet-btn p-1.5 rounded-full text-[#687D8F] hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
+              className="water-droplet-btn p-1.5 rounded-full text-slate-700 dark:text-slate-300 hover:text-[#0F1D2E] dark:hover:text-white transition cursor-pointer"
               title="Close options"
               aria-label="Close options"
             >
@@ -142,7 +142,7 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
           <div className="space-y-2.5">
             {/* A. Theme Switcher (Dark / Light Mode) */}
             <div>
-              <span className="text-[10px] uppercase font-bold text-[#687D8F] dark:text-slate-400 tracking-wider block mb-1.5">
+              <span className="text-[10px] uppercase font-bold text-slate-700 dark:text-slate-300 tracking-wider block mb-1.5">
                 {t.theme}
               </span>
               <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-white/40 dark:bg-black/20 border border-white/30 dark:border-white/10">
@@ -154,7 +154,7 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
                   className={`water-droplet-pill flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition cursor-pointer ${
                     theme === 'dark'
                       ? 'water-droplet-pill-active text-cyan-300'
-                      : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
+                      : 'text-slate-800 dark:text-slate-200 font-semibold hover:text-[#0F1D2E] dark:hover:text-white'
                   }`}
                 >
                   <Moon className="w-3.5 h-3.5 text-cyan-400" />
@@ -169,7 +169,7 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
                   className={`water-droplet-pill flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition cursor-pointer ${
                     theme === 'light'
                       ? 'water-droplet-pill-active text-amber-700 dark:text-amber-300'
-                      : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
+                      : 'text-slate-800 dark:text-slate-200 font-semibold hover:text-[#0F1D2E] dark:hover:text-white'
                   }`}
                 >
                   <Sun className="w-3.5 h-3.5 text-amber-500" />

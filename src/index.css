@@ -52,8 +52,8 @@ body {
     --border-color: rgba(255, 255, 255, 0.40);
     --border-highlight: #00AFCB;
     --text-primary: #0F1D2E;
-    --text-secondary: #334155;
-    --text-muted: #475569;
+    --text-secondary: #1E293B;
+    --text-muted: #334155;
     --accent-cyan: #00AFCB;
     --accent-blue: #2563EB;
     --accent-indigo: #4338CA;
@@ -508,28 +508,30 @@ html.light .water-droplet-search:focus-within {
     inset 0 1px 0 0 rgba(255, 255, 255, 0.50);
 }
 
-/* 3. WATER DROPLET AUTOCOMPLETE DROPDOWN */
+/* 3. SEARCH AUTOCOMPLETE SUGGESTIONS DROPDOWN (100% Opaque / Non-Transparent for high phone legibility) */
 .water-droplet-dropdown {
-  background: rgba(6, 14, 28, 0.60);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #0d1726 !important; /* Slightly dark in dark mode - completely non-transparent */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(56, 189, 248, 0.40) !important;
   box-shadow: 
-    0 16px 36px -6px rgba(0, 0, 0, 0.55),
-    0 4px 12px -2px rgba(0, 0, 0, 0.30),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.20);
+    0 20px 45px -4px rgba(0, 0, 0, 0.85),
+    0 8px 18px -2px rgba(0, 0, 0, 0.60),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.15) !important;
+  color: #f1f5f9 !important;
 }
 
 .light .water-droplet-dropdown,
 html.light .water-droplet-dropdown {
-  background: rgba(255, 255, 255, 0.70);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: #f8fafc !important; /* Slightly white in light mode - completely non-transparent */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid #cbd5e1 !important;
   box-shadow: 
-    0 14px 30px -6px rgba(23, 43, 58, 0.12),
-    0 4px 10px -2px rgba(23, 43, 58, 0.05),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.60);
+    0 16px 36px -4px rgba(15, 29, 46, 0.18),
+    0 6px 14px -2px rgba(15, 29, 46, 0.10),
+    inset 0 1px 0 0 rgba(255, 255, 255, 1) !important;
+  color: #0f1d2e !important;
 }
 
 /* 4. WATER DROPLET PILL (Quick Districts, Filter Switches, Badges) */

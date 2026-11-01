@@ -257,7 +257,15 @@ export async function fetchWeatherData(location: LocationData): Promise<WeatherD
         uvIndex: 6,
         dewPoint: 20,
         visibility: 10,
-        isDay: true,
+        isDay: (() => {
+          try {
+            const istDate = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+            const h = istDate.getHours() + istDate.getMinutes() / 60;
+            return h >= 6.0 && h < 18.25;
+          } catch {
+            return true;
+          }
+        })(),
         timestamp: now.toISOString(),
       },
       hourly: Array.from({ length: 48 }).map((_, i) => {

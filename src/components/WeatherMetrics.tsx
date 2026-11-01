@@ -20,11 +20,11 @@ interface WeatherMetricsProps {
 
 export const WeatherMetrics: React.FC<WeatherMetricsProps> = ({ current, today }) => {
   const getUvLevel = (uv: number): { label: string; color: string } => {
-    if (uv <= 2) return { label: 'Low', color: 'text-emerald-600 dark:text-emerald-400' };
-    if (uv <= 5) return { label: 'Moderate', color: 'text-yellow-600 dark:text-yellow-400' };
-    if (uv <= 7) return { label: 'High', color: 'text-amber-600 dark:text-amber-400' };
-    if (uv <= 10) return { label: 'Very High', color: 'text-orange-600 dark:text-orange-400' };
-    return { label: 'Extreme', color: 'text-rose-600 dark:text-rose-500' };
+    if (uv <= 2) return { label: 'Low', color: 'text-emerald-700 dark:text-emerald-400 font-semibold' };
+    if (uv <= 5) return { label: 'Moderate', color: 'text-amber-700 dark:text-yellow-400 font-semibold' };
+    if (uv <= 7) return { label: 'High', color: 'text-amber-800 dark:text-amber-300 font-bold' };
+    if (uv <= 10) return { label: 'Very High', color: 'text-orange-800 dark:text-orange-300 font-bold' };
+    return { label: 'Extreme', color: 'text-rose-700 dark:text-rose-400 font-bold' };
   };
 
   const uvInfo = getUvLevel(current.uvIndex);
@@ -45,8 +45,8 @@ export const WeatherMetrics: React.FC<WeatherMetricsProps> = ({ current, today }
       label: 'Wind Speed & Gusts',
       value: `${current.windSpeed} km/h`,
       subtitle: `Gusts up to ${current.windGusts} km/h`,
-      icon: <Wind className="w-4 h-4 text-teal-600 dark:text-teal-400" />,
-      bg: 'bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-300',
+      icon: <Wind className="w-4 h-4 text-teal-700 dark:text-teal-400" />,
+      bg: 'bg-teal-50 dark:bg-teal-500/10 text-teal-800 dark:text-teal-300',
       border: 'border-[#D8E4ED] dark:border-teal-500/20',
     },
     {
@@ -54,7 +54,7 @@ export const WeatherMetrics: React.FC<WeatherMetricsProps> = ({ current, today }
       label: 'Wind Direction',
       value: `${current.windDirection}°`,
       subtitle: windDirLabel,
-      icon: <Compass className="w-4 h-4 text-[#2563EB] dark:text-blue-400" />,
+      icon: <Compass className="w-4 h-4 text-[#1E40AF] dark:text-blue-400" />,
       bg: 'bg-blue-50 dark:bg-blue-500/10 text-[#1E40AF] dark:text-blue-300',
       border: 'border-[#D8E4ED] dark:border-blue-500/20',
     },
@@ -63,8 +63,8 @@ export const WeatherMetrics: React.FC<WeatherMetricsProps> = ({ current, today }
       label: 'Rain Probability',
       value: `${today?.precipitationProbabilityMax ?? 0}%`,
       subtitle: today?.precipitationSum ? `${today.precipitationSum} mm expected` : 'Negligible rain',
-      icon: <CloudRain className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />,
-      bg: 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300',
+      icon: <CloudRain className="w-4 h-4 text-indigo-700 dark:text-indigo-400" />,
+      bg: 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-800 dark:text-indigo-300',
       border: 'border-[#D8E4ED] dark:border-indigo-500/20',
     },
     {
@@ -72,8 +72,8 @@ export const WeatherMetrics: React.FC<WeatherMetricsProps> = ({ current, today }
       label: 'Cloud Coverage',
       value: `${current.cloudCover}%`,
       subtitle: current.cloudCover > 60 ? 'Overcast Sky' : current.cloudCover > 25 ? 'Scattered Clouds' : 'Clear Sky',
-      icon: <Cloud className="w-4 h-4 text-[#526779] dark:text-slate-300" />,
-      bg: 'bg-slate-100 dark:bg-slate-500/10 text-[#526779] dark:text-slate-300',
+      icon: <Cloud className="w-4 h-4 text-slate-700 dark:text-slate-300" />,
+      bg: 'bg-slate-100 dark:bg-slate-500/10 text-slate-800 dark:text-slate-300',
       border: 'border-[#D8E4ED] dark:border-slate-500/20',
     },
     {
@@ -82,8 +82,8 @@ export const WeatherMetrics: React.FC<WeatherMetricsProps> = ({ current, today }
       value: `${current.uvIndex}`,
       subtitle: `${uvInfo.label} Risk`,
       subtitleColor: uvInfo.color,
-      icon: <Sun className="w-4 h-4 text-amber-600 dark:text-amber-400" />,
-      bg: 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300',
+      icon: <Sun className="w-4 h-4 text-amber-700 dark:text-amber-400" />,
+      bg: 'bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-300',
       border: 'border-[#D8E4ED] dark:border-amber-500/20',
     },
     {
@@ -91,8 +91,8 @@ export const WeatherMetrics: React.FC<WeatherMetricsProps> = ({ current, today }
       label: 'Atmospheric Pressure',
       value: `${current.surfacePressure} hPa`,
       subtitle: 'Barometric Surface',
-      icon: <Gauge className="w-4 h-4 text-purple-600 dark:text-purple-400" />,
-      bg: 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-300',
+      icon: <Gauge className="w-4 h-4 text-purple-700 dark:text-purple-400" />,
+      bg: 'bg-purple-50 dark:bg-purple-500/10 text-purple-800 dark:text-purple-300',
       border: 'border-[#D8E4ED] dark:border-purple-500/20',
     },
     {
@@ -100,8 +100,8 @@ export const WeatherMetrics: React.FC<WeatherMetricsProps> = ({ current, today }
       label: 'Surface Visibility',
       value: `${current.visibility ?? 10} km`,
       subtitle: (current.visibility ?? 10) >= 10 ? 'Optimal Clearness' : 'Atmospheric Haze',
-      icon: <Eye className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />,
-      bg: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-300',
+      icon: <Eye className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />,
+      bg: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-900 dark:text-emerald-300',
       border: 'border-[#D8E4ED] dark:border-emerald-500/20',
     },
     {
@@ -109,8 +109,8 @@ export const WeatherMetrics: React.FC<WeatherMetricsProps> = ({ current, today }
       label: 'Dew Point',
       value: `${current.dewPoint ?? Math.round(current.temperature - (100 - current.relativeHumidity) / 5)}°C`,
       subtitle: 'Condensation Point',
-      icon: <ThermometerSnowflake className="w-4 h-4 text-sky-600 dark:text-sky-400" />,
-      bg: 'bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300',
+      icon: <ThermometerSnowflake className="w-4 h-4 text-sky-700 dark:text-sky-400" />,
+      bg: 'bg-sky-50 dark:bg-sky-500/10 text-sky-800 dark:text-sky-300',
       border: 'border-[#D8E4ED] dark:border-sky-500/20',
     },
   ];
@@ -118,11 +118,11 @@ export const WeatherMetrics: React.FC<WeatherMetricsProps> = ({ current, today }
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-3 px-1">
-        <h2 className="font-display text-sm font-bold text-[#172B3A] dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
+        <h2 className="font-display text-sm font-bold text-[#172B3A] dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[#00AFCB] dark:bg-cyan-400"></span>
           Key Meteorological Metrics
         </h2>
-        <span className="text-[11px] text-[#687D8F] dark:text-slate-400 font-mono font-normal">Real-Time Sensor Suite</span>
+        <span className="text-[11px] text-slate-700 dark:text-slate-300 font-mono font-medium">Real-Time Sensor Suite</span>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-3">
@@ -132,13 +132,13 @@ export const WeatherMetrics: React.FC<WeatherMetricsProps> = ({ current, today }
             className={`p-3.5 rounded-xl glass-panel glass-panel-hover border ${m.border} flex flex-col justify-between`}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-semibold text-[#526779] dark:text-slate-400 line-clamp-1">{m.label}</span>
+              <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 line-clamp-1">{m.label}</span>
               <div className={`p-1.5 rounded-lg ${m.bg}`}>{m.icon}</div>
             </div>
 
             <div>
               <div className="text-xl font-extrabold text-[#172B3A] dark:text-white font-mono tracking-tight">{m.value}</div>
-              <div className={`text-[10px] mt-0.5 truncate font-medium ${m.subtitleColor || 'text-[#526779] dark:text-slate-400'}`}>
+              <div className={`text-[10px] mt-0.5 truncate font-medium ${m.subtitleColor || 'text-slate-700 dark:text-slate-300'}`}>
                 {m.subtitle}
               </div>
             </div>

@@ -201,7 +201,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {lang === 'kn' ? 'ಕರ್ನಾಟಕ ಲೈವ್' : 'KARNATAKA LIVE'}
                 </span>
               </div>
-              <p className="text-[10px] text-[#526779] dark:text-slate-400 tracking-wider uppercase font-semibold hidden sm:block">
+              <p className="text-[10px] text-slate-700 dark:text-slate-300 tracking-wider uppercase font-semibold hidden sm:block">
                 {t.appSubtitle}
               </p>
             </div>
@@ -217,12 +217,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setDropdownOpen(true)}
                 placeholder={t.searchPlaceholder}
-                className="w-full pl-9 pr-16 sm:pr-20 py-2 sm:py-2.5 bg-transparent border-none text-xs sm:text-sm text-[#172B3A] dark:text-slate-100 placeholder-[#687D8F] focus:outline-none"
+                className="w-full pl-9 pr-16 sm:pr-20 py-2 sm:py-2.5 bg-transparent border-none text-xs sm:text-sm text-[#0F1D2E] dark:text-slate-100 placeholder-slate-600 dark:placeholder-slate-400 font-medium focus:outline-none"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="water-droplet-btn absolute right-9 sm:right-10 p-1 rounded-full text-[#687D8F] hover:text-[#172B3A] dark:hover:text-white cursor-pointer"
+                  className="water-droplet-btn absolute right-9 sm:right-10 p-1 rounded-full text-slate-700 dark:text-slate-300 hover:text-[#0F1D2E] dark:hover:text-white cursor-pointer"
                   title="Clear search"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -241,12 +241,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Dropdown Menu - Floating Crystal-Clear Water Pool */}
             {isDropdownOpen && (
               <div className="water-droplet-dropdown absolute left-0 right-0 mt-2 max-h-80 overflow-y-auto rounded-2xl p-2 z-50 animate-in fade-in">
-                <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#007A8E] dark:text-cyan-400 flex items-center justify-between border-b border-[#D8E4ED]/40 dark:border-white/10">
+                <div className="px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#007A8E] dark:text-cyan-400 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
                   <span>{searchQuery ? (lang === 'kn' ? 'ಹುಡುಕಾಟದ ಫಲಿತಾಂಶಗಳು' : 'Search Results (Localities & Districts)') : (lang === 'kn' ? 'ಕರ್ನಾಟಕ 31 ಜಿಲ್ಲೆಗಳು & ಸ್ಥಳೀಯ ಪ್ರದೇಶಗಳು' : 'Karnataka Districts & Localities')}</span>
                   {isSearching && <span className="text-[#00AFCB] dark:text-cyan-400 animate-pulse">{t.syncing}</span>}
                 </div>
 
-                <div className="mt-1 space-y-1">
+                <div className="mt-1.5 space-y-1">
                   {searchResults.map((loc) => {
                     const isSelected =
                       Math.abs(loc.latitude - currentLocation.latitude) < 0.01 &&
@@ -260,30 +260,30 @@ export const Navbar: React.FC<NavbarProps> = ({
                           setDropdownOpen(false);
                           setSearchQuery('');
                         }}
-                        className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs transition cursor-pointer ${
+                        className={`w-full text-left px-3 py-2.5 rounded-xl flex items-center justify-between text-xs transition cursor-pointer shadow-xs ${
                           isSelected
-                            ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-300 font-semibold'
-                            : 'hover:bg-white/40 dark:hover:bg-white/10 text-[#172B3A] dark:text-slate-200'
+                            ? 'bg-[#00AFCB]/15 text-[#007A8E] dark:bg-cyan-500/25 dark:text-cyan-200 font-bold border border-[#00AFCB]/40'
+                            : 'bg-white hover:bg-slate-100 dark:bg-[#132034] dark:hover:bg-[#192b45] text-[#0F1D2E] dark:text-slate-100 border border-slate-200 dark:border-slate-700/60'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <MapPin className={`w-3.5 h-3.5 ${isSelected ? 'text-[#00AFCB] dark:text-cyan-400' : 'text-[#687D8F]'}`} />
+                          <MapPin className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-[#00AFCB] dark:text-cyan-400' : 'text-slate-400 dark:text-slate-400'}`} />
                           <div>
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="font-display font-medium block">{loc.name}</span>
+                              <span className="font-display font-semibold block text-[#0F1D2E] dark:text-slate-100">{loc.name}</span>
                               {loc.isLocality && (
-                                <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-[#E6F8FA] text-[#007A8E] dark:bg-cyan-950/80 dark:text-cyan-300 font-semibold border border-[#00AFCB]/30">
+                                <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-[#E6F8FA] text-[#007A8E] dark:bg-cyan-950/80 dark:text-cyan-300 font-bold border border-[#00AFCB]/30">
                                   {lang === 'kn' ? 'ಸ್ಥಳೀಯ' : 'Locality'}
                                 </span>
                               )}
                             </div>
-                            <span className="text-[10px] text-[#526779] dark:text-slate-400 font-normal">
+                            <span className="text-[10px] text-slate-700 dark:text-slate-300 font-medium">
                               {loc.district && loc.district !== loc.name ? `${loc.district}, ` : ''}{loc.state}
                             </span>
                           </div>
                         </div>
 
-                        {isSelected && <Check className="w-4 h-4 text-[#00AFCB] dark:text-cyan-400" />}
+                        {isSelected && <Check className="w-4 h-4 text-[#00AFCB] dark:text-cyan-400 shrink-0" />}
                       </button>
                     );
                   })}
@@ -365,7 +365,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className={`water-droplet-pill flex-shrink-0 px-3 py-1 rounded-full text-xs cursor-pointer ${
                   isCurrent
                     ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-bold'
-                    : 'text-[#172B3A] dark:text-slate-300 font-medium'
+                    : 'text-slate-800 dark:text-slate-200 font-semibold'
                 }`}
               >
                 {loc.name}

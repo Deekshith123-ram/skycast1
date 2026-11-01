@@ -445,13 +445,13 @@ export default function App() {
         )}
 
         {/* D. Karnataka Satellite Cloud and Doppler Precipitation Tracker */}
-        <section className="space-y-2">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 px-1">
+        <section className="!mt-0.5 sm:!mt-1 space-y-0.5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 px-1 pb-0.5">
             <h2 className="font-display text-base sm:text-lg font-bold text-[#172B3A] dark:text-white flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#00AFCB] animate-ping"></span>
               {t.satelliteMapTitle}
             </h2>
-            <span className="text-xs text-[#526779] dark:text-slate-400">
+            <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">
               {t.satelliteMapSubtitle}
             </span>
           </div>
@@ -471,10 +471,12 @@ export default function App() {
 
         {/* E. Quick Weather Metrics */}
         {weatherData && (
-          <WeatherMetrics
-            current={weatherData.current}
-            today={weatherData.daily[0]}
-          />
+          <div className="!mt-0.5 sm:!mt-1">
+            <WeatherMetrics
+              current={weatherData.current}
+              today={weatherData.daily[0]}
+            />
+          </div>
         )}
 
         {/* F. Hourly Forecast (Scrollable) */}

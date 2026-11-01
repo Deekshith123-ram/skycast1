@@ -17,6 +17,8 @@ import {
   Compass,
   MapPin,
   Star,
+  Moon,
+  CloudMoon,
 } from 'lucide-react';
 import { WeatherAtmosphereAnimation } from './WeatherAtmosphereAnimation';
 import { Language, TRANSLATIONS, translateWeatherDesc } from '../services/languageService';
@@ -55,6 +57,16 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
   const today = daily[0];
 
   const getWeatherIcon = (code: number, isDay: boolean) => {
+    // Night icons (Google Weather parity)
+    if (!isDay) {
+      if (code === 0) return <Moon className="w-16 h-16 text-indigo-300 drop-shadow-[0_0_20px_rgba(165,180,252,0.45)]" />;
+      if (code <= 2) return <CloudMoon className="w-16 h-16 text-indigo-300 dark:text-cyan-200 drop-shadow-[0_0_18px_rgba(165,180,252,0.35)]" />;
+      if (code === 3) return <Cloud className="w-16 h-16 text-slate-500 dark:text-slate-300 drop-shadow-[0_0_18px_rgba(100,116,139,0.3)]" />;
+      if (code >= 51 && code <= 82) return <CloudRain className="w-16 h-16 text-blue-500 dark:text-blue-400 drop-shadow-[0_0_18px_rgba(59,130,246,0.35)]" />;
+      if (code >= 95) return <CloudLightning className="w-16 h-16 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_22px_rgba(245,158,11,0.4)]" />;
+      return <CloudFog className="w-16 h-16 text-slate-500 dark:text-slate-400" />;
+    }
+    // Daytime icons
     if (code === 0) return <Sun className="w-16 h-16 text-amber-500 drop-shadow-[0_0_18px_rgba(251,191,36,0.3)]" />;
     if (code <= 2) return <CloudSun className="w-16 h-16 text-[#00AFCB] dark:text-cyan-300 drop-shadow-[0_0_18px_rgba(0,175,203,0.3)]" />;
     if (code === 3) return <Cloud className="w-16 h-16 text-slate-600 dark:text-slate-300 drop-shadow-[0_0_18px_rgba(100,116,139,0.3)]" />;
@@ -108,12 +120,12 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
                   onClick={onSetDefaultLocality}
                   className={`water-droplet-btn px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm ${
                     isDefaultLocality
-                      ? 'water-droplet-pill-active text-amber-700 dark:text-amber-300 ring-1 ring-amber-400/40'
-                      : 'text-[#526779] dark:text-slate-300 hover:text-[#007A8E] dark:hover:text-cyan-300'
+                      ? 'water-droplet-pill-active text-amber-800 dark:text-amber-300 ring-1 ring-amber-400/40'
+                      : 'text-slate-800 dark:text-slate-200 hover:text-[#007A8E] dark:hover:text-cyan-300'
                   }`}
                   title={isDefaultLocality ? (lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಸ್ಥಳ' : 'Default Locality') : (lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಸ್ಥಳವಾಗಿ ಹೊಂದಿಸಿ' : 'Set as Default Locality')}
                 >
-                  <Star className={`w-3.5 h-3.5 ${isDefaultLocality ? 'fill-amber-400 text-amber-500' : 'text-[#687D8F]'}`} />
+                  <Star className={`w-3.5 h-3.5 ${isDefaultLocality ? 'fill-amber-400 text-amber-500' : 'text-slate-600 dark:text-slate-300'}`} />
                   <span>
                     {isDefaultLocality
                       ? (lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಸ್ಥಳ' : 'Default Locality')
@@ -121,21 +133,21 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
                   </span>
                 </button>
               )}
-              <span className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[#172B3A] dark:text-slate-200 text-xs font-semibold border border-[#D8E4ED] dark:border-slate-700 shadow-sm">
+              <span className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs font-semibold border border-[#D8E4ED] dark:border-slate-700 shadow-sm">
                 {location.district && location.district !== location.name ? `${location.district}, ` : ''}{location.state}, {location.country}
               </span>
             </div>
-            <div className="flex items-center gap-2 mt-1 text-xs text-[#526779] dark:text-slate-400 font-normal flex-wrap">
-              <span className="flex items-center gap-1 font-mono">
+            <div className="flex items-center gap-2 mt-1 text-xs text-slate-700 dark:text-slate-300 font-medium flex-wrap">
+              <span className="flex items-center gap-1 font-mono font-semibold">
                 <Compass className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
                 {location.latitude.toFixed(4)}°N, {location.longitude.toFixed(4)}°E
               </span>
               <span>•</span>
-              <span>{t.elevation}: ~{location.elevation ?? 650} m</span>
+              <span className="font-semibold">{t.elevation}: ~{location.elevation ?? 650} m</span>
               {(location.isEstimate || data.isEstimate) && (
                 <>
                   <span>•</span>
-                  <span className="text-amber-600 dark:text-amber-400 font-semibold">
+                  <span className="text-amber-700 dark:text-amber-400 font-bold">
                     ({lang === 'kn' ? 'ಅಂದಾಜು ಹವಾಮಾನ' : 'Estimated Weather'})
                   </span>
                 </>
@@ -145,12 +157,12 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
 
           <div className="flex items-center gap-2.5">
             {(location.isEstimate || data.isEstimate) ? (
-              <span className="water-droplet-pill flex items-center gap-1.5 px-3 py-1 rounded-full text-amber-700 dark:text-amber-300 text-xs font-bold shadow-sm" title="Weather data estimated from closest meteorological station/model">
+              <span className="water-droplet-pill flex items-center gap-1.5 px-3 py-1 rounded-full text-amber-800 dark:text-amber-300 text-xs font-bold shadow-sm" title="Weather data estimated from closest meteorological station/model">
                 <span className="h-2 w-2 rounded-full bg-amber-500" />
                 <span>{lang === 'kn' ? 'ಅಂದಾಜು' : 'Estimate'}</span>
               </span>
             ) : (
-              <span className="water-droplet-pill flex items-center gap-1.5 px-3 py-1 rounded-full text-emerald-700 dark:text-emerald-300 text-xs font-bold shadow-sm">
+              <span className="water-droplet-pill flex items-center gap-1.5 px-3 py-1 rounded-full text-emerald-800 dark:text-emerald-300 text-xs font-bold shadow-sm">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -160,9 +172,9 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
             )}
 
             {/* Expanded Updated Time Option with balanced alignment */}
-            <div className="water-droplet-pill flex items-center gap-1.5 text-xs text-[#526779] dark:text-slate-300 px-3.5 py-1 rounded-full shadow-sm">
+            <div className="water-droplet-pill flex items-center gap-1.5 text-xs text-slate-800 dark:text-slate-200 px-3.5 py-1 rounded-full shadow-sm">
               <Clock className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400 flex-shrink-0" />
-              <span>{t.updated}: <strong className="text-[#172B3A] dark:text-slate-100 font-bold font-mono">{lastUpdated}</strong></span>
+              <span>{t.updated}: <strong className="text-slate-900 dark:text-slate-100 font-bold font-mono">{lastUpdated}</strong></span>
             </div>
           </div>
         </div>
@@ -180,10 +192,10 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
                 <span className="font-display text-5xl md:text-6xl font-extrabold text-[#172B3A] dark:text-white tracking-tighter">
                   {mainTemp.value}°
                 </span>
-                <span className="font-display text-2xl font-bold text-[#526779] dark:text-slate-400">
+                <span className="font-display text-2xl font-bold text-slate-700 dark:text-slate-300">
                   {tempUnit === 'fahrenheit' ? 'F' : 'C'}
                 </span>
-                <span className="text-sm text-[#526779] dark:text-slate-300 ml-2 font-normal">
+                <span className="text-sm text-slate-800 dark:text-slate-200 ml-2 font-medium">
                   {t.feelsLike} <strong className="text-[#007A8E] dark:text-cyan-300 font-bold">{feelsLikeTemp.value}{feelsLikeTemp.unitLabel}</strong>
                 </span>
               </div>
@@ -193,16 +205,16 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
               </p>
 
               {today && maxTemp && minTemp && (
-                <div className="flex items-center gap-4 mt-2 text-xs font-normal text-[#526779] dark:text-slate-300">
+                <div className="flex items-center gap-4 mt-2 text-xs font-medium text-slate-800 dark:text-slate-200">
                   <span className="flex items-center gap-1 text-rose-700 dark:text-rose-400 font-semibold">
                     <ArrowUp className="w-3.5 h-3.5" />
-                    {t.high}: <strong className="font-mono text-[#172B3A] dark:text-white font-bold">{maxTemp.value}{maxTemp.unitLabel}</strong>
+                    {t.high}: <strong className="font-mono text-slate-900 dark:text-white font-bold">{maxTemp.value}{maxTemp.unitLabel}</strong>
                   </span>
-                  <span className="flex items-center gap-1 text-[#2563EB] dark:text-cyan-400 font-semibold">
+                  <span className="flex items-center gap-1 text-[#1E40AF] dark:text-cyan-400 font-semibold">
                     <ArrowDown className="w-3.5 h-3.5" />
-                    {t.low}: <strong className="font-mono text-[#172B3A] dark:text-white font-bold">{minTemp.value}{minTemp.unitLabel}</strong>
+                    {t.low}: <strong className="font-mono text-slate-900 dark:text-white font-bold">{minTemp.value}{minTemp.unitLabel}</strong>
                   </span>
-                  <span className="text-[#526779] dark:text-slate-400">
+                  <span className="text-slate-700 dark:text-slate-300 font-medium">
                     {t.rainProb}: <strong className="text-[#007A8E] dark:text-cyan-300 font-bold">{today.precipitationProbabilityMax}%</strong>
                   </span>
                 </div>
@@ -214,23 +226,23 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
           <div className="md:col-span-5 grid grid-cols-2 gap-3 pt-3 md:pt-0 md:border-l md:border-[#D8E4ED]/60 dark:md:border-cyan-500/15 md:pl-6">
             {/* Sunrise */}
             <div className="p-3 rounded-xl watery-sub-card flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400">
+              <div className="p-2 rounded-lg bg-amber-500/15 text-amber-700 dark:text-amber-400">
                 <Sunrise className="w-4 h-4" />
               </div>
               <div>
-                <span className="text-[10px] text-[#526779] dark:text-slate-300 uppercase tracking-wider block font-bold">{t.sunrise}</span>
-                <span className="text-xs font-bold text-[#172B3A] dark:text-white font-mono">{today?.sunrise ?? '06:08 AM'}</span>
+                <span className="text-[10px] text-slate-700 dark:text-slate-300 uppercase tracking-wider block font-bold">{t.sunrise}</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white font-mono">{today?.sunrise ?? '06:08 AM'}</span>
               </div>
             </div>
 
             {/* Sunset */}
             <div className="p-3 rounded-xl watery-sub-card flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-orange-500/15 text-orange-600 dark:text-orange-400">
+              <div className="p-2 rounded-lg bg-orange-500/15 text-orange-700 dark:text-orange-400">
                 <Sunset className="w-4 h-4" />
               </div>
               <div>
-                <span className="text-[10px] text-[#526779] dark:text-slate-300 uppercase tracking-wider block font-bold">{t.sunset}</span>
-                <span className="text-xs font-bold text-[#172B3A] dark:text-white font-mono">{today?.sunset ?? '06:18 PM'}</span>
+                <span className="text-[10px] text-slate-700 dark:text-slate-300 uppercase tracking-wider block font-bold">{t.sunset}</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white font-mono">{today?.sunset ?? '06:18 PM'}</span>
               </div>
             </div>
 
@@ -240,19 +252,19 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
                 <Cloud className="w-4 h-4" />
               </div>
               <div>
-                <span className="text-[10px] text-[#526779] dark:text-slate-300 uppercase tracking-wider block font-bold">{t.cloudCover}</span>
-                <span className="text-xs font-bold text-[#172B3A] dark:text-white font-mono">{current.cloudCover}%</span>
+                <span className="text-[10px] text-slate-700 dark:text-slate-300 uppercase tracking-wider block font-bold">{t.cloudCover}</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white font-mono">{current.cloudCover}%</span>
               </div>
             </div>
 
             {/* Surface Pressure / Barometer */}
             <div className="p-3 rounded-xl watery-sub-card flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-500/15 text-[#2563EB] dark:text-blue-400">
+              <div className="p-2 rounded-lg bg-blue-500/15 text-[#1E40AF] dark:text-blue-400">
                 <Wind className="w-4 h-4" />
               </div>
               <div>
-                <span className="text-[10px] text-[#526779] dark:text-slate-300 uppercase tracking-wider block font-bold">{t.barometer}</span>
-                <span className="text-xs font-bold text-[#172B3A] dark:text-white font-mono">{formattedPressure.value} {formattedPressure.unitLabel}</span>
+                <span className="text-[10px] text-slate-700 dark:text-slate-300 uppercase tracking-wider block font-bold">{t.barometer}</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white font-mono">{formattedPressure.value} {formattedPressure.unitLabel}</span>
               </div>
             </div>
           </div>

@@ -102,14 +102,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <h3 className="font-display text-base sm:text-lg font-bold text-[#172B3A] dark:text-white">
                 {t.platformSettings}
               </h3>
-              <p className="text-xs text-[#526779] dark:text-slate-400 font-normal">
+              <p className="text-xs text-slate-700 dark:text-slate-300 font-medium">
                 {t.settingsSubtitle}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="water-droplet-btn p-2 rounded-full text-[#687D8F] hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
+            className="water-droplet-btn p-2 rounded-full text-slate-700 dark:text-slate-300 hover:text-[#0F1D2E] dark:hover:text-white transition cursor-pointer"
             title="Close"
             aria-label="Close"
           >
@@ -129,10 +129,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             {/* Severe Weather Advisories */}
             <div className="flex items-center justify-between py-1">
               <div className="pr-3">
-                <span className="font-bold text-xs text-[#172B3A] dark:text-white block">
+                <span className="font-bold text-xs text-[#0F1D2E] dark:text-white block">
                   {t.severeAlertsDesc}
                 </span>
-                <span className="text-[11px] text-[#526779] dark:text-slate-400">
+                <span className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">
                   {lang === 'kn' ? 'ಚಂಡಮಾರುತ, ಭಾರೀ ಗಾಳಿ ಮತ್ತು ಪ್ರವಾಹ ಮುನ್ನೆಚ್ಚರಿಕೆ' : 'Heavy rain, gale gusts, lightning and cyclone alerts'}
                 </span>
               </div>
@@ -147,10 +147,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             {/* District Rain Probability Alert */}
             <div className="flex items-center justify-between py-1 border-t border-[#D8E4ED]/60 dark:border-slate-800/60 pt-2">
               <div className="pr-3">
-                <span className="font-bold text-xs text-[#172B3A] dark:text-white block">
+                <span className="font-bold text-xs text-[#0F1D2E] dark:text-white block">
                   {t.rainAlertsDesc}
                 </span>
-                <span className="text-[11px] text-[#526779] dark:text-slate-400">
+                <span className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">
                   {lang === 'kn' ? 'ಜಿಲ್ಲೆಯಲ್ಲಿ ಭಾರೀ ಮಳೆ ಸಂಭವನೀಯತೆ ಹೆಚ್ಚಿದಾಗ ಸೂಚನೆ' : 'Notify when rain probability reaches high confidence'}
                 </span>
               </div>
@@ -165,10 +165,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             {/* Alert Audio / Vibration */}
             <div className="flex items-center justify-between py-1 border-t border-[#D8E4ED]/60 dark:border-slate-800/60 pt-2">
               <div className="pr-3">
-                <span className="font-bold text-xs text-[#172B3A] dark:text-white block">
+                <span className="font-bold text-xs text-[#0F1D2E] dark:text-white block">
                   {t.alertSoundDesc}
                 </span>
-                <span className="text-[11px] text-[#526779] dark:text-slate-400">
+                <span className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">
                   {lang === 'kn' ? 'ಹವಾಮಾನ ತುರ್ತು ಎಚ್ಚರಿಕೆಗೆ ಆಡಿಯೋ ಟೋನ್' : 'Audible chime for meteorological priority alerts'}
                 </span>
               </div>
@@ -190,7 +190,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             {/* Temperature Unit */}
             <div className="space-y-1.5">
-              <label className="font-bold text-xs text-[#172B3A] dark:text-white block">
+              <label className="font-bold text-xs text-[#0F1D2E] dark:text-white block">
                 {t.temperatureUnit}
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -199,7 +199,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   className={`py-2 px-3 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-center gap-2 ${
                     settings.tempUnit === 'celsius'
                       ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
-                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
+                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold hover:text-[#0F1D2E] dark:hover:text-white'
                   }`}
                 >
                   <span>Celsius (°C)</span>
@@ -210,7 +210,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   className={`py-2 px-3 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-center gap-2 ${
                     settings.tempUnit === 'fahrenheit'
                       ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
-                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
+                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold hover:text-[#0F1D2E] dark:hover:text-white'
                   }`}
                 >
                   <span>Fahrenheit (°F)</span>
@@ -221,7 +221,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             {/* Wind Speed Unit */}
             <div className="space-y-1.5 pt-2 border-t border-[#D8E4ED]/60 dark:border-slate-800/60">
-              <label className="font-bold text-xs text-[#172B3A] dark:text-white block">
+              <label className="font-bold text-xs text-[#0F1D2E] dark:text-white block">
                 {t.windSpeedUnit}
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -232,7 +232,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     className={`py-2 px-2 rounded-xl border text-xs font-bold transition cursor-pointer text-center ${
                       settings.windSpeedUnit === unit
                         ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
-                        : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
+                        : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold'
                     }`}
                   >
                     {unit === 'kmh' ? 'km/h' : unit === 'ms' ? 'm/s' : 'mph'}
@@ -243,7 +243,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             {/* Precipitation Unit */}
             <div className="space-y-1.5 pt-2 border-t border-[#D8E4ED]/60 dark:border-slate-800/60">
-              <label className="font-bold text-xs text-[#172B3A] dark:text-white block">
+              <label className="font-bold text-xs text-[#0F1D2E] dark:text-white block">
                 {t.precipitationUnit}
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -252,7 +252,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   className={`py-2 px-3 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-center gap-2 ${
                     settings.precipUnit === 'mm'
                       ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
-                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
+                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold'
                   }`}
                 >
                   <span>Millimeters (mm)</span>
@@ -263,7 +263,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   className={`py-2 px-3 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-center gap-2 ${
                     settings.precipUnit === 'inch'
                       ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
-                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
+                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold'
                   }`}
                 >
                   <span>Inches (in)</span>
@@ -274,7 +274,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             {/* Pressure Unit */}
             <div className="space-y-1.5 pt-2 border-t border-[#D8E4ED]/60 dark:border-slate-800/60">
-              <label className="font-bold text-xs text-[#172B3A] dark:text-white block">
+              <label className="font-bold text-xs text-[#0F1D2E] dark:text-white block">
                 {t.pressureUnit}
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -285,7 +285,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     className={`py-2 px-2 rounded-xl border text-xs font-bold transition cursor-pointer text-center ${
                       settings.pressureUnit === unit
                         ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
-                        : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
+                        : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold'
                     }`}
                   >
                     {unit === 'hpa' ? 'hPa' : unit === 'mmhg' ? 'mmHg' : 'inHg'}
@@ -305,13 +305,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             {/* Active Location Info Card */}
             <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-[#D8E4ED] dark:border-slate-800 flex items-center justify-between">
               <div>
-                <span className="text-[10px] text-[#687D8F] dark:text-slate-400 uppercase tracking-wider block font-bold">
+                <span className="text-[10px] text-slate-700 dark:text-slate-300 uppercase tracking-wider block font-bold">
                   {t.currentLocationLabel}
                 </span>
-                <span className="font-display font-bold text-sm text-[#172B3A] dark:text-white block">
+                <span className="font-display font-bold text-sm text-[#0F1D2E] dark:text-white block">
                   {currentLocation.name}
                 </span>
-                <span className="text-[10px] text-[#526779] dark:text-slate-400">
+                <span className="text-[10px] text-slate-700 dark:text-slate-300 font-medium">
                   {currentLocation.state}, {currentLocation.country} • {currentLocation.latitude.toFixed(2)}°N, {currentLocation.longitude.toFixed(2)}°E
                 </span>
               </div>
@@ -345,7 +345,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   className={`py-2 px-1.5 rounded-xl border text-[11px] font-bold transition cursor-pointer flex flex-col items-center justify-center gap-1 text-center ${
                     settings.startupLocationMode === 'current_location'
                       ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
-                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
+                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold'
                   }`}
                 >
                   <Navigation className="w-3.5 h-3.5" />
@@ -358,7 +358,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   className={`py-2 px-1.5 rounded-xl border text-[11px] font-bold transition cursor-pointer flex flex-col items-center justify-center gap-1 text-center ${
                     settings.startupLocationMode === 'default_locality'
                       ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-400 text-amber-800 dark:text-amber-200 ring-1 ring-amber-400/30'
-                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
+                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold'
                   }`}
                 >
                   <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
@@ -371,14 +371,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   className={`py-2 px-1.5 rounded-xl border text-[11px] font-bold transition cursor-pointer flex flex-col items-center justify-center gap-1 text-center ${
                     settings.startupLocationMode === 'default_district'
                       ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
-                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
+                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold'
                   }`}
                 >
                   <MapPin className="w-3.5 h-3.5" />
                   <span>{lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಜಿಲ್ಲೆ' : 'Default District'}</span>
                 </button>
               </div>
-              <p className="text-[10px] text-[#687D8F] dark:text-slate-400">
+              <p className="text-[10px] text-slate-700 dark:text-slate-300 font-medium">
                 {settings.startupLocationMode === 'current_location'
                   ? (lang === 'kn'
                       ? 'ಆ್ಯಪ್ ತೆರೆದಾಗ ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಜಿಪಿಎಸ್ ಸ್ಥಳವನ್ನು ಪತ್ತೆಮಾಡುತ್ತದೆ (ಅನುಮತಿ ನೀಡಿದ ನಂತರ).'
@@ -557,7 +557,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   </>
                 )}
               </button>
-              <p className="text-[10px] text-[#687D8F] dark:text-slate-400 mt-1.5 text-center">
+              <p className="text-[10px] text-slate-700 dark:text-slate-300 font-medium mt-1.5 text-center">
                 {t.defaultKarnatakaDesc}
               </p>
             </div>
@@ -565,10 +565,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             {/* Auto Detect on Startup toggle */}
             <div className="flex items-center justify-between py-1 border-t border-[#D8E4ED]/60 dark:border-slate-800/60 pt-2">
               <div className="pr-3">
-                <span className="font-bold text-xs text-[#172B3A] dark:text-white block">
+                <span className="font-bold text-xs text-[#0F1D2E] dark:text-white block">
                   {t.autoDetectGPS}
                 </span>
-                <span className="text-[10px] text-[#526779] dark:text-slate-400">
+                <span className="text-[10px] text-slate-700 dark:text-slate-300 font-medium">
                   {lang === 'kn'
                     ? 'ಅನುಮೋದಿಸಿದ ನಂತರ ಮಾತ್ರ ಜಿಪಿಎಸ್ ಮೂಲಕ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆಹಚ್ಚುತ್ತದೆ'
                     : 'Automatically requests GPS if permitted; falls back gracefully to default district'}
@@ -592,7 +592,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             {/* Default Map Layer */}
             <div className="space-y-1.5">
-              <label className="font-bold text-xs text-[#172B3A] dark:text-white block">
+              <label className="font-bold text-xs text-[#0F1D2E] dark:text-white block">
                 {t.defaultMapLayer}
               </label>
               <div className="space-y-1.5">
@@ -607,7 +607,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     className={`w-full text-left py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-between transition cursor-pointer ${
                       settings.defaultMapLayer === layer.id
                         ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200'
-                        : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
+                        : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold'
                     }`}
                   >
                     <span>{layer.label}</span>
@@ -681,7 +681,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   className={`flex items-center justify-between py-2.5 px-3 rounded-xl border text-xs font-bold transition cursor-pointer ${
                     lang === 'en'
                       ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
-                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
+                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold hover:text-[#0F1D2E] dark:hover:text-white'
                   }`}
                 >
                   <div className="flex items-center gap-2">
@@ -696,7 +696,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   className={`flex items-center justify-between py-2.5 px-3 rounded-xl border text-xs font-bold transition cursor-pointer ${
                     lang === 'kn'
                       ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
-                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
+                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold hover:text-[#0F1D2E] dark:hover:text-white'
                   }`}
                 >
                   <div className="flex items-center gap-2">
@@ -710,7 +710,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             {/* Display Theme */}
             <div className="space-y-1.5 pt-2 border-t border-[#D8E4ED]/60 dark:border-slate-800/60">
-              <label className="font-bold text-xs text-[#172B3A] dark:text-white block">
+              <label className="font-bold text-xs text-[#0F1D2E] dark:text-white block">
                 {t.theme}
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -718,8 +718,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   onClick={() => setTheme('dark')}
                   className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-semibold transition cursor-pointer ${
                     theme === 'dark'
-                      ? 'bg-cyan-100 dark:bg-cyan-500/20 border-cyan-500/50 text-[#172B3A] dark:text-cyan-200 shadow-sm ring-1 ring-cyan-400/20'
-                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
+                      ? 'bg-cyan-100 dark:bg-cyan-500/20 border-cyan-500/50 text-[#0F1D2E] dark:text-cyan-200 shadow-sm ring-1 ring-cyan-400/20'
+                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold'
                   }`}
                 >
                   <Moon className="w-4 h-4 text-[#00AFCB] dark:text-cyan-400" />
@@ -731,8 +731,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   onClick={() => setTheme('light')}
                   className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-semibold transition cursor-pointer ${
                     theme === 'light'
-                      ? 'bg-[#E6F8FA] border-[#00AFCB] text-[#172B3A] dark:bg-cyan-500/20 dark:border-cyan-500/50 dark:text-cyan-200 shadow-sm'
-                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
+                      ? 'bg-[#E6F8FA] border-[#00AFCB] text-[#0F1D2E] dark:bg-cyan-500/20 dark:border-cyan-500/50 dark:text-cyan-200 shadow-sm'
+                      : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold'
                   }`}
                 >
                   <Sun className="w-4 h-4 text-amber-500" />
@@ -745,10 +745,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             {/* Atmosphere Animations Toggle */}
             <div className="flex items-center justify-between py-1 border-t border-[#D8E4ED]/60 dark:border-slate-800/60 pt-2">
               <div className="pr-3">
-                <span className="font-bold text-xs text-[#172B3A] dark:text-white block">
+                <span className="font-bold text-xs text-[#0F1D2E] dark:text-white block">
                   {t.atmosphereAnimationDesc}
                 </span>
-                <span className="text-[11px] text-[#526779] dark:text-slate-400">
+                <span className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">
                   {lang === 'kn' ? 'ತಾಪಮಾನ ವಿಭಾಗದ ಹಿನ್ನೆಲೆಯಲ್ಲಿ ನೈಜ ಮಳೆ ಮತ್ತು ಮೋಡದ ಚಲನೆ' : 'Simulates rainfall, sunlight motes, and clouds in current weather card'}
                 </span>
               </div>
@@ -770,7 +770,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             {/* Refresh Interval Selector */}
             <div className="space-y-1.5">
-              <label className="font-bold text-xs text-[#172B3A] dark:text-white block">
+              <label className="font-bold text-xs text-[#0F1D2E] dark:text-white block">
                 {t.refreshIntervalLabel}
               </label>
               <div className="grid grid-cols-4 gap-1.5">
@@ -786,7 +786,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     className={`py-2 px-1 rounded-xl border text-xs font-bold transition cursor-pointer text-center ${
                       settings.refreshInterval === item.value
                         ? 'bg-cyan-50 dark:bg-cyan-500/20 border-[#00AFCB] dark:border-cyan-400 text-[#007A8E] dark:text-cyan-200 ring-1 ring-[#00AFCB]/30'
-                        : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-[#526779] dark:text-slate-400'
+                        : 'bg-white dark:bg-slate-900 border-[#D8E4ED] dark:border-slate-800 text-slate-800 dark:text-slate-200 font-semibold'
                     }`}
                   >
                     {item.label}
@@ -798,10 +798,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             {/* Auto-Sync on App Resume */}
             <div className="flex items-center justify-between py-1 border-t border-[#D8E4ED]/60 dark:border-slate-800/60 pt-2">
               <div className="pr-3">
-                <span className="font-bold text-xs text-[#172B3A] dark:text-white block">
+                <span className="font-bold text-xs text-[#0F1D2E] dark:text-white block">
                   {t.syncOnResumeDesc}
                 </span>
-                <span className="text-[11px] text-[#526779] dark:text-slate-400">
+                <span className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">
                   {lang === 'kn' ? 'ಬಳಕೆದಾರರು ಮರಳಿದಾಗ ನೇರ ಡೇಟಾವನ್ನು ತಕ್ಷಣ ಸಿಂಕ್ ಮಾಡುತ್ತದೆ' : 'Immediately fetches live weather if away for more than 2 minutes'}
                 </span>
               </div>
@@ -816,10 +816,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             {/* Low Data Mode */}
             <div className="flex items-center justify-between py-1 border-t border-[#D8E4ED]/60 dark:border-slate-800/60 pt-2">
               <div className="pr-3">
-                <span className="font-bold text-xs text-[#172B3A] dark:text-white block">
+                <span className="font-bold text-xs text-[#0F1D2E] dark:text-white block">
                   {t.lowDataModeDesc}
                 </span>
-                <span className="text-[11px] text-[#526779] dark:text-slate-400">
+                <span className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">
                   {lang === 'kn' ? 'ಮೊಬೈಲ್ ಡೇಟಾ ಉಳಿಸಲು ಉಪಗ್ರಹ ನಕ್ಷೆಯ ಬ್ಯಾಂಡ್‌ವಿಡ್ತ್ ಉಳಿಸುತ್ತದೆ' : 'Optimizes map satellite tile fetches when on limited mobile connection'}
                 </span>
               </div>
@@ -835,7 +835,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* SECTION 7: SHARE & OFFICIAL DATA DISCLOSURES */}
           <div className="p-4 rounded-2xl bg-[#F8FAFC] dark:bg-slate-900/60 border border-[#D8E4ED] dark:border-slate-800/80 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-xs text-[#172B3A] dark:text-white flex items-center gap-1.5">
+              <span className="font-bold text-xs text-[#0F1D2E] dark:text-white flex items-center gap-1.5">
                 <Share2 className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
                 <span>{t.shareTitle}</span>
               </span>
@@ -847,16 +847,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <span>{copied ? t.copied : t.copyLink}</span>
               </button>
             </div>
-            <p className="text-[11px] text-[#526779] dark:text-slate-400">
+            <p className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">
               {t.shareDesc}
             </p>
 
             <div className="pt-2 border-t border-[#D8E4ED]/60 dark:border-slate-800/60">
-              <span className="font-bold text-[11px] text-[#172B3A] dark:text-white flex items-center gap-1.5 mb-1.5">
+              <span className="font-bold text-[11px] text-[#0F1D2E] dark:text-white flex items-center gap-1.5 mb-1.5">
                 <Shield className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
                 <span>{t.officialDataProviders}</span>
               </span>
-              <ul className="text-[10px] text-[#526779] dark:text-slate-400 space-y-1 list-disc list-inside">
+              <ul className="text-[10px] text-slate-700 dark:text-slate-300 font-medium space-y-1 list-disc list-inside">
                 <li>{lang === 'kn' ? 'ಭಾರತೀಯ ಹವಾಮಾನ ಇಲಾಖೆ (IMD INSAT-3D/3DR ಉಪಗ್ರಹ)' : 'India Meteorological Department (IMD) INSAT-3D/3DR'}</li>
                 <li>{lang === 'kn' ? 'ಓಪನ್-ಮೆಟಿಯೋ ನೈಜ-ಸಮಯದ ಹವಾಮಾನ ಡೇಟಾ' : 'Open-Meteo High-Resolution Numerical Forecasts'}</li>
                 <li>{lang === 'kn' ? 'ನಾಸಾ ಅರ್ಥ್‌ಡೇಟಾ ಮತ್ತು ಡಾಪ್ಲರ್ ರೇಡಾರ್' : 'NASA Earthdata GIBS & RainViewer Doppler Radar'}</li>

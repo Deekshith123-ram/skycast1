@@ -587,7 +587,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
               <Satellite className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
               {lang === 'kn' ? 'ಕರ್ನಾಟಕ ಉಪಗ್ರಹ ಮೋಡಗಳು' : 'Karnataka Satellite Clouds'}
             </span>
-            <span className="text-[10px] text-[#526779] dark:text-slate-400 border-l border-slate-300 dark:border-slate-700 pl-2 font-mono hidden sm:inline">
+            <span className="text-[10px] text-slate-700 dark:text-slate-300 border-l border-slate-300 dark:border-slate-700 pl-2 font-mono font-medium hidden sm:inline">
               {lastRefreshedTime}
             </span>
           </div>
@@ -612,7 +612,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
               className={`water-droplet-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm transition cursor-pointer ${
                 showDistrictRainPins
                   ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-extrabold'
-                  : 'text-[#526779] dark:text-slate-300'
+                  : 'text-slate-800 dark:text-slate-300 font-semibold'
               }`}
               title={lang === 'kn' ? 'ಎಲ್ಲಾ 31 ಜಿಲ್ಲೆಗಳ ಮಳೆ % ಪಿನ್‌ಗಳನ್ನು ಟಾಗಲ್ ಮಾಡಿ' : 'Toggle All 31 Karnataka District Rain % Pins'}
             >
@@ -652,7 +652,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
         {/* Floating Bottom Legend */}
         {showLegend && (
           <div className="absolute bottom-3 left-3 z-20 pointer-events-none hidden sm:block">
-            <div className="pointer-events-auto bg-white/90 dark:bg-[#061022]/90 backdrop-blur-md p-2.5 rounded-xl border border-[#D8E4ED] dark:border-cyan-500/35 text-[11px] text-[#526779] dark:text-slate-200 shadow-xl max-w-[220px]">
+            <div className="pointer-events-auto bg-white/95 dark:bg-[#061022]/90 backdrop-blur-md p-2.5 rounded-xl border border-[#D8E4ED] dark:border-cyan-500/35 text-[11px] text-slate-800 dark:text-slate-200 font-medium shadow-xl max-w-[220px]">
               <div className="flex items-center justify-between pb-1 mb-1 border-b border-[#D8E4ED] dark:border-cyan-500/20">
                 <span className="font-bold text-[#007A8E] dark:text-cyan-300 uppercase tracking-wider text-[10px]">
                   {t.rainProb}
@@ -660,7 +660,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowLegend(false)}
-                  className="text-[#687D8F] hover:text-[#172B3A] dark:hover:text-white cursor-pointer px-1 text-xs"
+                  className="text-slate-700 hover:text-[#0F1D2E] dark:text-slate-300 dark:hover:text-white cursor-pointer px-1 text-xs"
                 >
                   ✕
                 </button>
@@ -686,7 +686,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                     <span className="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-600"></span>
                     {lang === 'kn' ? 'ಚದುರಿದ ಮಳೆ' : 'Scattered'}
                   </span>
-                  <span className="font-mono text-[#687D8F] dark:text-slate-400 font-medium">&lt; 30%</span>
+                  <span className="font-mono text-slate-700 dark:text-slate-400 font-bold">&lt; 30%</span>
                 </div>
               </div>
             </div>
@@ -863,7 +863,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                     <h3 className="font-display text-sm font-bold text-[#172B3A] dark:text-white">
                       {lang === 'kn' ? 'ಕರ್ನಾಟಕ ಉಪಗ್ರಹ ಲೇಯರ್‌ಗಳು' : 'Karnataka Satellite Layers'}
                     </h3>
-                    <p className="text-[11px] text-[#526779] dark:text-slate-300">
+                    <p className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">
                       {lang === 'kn' ? 'ಲೈವ್ ಮೋಡಗಳು ಮತ್ತು ಡಾಪ್ಲರ್ ರೇಡಾರ್' : 'Live satellite clouds & Doppler rain radar'}
                     </p>
                   </div>
@@ -871,7 +871,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowLayerMenu(false)}
-                  className="water-droplet-btn p-1.5 rounded-full text-[#687D8F] hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
+                  className="water-droplet-btn p-1.5 rounded-full text-slate-700 dark:text-slate-300 hover:text-[#0F1D2E] dark:hover:text-white transition cursor-pointer"
                   title="Close"
                   aria-label="Close"
                 >
@@ -915,7 +915,7 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                               {opt.tag}
                             </span>
                           </div>
-                          <p className="text-[11px] text-[#526779] dark:text-slate-300 mt-1 leading-relaxed">
+                          <p className="text-[11px] text-slate-700 dark:text-slate-300 font-medium mt-1 leading-relaxed">
                             {opt.description}
                           </p>
                         </div>

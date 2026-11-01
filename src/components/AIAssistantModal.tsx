@@ -118,6 +118,17 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
     }
   }, [speakReplies]);
 
+  // Close modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   // Handle Speech Recognition initiation
   const startSpeechRecognition = (continuousMode = false) => {
     stopSpeaking();
@@ -370,20 +381,23 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/65 backdrop-blur-md animate-in fade-in duration-200"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-5 bg-black/70 backdrop-blur-md animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="ai-assistant-modal-title"
     >
       {/* Modal Container with Crystal-Clear Liquid Glass Frame */}
       <div className="relative w-full max-w-3xl max-h-[92vh] h-[680px] flex flex-col rounded-3xl bg-white/95 dark:bg-[#071328]/95 backdrop-blur-2xl border border-white/50 dark:border-cyan-500/30 shadow-[0_25px_60px_-15px_rgba(23,43,58,0.3)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] overflow-hidden">
-        {/* Header - Neat Aligned Controls */}
-        <div className="px-4 sm:px-6 py-3.5 border-b border-[#D8E4ED]/60 dark:border-white/10 flex items-center justify-between gap-3 bg-white/50 dark:bg-[#040a18]/60 flex-shrink-0">
+        {/* Header - Neat Aligned Controls with Prominent Close Button */}
+        <div className="px-3.5 sm:px-6 py-3 sm:py-3.5 border-b border-[#D8E4ED]/60 dark:border-white/10 flex items-center justify-between gap-2 sm:gap-3 bg-white/60 dark:bg-[#040a18]/70 flex-shrink-0">
           {/* Left Title & Status Badges */}
-          <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#00AFCB] via-cyan-500 to-blue-600 p-[1px] shadow-md shadow-cyan-500/25 flex-shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-[#00AFCB] via-cyan-500 to-blue-600 p-[1px] shadow-md shadow-cyan-500/25 flex-shrink-0">
               <div className="w-full h-full bg-[#071328] rounded-[15px] flex items-center justify-center relative overflow-hidden">
-                <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 animate-pulse" />
                 <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
@@ -391,8 +405,8 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
               </div>
             </div>
 
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                 <h2
                   id="ai-assistant-modal-title"
                   className="font-display text-sm sm:text-base font-bold text-[#172B3A] dark:text-white tracking-tight"
@@ -400,15 +414,12 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                   SkyCast AI
                 </h2>
                 {/* Anonymous Privacy Badge */}
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 shrink-0">
                   <ShieldCheck className="w-3 h-3 text-emerald-500" />
                   <span>{lang === 'kn' ? '100% ಅನಾಮಧೇಯ' : '100% Anonymous'}</span>
                 </span>
-                <span className="hidden sm:inline-flex px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-[#E6F8FA] dark:bg-cyan-500/15 text-[#007A8E] dark:text-cyan-300 border border-[#00AFCB]/30">
-                  Gemini 3.8 Flash
-                </span>
               </div>
-              <p className="text-[10px] sm:text-[11px] text-[#526779] dark:text-slate-400 line-clamp-1">
+              <p className="text-[10px] sm:text-[11px] text-slate-700 dark:text-slate-300 font-medium truncate hidden xs:block sm:block">
                 {lang === 'kn'
                   ? 'ಖಚಿತ ಹಾಗೂ ನಿಖರ ಹವಾಮಾನ ಮುನ್ಸೂಚನೆ • ವೈಯಕ್ತಿಕ ವಿವರ ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ'
                   : 'Definite & accurate weather intelligence with zero identity tracking'}
@@ -418,15 +429,15 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
 
           {/* Right Toolbar - Perfectly Aligned Buttons */}
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-            {/* Segmented Language Selector */}
-            <div className="flex items-center p-0.5 rounded-full bg-slate-100/80 dark:bg-black/30 border border-[#D8E4ED]/60 dark:border-white/10 text-[10px] font-semibold h-8 sm:h-9">
+            {/* Segmented Language Selector (Desktop / Tablet) */}
+            <div className="hidden sm:flex items-center p-0.5 rounded-full bg-slate-100/80 dark:bg-black/30 border border-[#D8E4ED]/60 dark:border-white/10 text-[10px] font-semibold h-8 sm:h-9">
               <button
                 type="button"
                 onClick={() => setSelectedLangMode('auto')}
                 className={`px-2.5 h-7 sm:h-8 rounded-full transition cursor-pointer flex items-center justify-center ${
                   selectedLangMode === 'auto'
                     ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-bold'
-                    : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
+                    : 'text-slate-800 dark:text-slate-200 font-semibold hover:text-[#0F1D2E] dark:hover:text-white'
                 }`}
                 title="Auto-detect language"
               >
@@ -438,7 +449,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                 className={`px-2.5 h-7 sm:h-8 rounded-full transition cursor-pointer flex items-center justify-center ${
                   selectedLangMode === 'en'
                     ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-bold'
-                    : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
+                    : 'text-slate-800 dark:text-slate-200 font-semibold hover:text-[#0F1D2E] dark:hover:text-white'
                 }`}
               >
                 EN
@@ -449,7 +460,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                 className={`px-2.5 h-7 sm:h-8 rounded-full transition cursor-pointer flex items-center justify-center ${
                   selectedLangMode === 'kn'
                     ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-bold'
-                    : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
+                    : 'text-slate-800 dark:text-slate-200 font-semibold hover:text-[#0F1D2E] dark:hover:text-white'
                 }`}
               >
                 ಕನ್ನಡ
@@ -467,21 +478,24 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
               <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
 
-            {/* Close Modal Button */}
+            {/* Dedicated Prominent Close / Wrong Mark (X) Button */}
             <button
               type="button"
               onClick={onClose}
-              className="water-droplet-btn w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-[#526779] dark:text-slate-300 hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
-              title={t.close}
-              aria-label={t.close}
+              className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-500/10 hover:bg-rose-500 active:bg-rose-600 text-rose-600 dark:text-rose-400 hover:text-white dark:hover:text-white border border-rose-500/25 hover:border-rose-500 transition-all duration-150 cursor-pointer shadow-sm hover:shadow-md hover:scale-105 active:scale-95 shrink-0"
+              title={lang === 'kn' ? 'ಕಿಟಕಿಯನ್ನು ಮುಚ್ಚಿ (Close)' : 'Close Ask AI (Esc)'}
+              aria-label={lang === 'kn' ? 'ಕಿಟಕಿಯನ್ನು ಮುಚ್ಚಿ (Close)' : 'Close Ask AI'}
             >
-              <X className="w-4 h-4 sm:w-5 sm:h-5" />
+              <X className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.75] transition-transform duration-150 group-hover:rotate-90" />
+              <span className="text-xs font-bold leading-none">
+                {lang === 'kn' ? 'ಮುಚ್ಚಿ' : 'Close'}
+              </span>
             </button>
           </div>
         </div>
 
         {/* Status Sub-bar: Grounding Telemetry & Mode Toggles */}
-        <div className="px-4 sm:px-6 py-2 bg-[#F8FAFC]/70 dark:bg-[#040c1a]/60 border-b border-[#D8E4ED]/60 dark:border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs flex-shrink-0">
+        <div className="px-3.5 sm:px-6 py-2 bg-[#F8FAFC]/70 dark:bg-[#040c1a]/60 border-b border-[#D8E4ED]/60 dark:border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs flex-shrink-0">
           {/* Grounding Telemetry Chip */}
           <div className="flex items-center gap-1.5 text-[11px] text-[#526779] dark:text-slate-400 flex-wrap">
             <span className="flex items-center gap-1 font-bold text-[#172B3A] dark:text-slate-200">
@@ -490,11 +504,44 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
             </span>
             <span className="hidden sm:inline text-slate-300 dark:text-slate-700">•</span>
             <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-cyan-500/10 text-[#007A8E] dark:text-cyan-300 border border-cyan-500/20">
-              31 Districts Telemetry
+              31 Districts
             </span>
-            <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
-              {lang === 'kn' ? 'ಖಚಿತ ಫಲಿತಾಂಶಗಳು' : 'Definite Results'}
-            </span>
+            {/* Mobile language switch */}
+            <div className="sm:hidden flex items-center p-0.5 rounded-full bg-slate-200/80 dark:bg-black/40 border border-[#D8E4ED]/60 dark:border-white/10 text-[9px] font-semibold h-6">
+              <button
+                type="button"
+                onClick={() => setSelectedLangMode('auto')}
+                className={`px-1.5 h-5 rounded-full transition cursor-pointer ${
+                  selectedLangMode === 'auto'
+                    ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-bold'
+                    : 'text-slate-800 dark:text-slate-200 font-semibold'
+                }`}
+              >
+                Auto
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedLangMode('en')}
+                className={`px-1.5 h-5 rounded-full transition cursor-pointer ${
+                  selectedLangMode === 'en'
+                    ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-bold'
+                    : 'text-slate-800 dark:text-slate-200 font-semibold'
+                }`}
+              >
+                EN
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedLangMode('kn')}
+                className={`px-1.5 h-5 rounded-full transition cursor-pointer ${
+                  selectedLangMode === 'kn'
+                    ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-bold'
+                    : 'text-slate-800 dark:text-slate-200 font-semibold'
+                }`}
+              >
+                ಕನ್ನಡ
+              </button>
+            </div>
           </div>
 
           {/* Sub-bar Right Toggles with Neat Alignments */}
@@ -506,7 +553,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
               className={`water-droplet-pill h-7 sm:h-8 flex items-center gap-1.5 px-3 rounded-full text-[11px] font-bold cursor-pointer transition ${
                 isLiveVoiceMode
                   ? 'water-droplet-pill-active text-rose-500 dark:text-rose-400 animate-pulse'
-                  : 'text-[#526779] dark:text-slate-300'
+                  : 'text-slate-800 dark:text-slate-300 font-semibold'
               }`}
               title="Hands-free continuous voice conversation"
             >
@@ -701,7 +748,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
 
         {/* Quick prompt suggestions Carousel */}
         <div className="px-4 sm:px-6 py-2 border-t border-[#D8E4ED]/60 dark:border-white/10 bg-white/40 dark:bg-[#071328]/60 overflow-x-auto no-scrollbar flex items-center gap-2 flex-shrink-0">
-          <span className="text-[10px] uppercase font-bold text-[#687D8F] dark:text-slate-400 whitespace-nowrap flex items-center gap-1 mr-1">
+          <span className="text-[10px] uppercase font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap flex items-center gap-1 mr-1">
             <HelpCircle className="w-3.5 h-3.5 text-[#00AFCB]" />
             {lang === 'kn' ? 'ಪ್ರಶ್ನೆಗಳು:' : 'Quick Questions:'}
           </span>
@@ -716,7 +763,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
               key={idx}
               onClick={() => handleSendMessage(promptText)}
               disabled={isLoading}
-              className="water-droplet-pill px-3 py-1 rounded-full text-[11px] text-[#172B3A] dark:text-slate-200 whitespace-nowrap cursor-pointer hover:border-[#00AFCB]/40 transition"
+              className="water-droplet-pill px-3 py-1 rounded-full text-[11px] text-[#0F1D2E] dark:text-slate-200 font-medium whitespace-nowrap cursor-pointer hover:border-[#00AFCB]/40 transition"
             >
               {promptText}
             </button>

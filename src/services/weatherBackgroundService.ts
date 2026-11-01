@@ -14,29 +14,29 @@ export const WEATHER_BACKGROUNDS: Record<WeatherBackgroundType, WeatherBackgroun
   rainy: {
     type: 'rainy',
     image: '/backgrounds/rainy.png',
-    label: 'Rainy Weather',
-    description: 'Falling rain streaks & dark blue storm clouds',
+    label: 'Image 1 – Rainy',
+    description: 'Rain, Drizzle, Showers, Thunderstorms',
     accentColor: '#38bdf8',
   },
   cloudy: {
     type: 'cloudy',
     image: '/backgrounds/cloudy.png',
-    label: 'Cloudy Sky',
-    description: 'Layered grey-blue textured overcast clouds without rain',
+    label: 'Image 2 – Cloudy',
+    description: 'Cloudy, Mostly Cloudy, Overcast',
     accentColor: '#94a3b8',
   },
   sunny: {
     type: 'sunny',
     image: '/backgrounds/sunny.png',
-    label: 'Day Clear Sky',
-    description: 'Bright daylight with natural sunlight & soft white clouds',
+    label: 'Image 3 – Sunny',
+    description: 'Clear, Sunny, Mainly Clear during daytime',
     accentColor: '#00afcb',
   },
   night: {
     type: 'night',
     image: '/backgrounds/night.png',
-    label: 'Clear Night Sky',
-    description: 'Deep navy night sky with stars & moonlight',
+    label: 'Image 4 – Night',
+    description: 'Clear Night, Mainly Clear at night',
     accentColor: '#818cf8',
   },
 };
@@ -58,13 +58,13 @@ export function getKarnatakaIsDay(): boolean {
 
 /**
  * Determines which background to display according to the live weather conditions
- * of the user's detected locality or searched location.
+ * and day/night status of the currently selected locality.
  *
- * Rules:
- * 1. Rainy weather: Rain, drizzle, showers, or thunderstorm -> Rainy background
- * 2. Nighttime: Night hours / !isDay without rain -> Night background (moon & stars)
- * 3. Daytime Cloudy: Daytime with overcast, heavy cloud deck, or fog -> Cloudy background
- * 4. Daytime Clear: Daytime clear sky, sunny, or fair-weather clouds -> Day clear sky background
+ * Exact Mappings:
+ * 1. Image 1 – Rainy: Rain, Drizzle, Showers, Thunderstorms.
+ * 2. Image 2 – Cloudy: Cloudy, Mostly Cloudy, Overcast.
+ * 3. Image 3 – Sunny: Clear, Sunny, Mainly Clear during daytime.
+ * 4. Image 4 – Night: Clear Night, Mainly Clear at night.
  */
 export function determineWeatherBackground(weather: WeatherData | null): WeatherBackgroundType {
   // 0. Fallback based on Karnataka local time (IST) if telemetry hasn't arrived yet
@@ -80,10 +80,10 @@ export function determineWeatherBackground(weather: WeatherData | null): Weather
   const rain = current.rain ?? 0;
   const desc = (current.weatherDescription || '').toLowerCase();
 
-  // 1. Rainy Weather (Rain / Drizzle / Showers / Thunderstorm) - applied day or night
+  // 1. Image 1 – Rainy: Rain, Drizzle, Showers, Thunderstorms (Day or Night)
   const isRainCode =
     (code >= 51 && code <= 67) || // Drizzle, freezing drizzle, rain
-    (code >= 80 && code <= 82) || // Rain showers
+    (code >= 80 && code <= 82) || // Rain showers, cloudburst
     code >= 95; // Thunderstorm, severe storm
   const isRainTelemetry = precipitation > 0.1 || rain > 0;
   const isRainText =
@@ -91,29 +91,40 @@ export function determineWeatherBackground(weather: WeatherData | null): Weather
     desc.includes('drizzle') ||
     desc.includes('shower') ||
     desc.includes('thunder') ||
-    desc.includes('storm');
+    desc.includes('storm') ||
+    desc.includes('downpour') ||
+    desc.includes('cloudburst');
 
   if (isRainCode || isRainTelemetry || isRainText) {
     return 'rainy';
   }
 
-  // 2. Night Sky
-  // When it is nighttime and not raining:
-  // Display the realistic deep navy night sky with stars, moonlight, and nocturnal clouds
+  // Cloudiness checks for: Cloudy, Mostly Cloudy, Overcast
+  const isCloudyCode = code === 3 || code === 45 || code === 48; // WMO 3 = Overcast, 45/48 = Fog
+  const isHighCloudCover = cloudCover >= 50;
+  const isCloudyText =
+    desc.includes('overcast') ||
+    desc.includes('cloudy') ||
+    desc.includes('mostly cloudy') ||
+    desc.includes('fog');
+  const isCloudyWeather = isCloudyCode || isHighCloudCover || isCloudyText;
+
+  // 4. At Night:
   if (!isDay) {
+    // If heavily overcast or dense cloudy at night -> Image 2 (Cloudy)
+    if (code === 3 || desc.includes('overcast') || (cloudCover >= 70 && isCloudyText)) {
+      return 'cloudy';
+    }
+    // Clear Night, Mainly Clear at night -> Image 4 (Night)
     return 'night';
   }
 
-  // 3. Daytime Cloudy Sky (Overcast, dense cloud deck, fog)
-  // WMO code 3 = Overcast, 45/48 = Fog, code 2 = Partly cloudy with >= 50% clouds
-  const isCloudyCode = code === 3 || code === 45 || code === 48;
-  const isHighCloudCover = cloudCover >= 50;
-  const isCloudyText = desc.includes('overcast') || desc.includes('cloudy') || desc.includes('fog');
-
-  if (isCloudyCode || isHighCloudCover || isCloudyText) {
+  // Daytime:
+  // 2. Image 2 – Cloudy: Cloudy, Mostly Cloudy, Overcast
+  if (isCloudyWeather) {
     return 'cloudy';
   }
 
-  // 4. Daytime Clear Sky (Sunny / Clear sky / light fair-weather clouds)
+  // 3. Image 3 – Sunny: Clear, Sunny, Mainly Clear during daytime
   return 'sunny';
 }

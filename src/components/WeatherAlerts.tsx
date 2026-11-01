@@ -58,12 +58,12 @@ export const WeatherAlerts: React.FC<WeatherAlertsProps> = ({ alerts }) => {
             <Shield className="w-4 h-4 text-[#00AFCB] dark:text-cyan-400" />
             Meteorological Advisories & Weather Warnings
           </h2>
-          <p className="text-xs text-[#526779] dark:text-slate-400 mt-0.5 font-normal">
+          <p className="text-xs text-slate-700 dark:text-slate-300 mt-0.5 font-medium">
             Standard IMD 4-stage color code alerts evaluated against verified surface & radar observations
           </p>
         </div>
 
-        <span className="text-[11px] font-mono text-[#687D8F] dark:text-slate-400 hidden sm:inline font-normal">
+        <span className="text-[11px] font-mono text-slate-700 dark:text-slate-300 hidden sm:inline font-semibold">
           Official Criteria (IS 4987)
         </span>
       </div>
@@ -74,45 +74,45 @@ export const WeatherAlerts: React.FC<WeatherAlertsProps> = ({ alerts }) => {
             key={alert.id}
             className={`p-4 rounded-xl border transition-all shadow-sm ${
               alert.severityColor === 'red'
-                ? 'bg-rose-50/80 dark:bg-rose-950/25 border-rose-300 dark:border-rose-500/40 text-[#172B3A] dark:text-white'
+                ? 'bg-rose-50/80 dark:bg-rose-950/25 border-rose-300 dark:border-rose-500/40 text-slate-900 dark:text-white'
                 : alert.severityColor === 'amber'
-                ? 'bg-amber-50/80 dark:bg-amber-950/20 border-amber-300 dark:border-amber-500/35 text-[#172B3A] dark:text-white'
+                ? 'bg-amber-50/80 dark:bg-amber-950/20 border-amber-300 dark:border-amber-500/35 text-slate-900 dark:text-white'
                 : alert.severityColor === 'yellow'
-                ? 'bg-yellow-50/80 dark:bg-yellow-950/20 border-yellow-300 dark:border-yellow-500/35 text-[#172B3A] dark:text-white'
-                : 'bg-white dark:bg-slate-900/40 border-[#D8E4ED] dark:border-slate-800 text-[#172B3A] dark:text-white'
+                ? 'bg-yellow-50/80 dark:bg-yellow-950/20 border-yellow-300 dark:border-yellow-500/35 text-slate-900 dark:text-white'
+                : 'bg-white dark:bg-slate-900/40 border-[#D8E4ED] dark:border-slate-800 text-slate-900 dark:text-white'
             }`}
           >
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-              <h3 className="font-display text-sm font-semibold text-[#172B3A] dark:text-white">{alert.title}</h3>
+              <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">{alert.title}</h3>
               <div>{getAlertBadge(alert.severityColor, alert.severity)}</div>
             </div>
 
             {/* Region & Time info */}
-            <div className="flex flex-wrap items-center gap-3 text-xs text-[#526779] dark:text-slate-400 mb-2.5 font-mono">
-              <span>Target: <strong className="text-[#172B3A] dark:text-slate-200">{alert.affectedRegion}</strong></span>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-700 dark:text-slate-300 mb-2.5 font-mono font-medium">
+              <span>Target: <strong className="text-slate-900 dark:text-slate-100">{alert.affectedRegion}</strong></span>
               <span>•</span>
               <span className="flex items-center gap-1">
                 <Clock className="w-3 h-3 text-[#00AFCB] dark:text-cyan-400" />
-                Validity: <strong className="text-[#172B3A] dark:text-slate-200">{alert.validUntil}</strong>
+                Validity: <strong className="text-slate-900 dark:text-slate-100">{alert.validUntil}</strong>
               </span>
             </div>
 
             {/* Explanation */}
-            <p className="text-xs text-[#526779] dark:text-slate-300 leading-relaxed mb-3">
+            <p className="text-xs text-slate-800 dark:text-slate-200 leading-relaxed mb-3">
               {alert.explanation}
             </p>
 
             {/* Precautionary Instructions */}
             <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-black/30 border border-[#D8E4ED] dark:border-slate-800/80 text-xs space-y-1 shadow-sm">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#00AFCB] dark:text-cyan-300 block">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-800 dark:text-cyan-300 block">
                 Precautionary Safety Guidance:
               </span>
-              <p className="text-[#172B3A] dark:text-slate-300">{alert.instructions}</p>
+              <p className="text-slate-900 dark:text-slate-200 font-medium">{alert.instructions}</p>
             </div>
 
             {/* Source info */}
-            <div className="mt-2.5 pt-2 border-t border-[#D8E4ED] dark:border-slate-800/60 flex items-center justify-between text-[10px] text-[#687D8F] dark:text-slate-500">
+            <div className="mt-2.5 pt-2 border-t border-[#D8E4ED] dark:border-slate-800/60 flex items-center justify-between text-[10px] text-slate-700 dark:text-slate-400 font-medium">
               <span>Source: {alert.source}</span>
               <span>Classification: {alert.category}</span>
             </div>
