@@ -51,12 +51,12 @@ body {
     --bg-card-hover: rgba(255, 255, 255, 0.30);
     --border-color: rgba(255, 255, 255, 0.40);
     --border-highlight: #00AFCB;
-    --text-primary: #0F1D2E;
-    --text-secondary: #1E293B;
-    --text-muted: #334155;
-    --accent-cyan: #00AFCB;
-    --accent-blue: #2563EB;
-    --accent-indigo: #4338CA;
+    --text-primary: #07101C;
+    --text-secondary: #0F1D2E;
+    --text-muted: #1E293B;
+    --accent-cyan: #007A8E;
+    --accent-blue: #1E40AF;
+    --accent-indigo: #3730A3;
   }
 
   html.dark,
@@ -686,3 +686,93 @@ html.light .water-droplet-pill-active {
 .animate-ping-slow {
   animation: ping-slow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
+
+/* ==========================================================================
+   EXCLUSIVE LIGHT MODE TEXT VISIBILITY & CONTRAST ENHANCEMENTS
+   STRICT REQUIREMENT: Applies ONLY to Light Mode (html.light:not(.dark)).
+   Dark Mode (html.dark / .dark) is 100% UNTOUCHED and PRESERVED EXACTLY AS-IS.
+   ========================================================================== */
+
+/* High-contrast base text legibility exclusively for Light Mode */
+html.light:not(.dark),
+html:not(.dark) .light {
+  color: #07101C;
+}
+
+html.light:not(.dark) .glass-panel,
+html:not(.dark) .light .glass-panel {
+  color: #07101C;
+}
+
+/* Secondary & muted labels in Light Mode elevated to deep rich slate for crystal-clear readability */
+html.light:not(.dark) .text-slate-400,
+html:not(.dark) .light .text-slate-400 {
+  color: #1E293B !important;
+}
+
+html.light:not(.dark) .text-slate-500,
+html:not(.dark) .light .text-slate-500 {
+  color: #0F1D2E !important;
+}
+
+html.light:not(.dark) .text-slate-600,
+html:not(.dark) .light .text-slate-600 {
+  color: #0A1420 !important;
+}
+
+html.light:not(.dark) .text-slate-700,
+html:not(.dark) .light .text-slate-700 {
+  color: #07101C !important;
+}
+
+html.light:not(.dark) .text-slate-800,
+html:not(.dark) .light .text-slate-800 {
+  color: #040810 !important;
+}
+
+/* Specific slate-blue hex codes boosted exclusively in Light Mode */
+html.light:not(.dark) .text-\[\#526779\],
+html:not(.dark) .light .text-\[\#526779\],
+html.light:not(.dark) .text-\[\#687D8F\],
+html:not(.dark) .light .text-\[\#687D8F\],
+html.light:not(.dark) .text-\[\#8B9EA8\],
+html:not(.dark) .light .text-\[\#8B9EA8\] {
+  color: #0F1D2E !important;
+}
+
+/* Teal & Cyan text boosted in Light Mode to deep oceanic cyan with WCAG AAA contrast */
+html.light:not(.dark) .text-\[\#007A8E\],
+html:not(.dark) .light .text-\[\#007A8E\] {
+  color: #005664 !important;
+}
+
+html.light:not(.dark) .text-cyan-600,
+html:not(.dark) .light .text-cyan-600,
+html.light:not(.dark) .text-cyan-700,
+html:not(.dark) .light .text-cyan-700 {
+  color: #005F6E !important;
+}
+
+/* Clear inputs and search placeholders in Light Mode */
+html.light:not(.dark) input::placeholder,
+html:not(.dark) .light input::placeholder {
+  color: #334155 !important;
+  opacity: 0.9 !important;
+}
+
+/* Enhanced badge and button text in Light Mode */
+html.light:not(.dark) .water-droplet-pill,
+html:not(.dark) .light .water-droplet-pill {
+  color: #07101C;
+}
+
+html.light:not(.dark) .water-droplet-btn,
+html:not(.dark) .light .water-droplet-btn {
+  color: #07101C;
+}
+
+html.light:not(.dark) .font-mono,
+html:not(.dark) .light .font-mono {
+  font-weight: 600;
+}
+

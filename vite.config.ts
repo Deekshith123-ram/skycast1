@@ -2,7 +2,10 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig, Plugin } from 'vite';
-import { handleGeminiChat } from './src/server/geminiApiHandler';
+import { fileURLToPath } from 'node:url';
+import { handleGeminiChat } from './src/server/geminiApiHandler.ts';
+
+const __dirname = typeof import.meta.dirname !== 'undefined' ? import.meta.dirname : path.dirname(fileURLToPath(import.meta.url));
 
 function geminiApiPlugin(): Plugin {
   return {

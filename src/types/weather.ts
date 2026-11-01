@@ -21,8 +21,11 @@ export interface DistrictRainData {
   longitude: number;
   rainProbability: number;
   precipitationSum: number;
+  temp?: number;
   tempMax: number;
   tempMin: number;
+  humidity?: number;
+  windSpeed?: number;
   weatherCode: number;
   weatherDescription: string;
   region: 'Coastal' | 'Malnad (Ghats)' | 'North Interior' | 'South Interior';

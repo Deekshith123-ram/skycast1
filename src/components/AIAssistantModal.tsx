@@ -384,15 +384,15 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-5 bg-black/70 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-5 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="ai-assistant-modal-title"
     >
-      {/* Modal Container with Crystal-Clear Liquid Glass Frame */}
-      <div className="relative w-full max-w-3xl max-h-[92vh] h-[680px] flex flex-col rounded-3xl bg-white/95 dark:bg-[#071328]/95 backdrop-blur-2xl border border-white/50 dark:border-cyan-500/30 shadow-[0_25px_60px_-15px_rgba(23,43,58,0.3)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] overflow-hidden">
+      {/* Modal Container with Slight Liquid Glass Transparency */}
+      <div className="relative w-full max-w-3xl max-h-[92vh] h-[680px] flex flex-col rounded-3xl bg-white/80 dark:bg-[#071328]/80 backdrop-blur-xl border border-white/60 dark:border-cyan-500/35 shadow-[0_25px_60px_-15px_rgba(23,43,58,0.3)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] overflow-hidden">
         {/* Header - Neat Aligned Controls with Prominent Close Button */}
-        <div className="px-3.5 sm:px-6 py-3 sm:py-3.5 border-b border-[#D8E4ED]/60 dark:border-white/10 flex items-center justify-between gap-2 sm:gap-3 bg-white/60 dark:bg-[#040a18]/70 flex-shrink-0">
+        <div className="px-3.5 sm:px-6 py-3 sm:py-3.5 border-b border-[#D8E4ED]/60 dark:border-white/10 flex items-center justify-between gap-2 sm:gap-3 bg-white/50 dark:bg-[#040a18]/50 backdrop-blur-md flex-shrink-0">
           {/* Left Title & Status Badges */}
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-[#00AFCB] via-cyan-500 to-blue-600 p-[1px] shadow-md shadow-cyan-500/25 flex-shrink-0">
@@ -495,7 +495,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
         </div>
 
         {/* Status Sub-bar: Grounding Telemetry & Mode Toggles */}
-        <div className="px-3.5 sm:px-6 py-2 bg-[#F8FAFC]/70 dark:bg-[#040c1a]/60 border-b border-[#D8E4ED]/60 dark:border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs flex-shrink-0">
+        <div className="px-3.5 sm:px-6 py-2 bg-[#F8FAFC]/55 dark:bg-[#040c1a]/50 backdrop-blur-md border-b border-[#D8E4ED]/60 dark:border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs flex-shrink-0">
           {/* Grounding Telemetry Chip */}
           <div className="flex items-center gap-1.5 text-[11px] text-[#526779] dark:text-slate-400 flex-wrap">
             <span className="flex items-center gap-1 font-bold text-[#172B3A] dark:text-slate-200">
@@ -625,7 +625,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                   className={`max-w-[88%] sm:max-w-[80%] rounded-2xl p-3.5 sm:p-4 text-xs sm:text-[13px] leading-relaxed shadow-sm transition-all ${
                     isUser
                       ? 'bg-gradient-to-r from-[#00AFCB] to-[#008DA4] text-white rounded-br-xs font-medium'
-                      : 'bg-white/80 dark:bg-slate-900/85 text-[#172B3A] dark:text-slate-100 rounded-bl-xs border border-[#D8E4ED] dark:border-slate-800'
+                      : 'bg-white/75 dark:bg-slate-900/75 backdrop-blur-md text-[#172B3A] dark:text-slate-100 rounded-bl-xs border border-[#D8E4ED]/80 dark:border-slate-800/80'
                   } ${isSpeakingThis ? 'ring-2 ring-cyan-400 dark:ring-cyan-300' : ''}`}
                 >
                   {/* Sender Header for AI */}
@@ -747,7 +747,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
         </div>
 
         {/* Quick prompt suggestions Carousel */}
-        <div className="px-4 sm:px-6 py-2 border-t border-[#D8E4ED]/60 dark:border-white/10 bg-white/40 dark:bg-[#071328]/60 overflow-x-auto no-scrollbar flex items-center gap-2 flex-shrink-0">
+        <div className="px-4 sm:px-6 py-2 border-t border-[#D8E4ED]/60 dark:border-white/10 bg-white/30 dark:bg-[#071328]/45 backdrop-blur-md overflow-x-auto no-scrollbar flex items-center gap-2 flex-shrink-0">
           <span className="text-[10px] uppercase font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap flex items-center gap-1 mr-1">
             <HelpCircle className="w-3.5 h-3.5 text-[#00AFCB]" />
             {lang === 'kn' ? 'ಪ್ರಶ್ನೆಗಳು:' : 'Quick Questions:'}
@@ -771,7 +771,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
         </div>
 
         {/* Input Bar with Impeccable Button Alignments */}
-        <div className="p-3.5 sm:p-4 border-t border-[#D8E4ED]/60 dark:border-white/10 bg-white/60 dark:bg-[#071328]/60 backdrop-blur-md flex-shrink-0">
+        <div className="p-3.5 sm:p-4 border-t border-[#D8E4ED]/60 dark:border-white/10 bg-white/50 dark:bg-[#071328]/50 backdrop-blur-md flex-shrink-0">
           {/* Active Voice Listening Banner if mic is recording */}
           {isListening && (
             <div className="mb-2 p-2 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-300 dark:border-cyan-500/40 flex items-center justify-between text-xs text-[#007A8E] dark:text-cyan-300 animate-pulse">

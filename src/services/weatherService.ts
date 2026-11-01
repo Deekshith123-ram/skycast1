@@ -62,7 +62,10 @@ async function fetchOpenMeteo(url: string): Promise<Response> {
   const proxyUrl = url.replace('https://api.open-meteo.com', '/api/open-meteo');
   try {
     const res = await fetch(proxyUrl);
-    if (res.ok) return res;
+    const contentType = res.headers.get('content-type') || '';
+    if (res.ok && contentType.includes('application/json')) {
+      return res;
+    }
     return await fetch(url);
   } catch {
     return await fetch(url);
@@ -328,7 +331,11 @@ export async function fetchAllKarnatakaDistrictsRain(): Promise<DistrictRainData
     const lats = ALL_KARNATAKA_DISTRICTS.map((d) => d.latitude.toFixed(4)).join(',');
     const lons = ALL_KARNATAKA_DISTRICTS.map((d) => d.longitude.toFixed(4)).join(',');
 
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&daily=precipitation_probability_max,precipitation_sum,weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FKolkata`;
+    // Request both current conditions (temperature, humidity, wind, weather code) AND daily forecasts for all 31 districts
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}` +
+      `&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m` +
+      `&daily=precipitation_probability_max,precipitation_sum,weather_code,temperature_2m_max,temperature_2m_min` +
+      `&timezone=Asia%2FKolkata`;
 
     const res = await fetchOpenMeteo(url);
     if (!res.ok) {
@@ -338,20 +345,30 @@ export async function fetchAllKarnatakaDistrictsRain(): Promise<DistrictRainData
     const data = await res.json();
     const results: DistrictRainData[] = [];
 
-    // When multiple coordinates are requested, Open-Meteo returns an Array of result objects
+    // When multiple coordinates are requested, Open-Meteo returns an Array of result objects matching the order of requested coordinates
     const items = Array.isArray(data) ? data : [data];
 
     for (let i = 0; i < ALL_KARNATAKA_DISTRICTS.length; i++) {
       const dist = ALL_KARNATAKA_DISTRICTS[i];
       const forecast = items[i];
 
-      const rainProb = forecast?.daily?.precipitation_probability_max?.[0] ?? 20;
-      const precipSum = forecast?.daily?.precipitation_sum?.[0] ?? 0;
-      const wCode = forecast?.daily?.weather_code?.[0] ?? 0;
-      const tMax = Math.round(forecast?.daily?.temperature_2m_max?.[0] ?? 30);
-      const tMin = Math.round(forecast?.daily?.temperature_2m_min?.[0] ?? 21);
+      const currentTemp = typeof forecast?.current?.temperature_2m === 'number'
+        ? Math.round(forecast.current.temperature_2m)
+        : undefined;
+      const humidity = typeof forecast?.current?.relative_humidity_2m === 'number'
+        ? Math.round(forecast.current.relative_humidity_2m)
+        : undefined;
+      const windSpeed = typeof forecast?.current?.wind_speed_10m === 'number'
+        ? Math.round(forecast.current.wind_speed_10m)
+        : undefined;
 
-      results.push({
+      const rainProb = forecast?.daily?.precipitation_probability_max?.[0] ?? (currentTemp ? Math.min(95, Math.round((forecast?.current?.precipitation ?? 0) > 0 ? 80 : 25)) : 20);
+      const precipSum = forecast?.daily?.precipitation_sum?.[0] ?? forecast?.current?.precipitation ?? 0;
+      const wCode = forecast?.current?.weather_code ?? forecast?.daily?.weather_code?.[0] ?? 0;
+      const tMax = Math.round(forecast?.daily?.temperature_2m_max?.[0] ?? (currentTemp ? currentTemp + 4 : 30));
+      const tMin = Math.round(forecast?.daily?.temperature_2m_min?.[0] ?? (currentTemp ? currentTemp - 5 : 21));
+
+      const districtResult: DistrictRainData = {
         id: dist.id,
         name: dist.name,
         district: dist.district,
@@ -359,43 +376,75 @@ export async function fetchAllKarnatakaDistrictsRain(): Promise<DistrictRainData
         longitude: dist.longitude,
         rainProbability: rainProb,
         precipitationSum: Number(precipSum.toFixed(1)),
+        temp: currentTemp,
         tempMax: tMax,
         tempMin: tMin,
+        humidity,
+        windSpeed,
         weatherCode: wCode,
         weatherDescription: getWeatherDescription(wCode).description,
         region: dist.region,
-      });
+      };
+
+      // Store in individual per-district cache so each district's data is isolated
+      try {
+        localStorage.setItem(`skycast_district_weather_${dist.id}`, JSON.stringify(districtResult));
+      } catch {}
+
+      results.push(districtResult);
     }
 
-    // Cache locally
+    // Cache overall list
     try {
       localStorage.setItem(KARNATAKA_RAIN_CACHE_KEY, JSON.stringify(results));
     } catch {}
 
     return results;
   } catch (err) {
-    console.warn('Failed to fetch live Karnataka district rain telemetry, checking cache:', err);
-    try {
-      const cached = localStorage.getItem(KARNATAKA_RAIN_CACHE_KEY);
-      if (cached) {
-        return JSON.parse(cached);
-      }
-    } catch {}
+    console.warn('Failed to fetch live Karnataka district rain telemetry, checking individual district caches:', err);
 
-    // Fallback baseline for all 31 districts
-    return ALL_KARNATAKA_DISTRICTS.map((dist, idx) => ({
-      id: dist.id,
-      name: dist.name,
-      district: dist.district,
-      latitude: dist.latitude,
-      longitude: dist.longitude,
-      rainProbability: dist.region === 'Coastal' ? 55 : dist.region === 'Malnad (Ghats)' ? 45 : 20,
-      precipitationSum: dist.region === 'Coastal' ? 4.2 : 0.8,
-      tempMax: 31,
-      tempMin: 22,
-      weatherCode: 2,
-      weatherDescription: 'Partly Cloudy',
-      region: dist.region,
-    }));
+    // Retrieve per-district cached data separately for each district
+    const fallbackResults: DistrictRainData[] = [];
+
+    for (const dist of ALL_KARNATAKA_DISTRICTS) {
+      try {
+        const itemCache = localStorage.getItem(`skycast_district_weather_${dist.id}`);
+        if (itemCache) {
+          const parsed = JSON.parse(itemCache);
+          if (parsed && typeof parsed.latitude === 'number' && parsed.id === dist.id) {
+            fallbackResults.push(parsed);
+            continue;
+          }
+        }
+      } catch {}
+
+      // If no per-district cache exists, use geographical zone realistic baseline tailored to coordinates & elevation
+      const isHighAltitude = (dist.elevation ?? 600) > 900;
+      const isCoastal = dist.region === 'Coastal';
+      const isNorth = dist.region === 'North Interior';
+
+      const estMax = isCoastal ? 32 : isHighAltitude ? 26 : isNorth ? 34 : 30;
+      const estMin = isCoastal ? 25 : isHighAltitude ? 17 : isNorth ? 22 : 20;
+
+      fallbackResults.push({
+        id: dist.id,
+        name: dist.name,
+        district: dist.district,
+        latitude: dist.latitude,
+        longitude: dist.longitude,
+        rainProbability: isCoastal ? 65 : dist.region === 'Malnad (Ghats)' ? 50 : 25,
+        precipitationSum: isCoastal ? 4.8 : 0.6,
+        temp: Math.round((estMax + estMin) / 2),
+        tempMax: estMax,
+        tempMin: estMin,
+        humidity: isCoastal ? 82 : isHighAltitude ? 70 : 55,
+        windSpeed: isCoastal ? 18 : 12,
+        weatherCode: isCoastal ? 61 : 2,
+        weatherDescription: isCoastal ? 'Slight Rain' : 'Partly Cloudy',
+        region: dist.region,
+      });
+    }
+
+    return fallbackResults;
   }
 }

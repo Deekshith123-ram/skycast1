@@ -244,7 +244,14 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
                     Rain: <strong className="text-slate-900 dark:text-white font-mono font-bold">{d.precipitationSum} mm</strong>
                   </span>
                   <span className="text-slate-700 dark:text-slate-300 font-mono font-medium">
-                    {d.tempMin}° / <strong className="text-slate-900 dark:text-white font-bold">{d.tempMax}°C</strong>
+                    {typeof d.temp === 'number' ? (
+                      <>
+                        <strong className="text-slate-900 dark:text-white font-bold">{d.temp}°C</strong>{' '}
+                        <span className="text-[10px] text-slate-600 dark:text-slate-400">({d.tempMin}°/{d.tempMax}°)</span>
+                      </>
+                    ) : (
+                      <>{d.tempMin}° / <strong className="text-slate-900 dark:text-white font-bold">{d.tempMax}°C</strong></>
+                    )}
                   </span>
                 </div>
               </div>

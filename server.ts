@@ -353,6 +353,54 @@ app.get('/api/rainviewer/public/weather-maps.json', async (_req: Request, res: R
   }
 });
 
+// GET /api/open-meteo/* endpoint to proxy queries to Open-Meteo API
+app.get('/api/open-meteo/*', async (req: Request, res: Response) => {
+  try {
+    const targetPath = req.url.replace(/^\/api\/open-meteo/, '');
+    const upstreamUrl = `https://api.open-meteo.com${targetPath}`;
+    const upstreamRes = await fetch(upstreamUrl, {
+      headers: {
+        'User-Agent': 'SkyCastWeatherApp/2.5 (Karnataka-Live-Weather)',
+        'Accept': 'application/json',
+      },
+    });
+    if (!upstreamRes.ok) {
+      res.status(upstreamRes.status).json({ error: `Open-Meteo upstream returned status ${upstreamRes.status}` });
+      return;
+    }
+    const data = await upstreamRes.json();
+    res.setHeader('Content-Type', 'application/json');
+    res.json(data);
+  } catch (err: any) {
+    console.warn('Open-Meteo proxy notice:', err?.message || err);
+    res.status(502).json({ error: 'Open-Meteo proxy unavailable' });
+  }
+});
+
+// GET /api/geocoding-open-meteo/* endpoint to proxy queries to Geocoding Open-Meteo API
+app.get('/api/geocoding-open-meteo/*', async (req: Request, res: Response) => {
+  try {
+    const targetPath = req.url.replace(/^\/api\/geocoding-open-meteo/, '');
+    const upstreamUrl = `https://geocoding-api.open-meteo.com${targetPath}`;
+    const upstreamRes = await fetch(upstreamUrl, {
+      headers: {
+        'User-Agent': 'SkyCastWeatherApp/2.5 (Karnataka-Live-Weather)',
+        'Accept': 'application/json',
+      },
+    });
+    if (!upstreamRes.ok) {
+      res.status(upstreamRes.status).json({ error: `Geocoding upstream returned status ${upstreamRes.status}` });
+      return;
+    }
+    const data = await upstreamRes.json();
+    res.setHeader('Content-Type', 'application/json');
+    res.json(data);
+  } catch (err: any) {
+    console.warn('Geocoding Open-Meteo proxy notice:', err?.message || err);
+    res.status(502).json({ error: 'Geocoding Open-Meteo proxy unavailable' });
+  }
+});
+
 // GET /api/reverse-geocode endpoint for high-accuracy locality detection
 app.get('/api/reverse-geocode', async (req: Request, res: Response) => {
   const lat = parseFloat(req.query.lat as string);
