@@ -598,7 +598,6 @@ VOICE & SPOKEN RESPONSE FRIENDLINESS:
           contents,
           config: {
             systemInstruction,
-            temperature: 0.5,
           },
         }),
         timeoutPromise,
