@@ -171,7 +171,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <header
         onMouseEnter={() => onHeaderHover?.(true)}
         onMouseLeave={() => onHeaderHover?.(false)}
-        className={`fixed top-0 inset-x-0 z-40 w-full pt-[env(safe-area-inset-top)] bg-white/65 dark:bg-[#050b18]/65 backdrop-blur-2xl border-b border-[#D8E4ED]/60 dark:border-cyan-500/20 shadow-[0_4px_30px_rgba(23,43,58,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300 ease-out ${
+        className={`fixed top-0 inset-x-0 z-40 w-full pt-[env(safe-area-inset-top)] bg-white/25 dark:bg-[#050b18]/30 backdrop-blur-xl border-b border-[#D8E4ED]/40 dark:border-white/10 shadow-[0_4px_24px_rgba(23,43,58,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.35)] transition-all duration-300 ease-out ${
           isVisible || isDropdownOpen
             ? 'translate-y-0 opacity-100 pointer-events-auto'
             : '-translate-y-full opacity-0 pointer-events-none'
