@@ -10,24 +10,24 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const isDev = process.env.NODE_ENV !== 'production';
-// In dev mode, AI Studio requires dev server on port 3000. Never listen on 8080 in dev.
-const port = isDev ? 3000 : parseInt(process.env.PORT || '8080', 10);
+// AI Studio requires server on port 3000 (0.0.0.0). Default to 3000.
+const port = parseInt(process.env.PORT || '3000', 10);
 
 app.use(express.json({ limit: '5mb' }));
 
-// Initialize GoogleGenAI client if API key is present
-const apiKey = process.env.GEMINI_API_KEY;
-const aiClient = apiKey
-  ? new GoogleGenAI({
-      apiKey,
-      httpOptions: {
-        headers: {
-          'User-Agent': 'aistudio-build',
-        },
+// Helper to get GoogleGenAI client if API key is present
+function getAiClient(): GoogleGenAI | null {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return null;
+  return new GoogleGenAI({
+    apiKey,
+    httpOptions: {
+      headers: {
+        'User-Agent': 'aistudio-build',
       },
-    })
-  : null;
+    },
+  });
+}
 
 // Determine if a user query is outside the strict weather and SkyCast scope
 function isOffTopicQuery(query: string): boolean {
@@ -552,6 +552,7 @@ VOICE & SPOKEN RESPONSE FRIENDLINESS:
 - Structure answers with clean bullet points and clear bold headings so Text-to-Speech engines read them aloud naturally without code markers.
 - Highlight Karnataka-specific context when asked (e.g. Malnad/Ghats vs Coastal vs South Interior vs North Interior).`;
 
+    const aiClient = getAiClient();
     if (!aiClient) {
       console.warn('GEMINI_API_KEY not configured. Responding with grounded local fallback.');
       const fallbackText = generateLocalFallbackReply(message, language, context);
