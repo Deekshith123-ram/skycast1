@@ -59,10 +59,10 @@ export const DailyForecast: React.FC<DailyForecastProps> = ({ daily }) => {
           return (
             <div
               key={item.date}
-              className={`p-3.5 rounded-xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm backdrop-blur-md ${
+              className={`p-3.5 rounded-xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm watery-sub-card ${
                 idx === 0
-                  ? 'bg-[#E6F8FA]/60 dark:bg-cyan-950/40 border-[#00AFCB] dark:border-cyan-400/50 shadow-sm ring-1 ring-[#00AFCB]'
-                  : 'bg-white/45 dark:bg-slate-900/35 border-[#D8E4ED]/70 dark:border-slate-800/60 hover:bg-white/60 dark:hover:bg-slate-900/50 hover:border-[#00AFCB] dark:hover:border-cyan-500/40'
+                  ? 'border-[#00AFCB] dark:border-cyan-400 shadow-sm ring-1 ring-[#00AFCB] bg-[#00AFCB]/10'
+                  : 'hover:border-[#00AFCB] dark:hover:border-cyan-500/40'
               }`}
             >
               {/* Day & Date */}

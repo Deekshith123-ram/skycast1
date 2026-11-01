@@ -105,8 +105,17 @@ export async function fetchWeatherData(location: LocationData): Promise<WeatherD
       windGusts: Math.round(data.current?.wind_gusts_10m ?? 12),
       uvIndex: Number((data.current?.uv_index ?? 5).toFixed(1)),
       dewPoint: data.hourly?.dew_point_2m?.[0] ? Math.round(data.hourly.dew_point_2m[0]) : undefined,
-      visibility: data.hourly?.visibility?.[0] ? Math.round(data.hourly.visibility[0] / 1000) : 10,
-      isDay: Boolean(data.current?.is_day ?? 1),
+      isDay: typeof data.current?.is_day === 'number'
+        ? data.current.is_day === 1
+        : (() => {
+            try {
+              const istDate = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+              const h = istDate.getHours() + istDate.getMinutes() / 60;
+              return h >= 6.0 && h < 18.25;
+            } catch {
+              return true;
+            }
+          })(),
       timestamp: now.toISOString(),
     };
 

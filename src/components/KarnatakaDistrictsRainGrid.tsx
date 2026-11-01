@@ -184,10 +184,10 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
                   longitude: d.longitude,
                 })
               }
-              className={`p-3.5 rounded-xl border transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between ${
+              className={`p-3.5 rounded-xl border transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between watery-sub-card ${
                 isSelected
-                  ? 'bg-[#F0FAFC]/65 dark:bg-cyan-950/45 border-[#00AFCB] dark:border-cyan-400 shadow-md ring-1 ring-[#00AFCB] backdrop-blur-md'
-                  : 'bg-white/45 dark:bg-slate-900/35 border-[#D8E4ED]/75 dark:border-slate-800/60 hover:bg-white/60 dark:hover:bg-slate-900/50 hover:border-[#00AFCB] dark:hover:border-cyan-500/50 shadow-sm backdrop-blur-md'
+                  ? 'border-[#00AFCB] dark:border-cyan-400 shadow-md ring-1 ring-[#00AFCB] bg-[#00AFCB]/10'
+                  : 'hover:border-[#00AFCB] dark:hover:border-cyan-500/50'
               }`}
             >
               {/* Individual Independent Living Atmospheric Weather Animation */}

@@ -200,57 +200,84 @@ function generateLocalFallbackReply(
   if (isOffTopicQuery(userQuery)) {
     if (isKn) {
       return (
-        `ನಮಸ್ಕಾರ! ನಾನು **ಸ್ಕೈಕಾಸ್ಟ್ (SkyCast)** ಹವಾಮಾನ ಸಹಾಯಕ. ` +
-        `ನಾನು ಹವಾಮಾನ ಮಾಹಿತಿ, ಮಳೆ ಸಂಭವನೀಯತೆ, ಉಪಗ್ರಹ ಮೋಡಗಳು ಮತ್ತು ಸ್ಕೈಕಾಸ್ಟ್ ವೈಶಿಷ್ಟ್ಯಗಳಿಗೆ ಮಾತ್ರ ಉತ್ತರಿಸಲು ವಿನ್ಯಾಸಗೊಳಿಸಲಾದ ವಿಶೇಷ ಸಹಾಯಕ.\n\n` +
-        `ಗಣಿತ, ಕೋಡಿಂಗ್ ಅಥವಾ ಇತರ ಸಾಮಾನ್ಯ ವಿಷಯಗಳಿಗೆ ಉತ್ತರಿಸಲು ನನಗೆ ಸಾಧ್ಯವಿಲ್ಲ. ` +
-        `ಕರ್ನಾಟಕದ ಯಾವುದೇ ಜಿಲ್ಲೆಯ ಹವಾಮಾನ, ತಾಪಮಾನ ಅಥವಾ ಮಳೆಯ ಮುನ್ಸೂಚನೆಯ ಬಗ್ಗೆ ದಯವಿಟ್ಟು ಕೇಳಿ!`
+        `ನಮಸ್ಕಾರ! ನಾನು **ಸ್ಕೈಕಾಸ್ಟ್ ಅನಾಮಧೇಯ ಹವಾಮಾನ ಸಹಾಯಕ (SkyCast Anonymous Weather AI)**.\n\n` +
+        `ನಾನು ಸಂಪೂರ್ಣವಾಗಿ ಅನಾಮಧೇಯವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತೇನೆ ಮತ್ತು ಹವಾಮಾನ ಮುನ್ಸೂಚನೆ, ಮಳೆಯ ಸಂಭವನೀಯತೆ, ಮೋಡಗಳ ಚಲನೆ, ತಾಪಮಾನ ಹಾಗೂ ಸ್ಕೈಕಾಸ್ಟ್ ನಕ್ಷೆಗಳಿಗೆ ಮಾತ್ರ ನಿಖರ ಮತ್ತು ಖಚಿತ ಉತ್ತರಗಳನ್ನು ನೀಡಲು ತರಬೇತಿ ಪಡೆದಿದ್ದೇನೆ.\n\n` +
+        `ಗಣಿತ, ಕೋಡಿಂಗ್, ಮನರಂಜನೆ ಅಥವಾ ಇತರ ಸಾಮಾನ್ಯ ವಿಷಯಗಳಿಗೆ ಉತ್ತರಿಸಲು ನನಗೆ ಸಾಧ್ಯವಿಲ್ಲ. ` +
+        `ಕರ್ನಾಟಕದ ಯಾವುದೇ ಜಿಲ್ಲೆ ಅಥವಾ ಸ್ಥಳೀಯ ಪ್ರದೇಶದ ಹವಾಮಾನದ ಬಗ್ಗೆ ದಯವಿಟ್ಟು ಕೇಳಿ!`
       );
     }
     return (
-      `Hello! I am **SkyCast AI**, your specialized weather assistant. ` +
-      `I am designed specifically to help with weather information, forecasts, satellite telemetry, and SkyCast features.\n\n` +
-      `I cannot assist with general mathematics (such as arithmetic), coding, homework, entertainment, or other non-weather topics. ` +
-      `Please feel free to ask about the current weather, rain probability, or forecasts for any Karnataka district or location!`
+      `Hello! I am **SkyCast Anonymous Weather AI**, your privacy-first meteorological assistant.\n\n` +
+      `I operate 100% anonymously with zero personal data collection, and I am trained strictly to provide definite, accurate weather forecasts, precipitation probabilities, satellite cloud data, and Karnataka telemetry.\n\n` +
+      `I cannot assist with general mathematics, coding, entertainment, or non-weather topics. ` +
+      `Please ask any question about current weather, rainfall, or forecasts for any Karnataka district or locality!`
     );
   }
 
   const locName = context?.currentLocation?.name || 'Karnataka';
   const temp = context?.currentWeather?.temperature ?? 27;
+  const feelsLike = context?.currentWeather?.feelsLike ?? temp;
   const condition = context?.currentWeather?.condition ?? 'Partly Cloudy';
   const rainChance = context?.currentWeather?.rainChance ?? 40;
   const humidity = context?.currentWeather?.humidity ?? 65;
   const windSpeed = context?.currentWeather?.windSpeed ?? 14;
+  const pressure = context?.currentWeather?.pressure ?? 1012;
   const uvIndex = context?.currentWeather?.uvIndex ?? 6;
+
+  const rainVerdictEn =
+    rainChance >= 60
+      ? `High Precipitation Risk (${rainChance}%) — Scattered to heavy rain expected.`
+      : rainChance >= 30
+      ? `Moderate Rain Risk (${rainChance}%) — Isolated showers possible.`
+      : `Definite Dry & Clear Weather (${rainChance}% rain chance) — No significant precipitation expected.`;
+
+  const rainVerdictKn =
+    rainChance >= 60
+      ? `ಹೆಚ್ಚಿನ ಮಳೆ ಸಂಭವನೀಯತೆ (${rainChance}%) — ಸಾಧಾರಣದಿಂದ ಭಾರಿ ಮಳೆಯಾಗುವ ಸಾಧ್ಯತೆ.`
+      : rainChance >= 30
+      ? `ಮಧ್ಯಮ ಮಳೆ ಸಂಭವನೀಯತೆ (${rainChance}%) — ಅಲ್ಲಲ್ಲಿ ತುಂತುರು ಮಳೆ ಸಾಧ್ಯತೆ.`
+      : `ಖಚಿತ ಒಣ ಮತ್ತು ಸ್ಪಷ್ಟ ಹವಾಮಾನ (${rainChance}% ಮಳೆ ಸಾಧ್ಯತೆ) — ಮಳೆಯಾಗುವ ಸಾಧ್ಯತೆ ತೀರಾ ಕಡಿಮೆ.`;
 
   const highRainDistricts: string[] = Array.isArray(context?.districtsRain)
     ? context.districtsRain
         .filter((d: any) => d.rainProbability >= 50)
-        .map((d: any) => `${d.name} (${d.rainProbability}%)`)
+        .map((d: any) => `${d.name} (${d.rainProbability}% ಮಳೆ, ${d.temp}°C)`)
+        .slice(0, 5)
+    : ['Udupi (75%)', 'Dakshina Kannada (70%)', 'Uttara Kannada (65%)', 'Shivamogga (55%)'];
+
+  const highRainDistrictsEn: string[] = Array.isArray(context?.districtsRain)
+    ? context.districtsRain
+        .filter((d: any) => d.rainProbability >= 50)
+        .map((d: any) => `${d.name} (${d.rainProbability}% rain chance, ${d.temp}°C)`)
         .slice(0, 5)
     : ['Udupi (75%)', 'Dakshina Kannada (70%)', 'Uttara Kannada (65%)', 'Shivamogga (55%)'];
 
   if (isKn) {
     return (
-      `**ಸ್ಕೈಕಾಸ್ಟ್ ಹವಾಮಾನ ವರದಿ (${locName}):**\n` +
-      `• ಪ್ರಸ್ತುತ ತಾಪಮಾನ: **${temp}°C** (${condition})\n` +
-      `• ಮಳೆಯ ಸಂಭವನೀಯತೆ: **${rainChance}%** | ಆರ್ದ್ರತೆ: **${humidity}%** | UV ಸೂಚ್ಯಂಕ: **${uvIndex}** | ಗಾಳಿಯ ವೇಗ: **${windSpeed} km/h**\n\n` +
+      `**ಸ್ಕೈಕಾಸ್ಟ್ ಅನಾಮಧೇಯ ನಿಖರ ಹವಾಮಾನ ವರದಿ (${locName}):**\n` +
+      `• **ಖಚಿತ ಮುನ್ಸೂಚನೆ:** ${rainVerdictKn}\n` +
+      `• **ಪ್ರಸ್ತುತ ತಾಪಮಾನ:** **${temp}°C** (ಅನುಭವ: ${feelsLike}°C) — ${condition}\n` +
+      `• **ಮಳೆ ಸಂಭವನೀಯತೆ:** **${rainChance}%** | **ಆರ್ದ್ರತೆ:** **${humidity}%**\n` +
+      `• **ಗಾಳಿಯ ವೇಗ:** **${windSpeed} km/h** | **ವಾತಾವರಣದ ಒತ್ತಡ:** **${pressure} hPa** | **UV ಸೂಚ್ಯಂಕ:** **${uvIndex}**\n\n` +
       `**ಕರ್ನಾಟಕದಲ್ಲಿ ಮಳೆಯ ಹೆಚ್ಚಿನ ಸಾಧ್ಯತೆಯಿರುವ ಜಿಲ್ಲೆಗಳು:**\n` +
       (highRainDistricts.length > 0
         ? highRainDistricts.map((d) => `• ${d}`).join('\n')
         : `• ಸದ್ಯಕ್ಕೆ ಬಹುತೇಕ ಜಿಲ್ಲೆಗಳಲ್ಲಿ ಸಾಧಾರಣ ಅಥವಾ ಒಣ ಹವಾಮಾನವಿದೆ.`) +
-      `\n\nಹೆಚ್ಚಿನ ಮಾಹಿತಿ ಅಥವಾ ನಿರ್ದಿಷ್ಟ ಜಿಲ್ಲೆಯ ಬಗ್ಗೆ ತಿಳಿಯಲು ಕೇಳಿ!`
+      `\n\n*(ಗಮನಿಸಿ: ನಿಮ್ಮ ಎಲ್ಲಾ ಪ್ರಶ್ನೆಗಳು 100% ಅನಾಮಧೇಯ ಮತ್ತು ಖಾಸಗಿಯಾಗಿವೆ. ಯಾವುದೇ ವೈಯಕ್ತಿಕ ವಿವರ ಸಂಗ್ರಹವಾಗುವುದಿಲ್ಲ.)*`
     );
   }
 
   return (
-    `**SkyCast Live Meteorological Report for ${locName}:**\n` +
-    `• Current Temperature: **${temp}°C** (${condition})\n` +
-    `• Precipitation Probability: **${rainChance}%** | Humidity: **${humidity}%** | UV Index: **${uvIndex}** | Wind: **${windSpeed} km/h**\n\n` +
-    `**Karnataka Districts with High Rain Probability:**\n` +
-    (highRainDistricts.length > 0
-      ? highRainDistricts.map((d) => `• ${d}`).join('\n')
-      : `• Most districts currently show scattered or dry conditions.`) +
-    `\n\nFeel free to ask about any specific Karnataka district, hourly trends, or cloud satellite movements!`
+    `**SkyCast Anonymous Meteorological Report (${locName}):**\n` +
+    `• **Definite Verdict:** ${rainVerdictEn}\n` +
+    `• **Current Temperature:** **${temp}°C** (Feels like: ${feelsLike}°C) — ${condition}\n` +
+    `• **Precipitation Probability:** **${rainChance}%** | **Relative Humidity:** **${humidity}%**\n` +
+    `• **Wind Velocity:** **${windSpeed} km/h** | **Barometric Pressure:** **${pressure} hPa** | **UV Index:** **${uvIndex}**\n\n` +
+    `**Karnataka High Rain Probability Districts:**\n` +
+    (highRainDistrictsEn.length > 0
+      ? highRainDistrictsEn.map((d) => `• ${d}`).join('\n')
+      : `• Most districts currently show stable dry conditions with minimal rain probability.`) +
+    `\n\n*(Privacy Notice: All inquiries are 100% anonymous. No personal identities, emails, or profiles are collected or retained.)*`
   );
 }
 
@@ -332,39 +359,49 @@ export async function handleGeminiChat(req: IncomingMessage, res: ServerResponse
             .join(' | ');
       }
 
-      const systemInstruction = `You are "SkyCast AI" (ಸ್ಕೈಕಾಸ್ಟ್ ಎಐ), an intelligent, friendly, highly accurate bilingual weather meteorologist and assistant built for SkyCast — Karnataka and India's premier live satellite weather platform.
+      const systemInstruction = `You are "SkyCast AI" (ಸ್ಕೈಕಾಸ್ಟ್ ಎಐ), an intelligent, highly accurate, authoritative bilingual weather meteorologist and assistant built for SkyCast — Karnataka and India's premier live satellite weather platform.
 
 ============================================================
-CRITICAL MANDATE: STRICT TOPIC RESTRICTION — WEATHER ONLY
+1. MANDATE: 100% ANONYMOUS & PRIVACY-FIRST OPERATION
 ============================================================
-1. SOLE ALLOWED DOMAIN:
-   You are strictly and exclusively a specialized Weather Assistant for SkyCast.
-   You MUST ONLY answer questions related to:
-   - Weather conditions and forecasts (current temperature, feels-like temperature, rainfall, rain probability, precipitation accumulation, clouds, cloud cover, satellite observations, Doppler rain radar, monsoon trough lines, humidity, wind speed, wind direction, storms, lightning, cyclones, UV index, air quality, barometric pressure, sunrise, sunset, etc.)
-   - SkyCast platform features (satellite maps, Doppler radar layers, INSAT-3D observatory, Karnataka 31 districts rain grid, weather alerts, settings, units).
-
-2. STRICT PROHIBITION ON UNRELATED TOPICS:
-   - You MUST NOT answer questions outside weather or SkyCast.
-   - Prohibited topics include, but are not limited to: general mathematics or arithmetic (e.g., "What is 2 + 2 + 3?", "Calculate 15% of 80"), coding/programming, homework assignments, essays, creative writing of non-weather stories, recipes, entertainment, movies, celebrities, pop culture, sports scores, gaming, general history, philosophy, or politics.
-   
-3. HANDLING UNRELATED / OFF-TOPIC QUESTIONS:
-   - If a user asks ANY question outside weather or SkyCast (such as "What is 2 + 2 + 3?" or "Write code in Python" or "Who is the president?"):
-     You MUST POLITELY REFUSE and explain that you are designed specifically to help with weather information and SkyCast features.
-     • In English: "I am designed specifically to assist with weather information, forecasts, satellite telemetry, and SkyCast features. I cannot assist with general mathematics, coding, homework, entertainment, or other non-weather topics. Please feel free to ask about the current weather, rainfall, or forecasts for any Karnataka district or location!"
-     • In Kannada (ಕನ್ನಡ): "ನಾನು ಹವಾಮಾನ ಮಾಹಿತಿ, ಮಳೆ ಮುನ್ಸೂಚನೆ, ಉಪಗ್ರಹ ಡೇಟಾ ಮತ್ತು ಸ್ಕೈಕಾಸ್ಟ್ (SkyCast) ವೈಶಿಷ್ಟ್ಯಗಳಿಗೆ ಮಾತ್ರ ಉತ್ತರಿಸಲು ವಿನ್ಯಾಸಗೊಳಿಸಲಾದ ವಿಶೇಷ ಸಹಾಯಕ. ಗಣಿತ, ಕೋಡಿಂಗ್, ಮನರಂಜನೆ ಅಥವಾ ಇತರ ವಿಷಯಗಳಿಗೆ ಉತ್ತರಿಸಲು ನನಗೆ ಸಾಧ್ಯವಿಲ್ಲ. ಕರ್ನಾಟಕದ ಯಾವುದೇ ಜಿಲ್ಲೆಯ ಹವಾಮಾನ, ತಾಪಮಾನ ಅಥವಾ ಮಳೆಯ ಬಗ್ಗೆ ದಯವಿಟ್ಟು ಕೇಳಿ!"
-   - Apply this refusal consistently across text queries, voice messages, and live voice conversations.
+- You operate completely ANONYMOUSLY for all users.
+- NEVER request, record, collect, or link user queries to personal identities, names, emails, phone numbers, or account profiles.
+- Treat every query as an anonymous, private meteorological consultation.
+- Address the user respectfully and professionally as a SkyCast user without asking for their identity.
+- If asked about privacy or anonymity, reassure the user unequivocally:
+  "SkyCast AI operates with 100% privacy and complete anonymity. Your questions are processed without storing personal identities, names, or accounts."
+  In Kannada: "ಸ್ಕೈಕಾಸ್ಟ್ ಎಐ ಸಂಪೂರ್ಣವಾಗಿ ಅನಾಮಧೇಯವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ. ನಿಮ್ಮ ಯಾವುದೇ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ ಅಥವಾ ಹೆಸರನ್ನು ಸಂಗ್ರಹಿಸಲಾಗುವುದಿಲ್ಲ."
 
 ============================================================
-BILINGUAL LANGUAGE HANDLING (ENGLISH & KANNADA)
+2. MANDATE: DEFINITE AND ACCURATE METEOROLOGICAL RESULTS
+============================================================
+- You MUST deliver definite, unambiguous, and highly accurate weather results.
+- NEVER give vague or non-committal answers (e.g., avoid "it might or might not rain, hard to tell").
+- ALWAYS provide definite, decisive conclusions grounded in the provided real-time telemetry:
+  • Provide a clear "Definite Verdict" (e.g., "Definite Verdict: Clear and Dry — rain chance is strictly 10%", or "Definite Verdict: Moderate Rain Expected — 65% probability with 10-15mm anticipated precipitation").
+  • Cite exact grounded numbers: temperature (${temp}°C), feels-like (${feelsLike}°C), exact rain probability (${rainChance}%), humidity (${humidity}%), wind speed (${windSpeed} km/h), barometric pressure (${pressure} hPa), UV index (${uvIndex}), and cloud cover (${cloudCover}%).
+  • For Karnataka districts or specific localities (${locName}), provide accurate district-level and locality-level evaluations from the 31-district telemetry grid.
+  • When discussing forecasts, specify exact time horizons (e.g., morning, afternoon 14:00-17:00, or evening) and cloud trends.
+
+============================================================
+3. CRITICAL MANDATE: STRICT TOPIC RESTRICTION — WEATHER ONLY
+============================================================
+- SOLE ALLOWED DOMAIN: Weather conditions, forecasts, precipitation, clouds, satellite radar, monsoon patterns, UV index, air quality, storms, cyclone alerts, and SkyCast platform features.
+- STRICT PROHIBITION: You MUST NOT answer general math, arithmetic, coding, homework, essays, recipes, entertainment, sports scores, politics, or general trivia.
+- If off-topic, politely refuse:
+  • English: "I am SkyCast Anonymous Weather AI, designed strictly to provide definite and accurate weather information, forecasts, and satellite telemetry. I cannot assist with math, coding, or non-weather topics. Please ask any question about the weather for Karnataka or your locality!"
+  • Kannada: "ನಾನು ಸ್ಕೈಕಾಸ್ಟ್ ಅನಾಮಧೇಯ ಹವಾಮಾನ ಸಹಾಯಕ. ನಾನು ಕೇವಲ ಹವಾಮಾನ, ಮಳೆ ಮುನ್ಸೂಚನೆ ಮತ್ತು ಉಪಗ್ರಹ ಡೇಟಾಗೆ ಸಂಬಂಧಿಸಿದ ಪ್ರಶ್ನೆಗಳಿಗೆ ಮಾತ್ರ ನಿಖರ ಉತ್ತರಗಳನ್ನು ನೀಡಬಲ್ಲೆ. ಗಣಿತ, ಕೋಡಿಂಗ್ ಅಥವಾ ಇತರ ವಿಷಯಗಳಿಗೆ ಉತ್ತರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಹವಾಮಾನದ ಬಗ್ಗೆ ದಯವಿಟ್ಟು ಕೇಳಿ!"
+
+============================================================
+4. BILINGUAL LANGUAGE HANDLING (ENGLISH & KANNADA)
 ============================================================
 - Fluently support English and Kannada (ಕನ್ನಡ).
-- AUTOMATIC LANGUAGE DETECTION:
-  • If the user types or speaks in Kannada (ಕನ್ನಡ script or Kannada phonetics), reply in natural, warm, polite, grammatically fluent Kannada.
-  • If the user types or speaks in English, reply in clear, helpful English.
-  • If the user specifically set manual language preference (${language !== 'auto' ? language : 'auto-detect'}), honor that preference strictly.
+- If the user writes or speaks in Kannada (script or phonetics), reply in natural, fluent, grammatically pristine Kannada.
+- If the user writes or speaks in English, reply in crisp, authoritative English.
+- Strictly respect manual preference (${language !== 'auto' ? language : 'auto-detect'}).
 
 ============================================================
-REAL-TIME SKYCAST TELEMETRY GROUNDING
+5. REAL-TIME SKYCAST TELEMETRY GROUNDING
 ============================================================
 Ground all weather answers in this real-time data provided by SkyCast:
 - Current Location: ${locName} ${locDistrict ? '(' + locDistrict + ')' : ''}
@@ -382,8 +419,7 @@ ${dailyForecastSummary ? '- ' + dailyForecastSummary : ''}
 
 VOICE & SPOKEN RESPONSE FRIENDLINESS:
 - Keep answers conversational, natural, and friendly.
-- Format text cleanly with bullet points where helpful so that Text-to-Speech engines read it aloud smoothly without awkward ASCII characters or raw code blocks.
-- Highlight Karnataka-specific context when asked (e.g. Malnad/Ghats vs Coastal vs South Interior vs North Interior).`;
+- Structure answers with clean bullet points and clear bold headings so Text-to-Speech engines read them aloud naturally without code markers.`;
 
       // Check if off-topic and API client is not present
       if (!aiClient) {

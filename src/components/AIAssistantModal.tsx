@@ -14,9 +14,11 @@ import {
   Bot,
   User,
   Compass,
+  MapPin,
   CloudRain,
   HelpCircle,
-  ShieldAlert,
+  ShieldCheck,
+  Copy,
   Info,
 } from 'lucide-react';
 import { Language, TRANSLATIONS } from '../services/languageService';
@@ -62,8 +64,8 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
         id: 'welcome',
         role: 'model',
         text: isKn
-          ? `ನಮಸ್ಕಾರ! ನಾನು **ಸ್ಕೈಕಾಸ್ಟ್ ಎಐ (SkyCast AI)** ಹವಾಮಾನ ಸಹಾಯಕ. ನಾನು ಕರ್ನಾಟಕದ ಎಲ್ಲಾ 31 ಜಿಲ್ಲೆಗಳ ಮಳೆ ಸಂಭವನೀಯತೆ, ಉಪಗ್ರಹ ಮೋಡಗಳು, ತಾಪಮಾನ, ಗಾಳಿ, UV ಸೂಚ್ಯಂಕ ಮತ್ತು ${currentLocation.name} ಸ್ಥಳದ ನೇರ ಹವಾಮಾನದ ಬಗ್ಗೆ ಮಾತ್ರ ಉತ್ತರಿಸಲು ವಿನ್ಯಾಸಗೊಳಿಸಲಾದ ವಿಶೇಷ ಸಹಾಯಕ.\n\nಕನ್ನಡ ಅಥವಾ ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ, ವಾಯ್ಸ್ ಮೆಸೇಜ್ ಕಳುಹಿಸಿ ಅಥವಾ ಲೈವ್ ಧ್ವನಿ ಸಂಭಾಷಣೆ ಆರಂಭಿಸಿ!`
-          : `Hello! I am **SkyCast AI**, your bilingual weather meteorologist. I specialize strictly in weather, forecasts, satellite telemetry, Doppler radar, and all 31 Karnataka district rain probabilities for ${currentLocation.name}.\n\nAsk me anything about the weather in English or ಕನ್ನಡ using text, voice messages, or live hands-free voice!`,
+          ? `ನಮಸ್ಕಾರ! ನಾನು **ಸ್ಕೈಕಾಸ್ಟ್ ಅನಾಮಧೇಯ ಹವಾಮಾನ ಸಹಾಯಕ (SkyCast Anonymous Weather AI)**.\n\nನಿಮ್ಮ ಪ್ರಶ್ನೆಗಳು 100% ಅನಾಮಧೇಯ ಮತ್ತು ಖಾಸಗಿಯಾಗಿವೆ. ಯಾವುದೇ ವೈಯಕ್ತಿಕ ಖಾತೆ ಅಥವಾ ವಿವರಗಳನ್ನು ಸಂಗ್ರಹಿಸಲಾಗುವುದಿಲ್ಲ.\n\nಕರ್ನಾಟಕದ ಎಲ್ಲಾ 31 ಜಿಲ್ಲೆಗಳ ಮಳೆ ಸಂಭವನೀಯತೆ, ಉಪಗ್ರಹ ಮೋಡಗಳು, ತಾಪಮಾನ, ಗಾಳಿ, UV ಸೂಚ್ಯಂಕ ಮತ್ತು **${currentLocation.name}** ಸ್ಥಳದ ನೇರ ಹವಾಮಾನದ ಬಗ್ಗೆ ಖಚಿತ ಹಾಗೂ ನಿಖರ ಮಾಹಿತಿಯನ್ನು ನೀಡಲು ನಾನು ಸಿದ್ಧನಿದ್ದೇನೆ.\n\nಕನ್ನಡ ಅಥವಾ ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ ಅಥವಾ ಮೈಕ್ ಬಟನ್ ಒತ್ತಿ ಮಾತನಾಡಿ!`
+          : `Hello! I am **SkyCast Anonymous Weather AI**, your dedicated privacy-first meteorological assistant.\n\nAll your inquiries are 100% anonymous and private with zero identity tracking. I am trained strictly to provide definite, highly accurate weather forecasts, precipitation probabilities, cloud movements, and telemetry for **${currentLocation.name}** and across Karnataka.\n\nAsk me any weather question in English or ಕನ್ನಡ using text or voice!`,
         timestamp: Date.now(),
         detectedLang: isKn ? 'kn' : 'en',
       },
@@ -76,6 +78,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
   const [isLiveVoiceMode, setIsLiveVoiceMode] = useState(false);
   const [speakReplies, setSpeakReplies] = useState(true);
   const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -340,6 +343,12 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
     );
   };
 
+  const handleCopyMessage = (msgId: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedMessageId(msgId);
+    setTimeout(() => setCopiedMessageId(null), 2000);
+  };
+
   const handleClearChat = () => {
     stopSpeaking();
     setSpeakingMessageId(null);
@@ -349,8 +358,8 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
         role: 'model',
         text:
           lang === 'kn'
-            ? `ಸಂಭಾಷಣೆಯನ್ನು ಮರುಹೊಂದಿಸಲಾಗಿದೆ. ಕರ್ನಾಟಕದ ಹವಾಮಾನ, ಮಳೆ ಅಥವಾ ${currentLocation.name} ಬಗ್ಗೆ ಹೊಸ ಪ್ರಶ್ನೆ ಕೇಳಿ!`
-            : `Conversation reset. Ask any new question about Karnataka weather, rain probability, or ${currentLocation.name}!`,
+            ? `ಸಂಭಾಷಣೆಯನ್ನು ಮರುಹೊಂದಿಸಲಾಗಿದೆ. ನಿಮ್ಮ ಸಂವಾದ 100% ಅನಾಮಧೇಯವಾಗಿದೆ. ಕರ್ನಾಟಕದ ಹವಾಮಾನ, ಮಳೆ ಅಥವಾ **${currentLocation.name}** ಬಗ್ಗೆ ಹೊಸ ಖಚಿತ ಪ್ರಶ್ನೆ ಕೇಳಿ!`
+            : `Conversation reset. All queries remain 100% anonymous. Ask any new question about Karnataka weather, rain probability, or **${currentLocation.name}**!`,
         timestamp: Date.now(),
         detectedLang: lang,
       },
@@ -361,52 +370,63 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/65 backdrop-blur-md animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="ai-assistant-modal-title"
     >
-      {/* Modal Container */}
-      <div className="relative w-full max-w-2xl max-h-[92vh] h-[660px] flex flex-col rounded-3xl bg-white/95 dark:bg-[#071328]/95 backdrop-blur-2xl border border-[#D8E4ED] dark:border-cyan-500/35 shadow-[0_25px_60px_-15px_rgba(23,43,58,0.3)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] overflow-hidden">
-        {/* Header */}
-        <div className="px-3.5 sm:px-6 py-3 border-b border-[#D8E4ED] dark:border-slate-800 flex items-center justify-between gap-2 bg-white/50 dark:bg-[#050e1f]/60 flex-shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="relative p-2 rounded-2xl bg-gradient-to-tr from-[#00AFCB] to-cyan-400 text-white shadow-md shadow-cyan-500/20">
-              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
-              <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-              </span>
+      {/* Modal Container with Crystal-Clear Liquid Glass Frame */}
+      <div className="relative w-full max-w-3xl max-h-[92vh] h-[680px] flex flex-col rounded-3xl bg-white/95 dark:bg-[#071328]/95 backdrop-blur-2xl border border-white/50 dark:border-cyan-500/30 shadow-[0_25px_60px_-15px_rgba(23,43,58,0.3)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] overflow-hidden">
+        {/* Header - Neat Aligned Controls */}
+        <div className="px-4 sm:px-6 py-3.5 border-b border-[#D8E4ED]/60 dark:border-white/10 flex items-center justify-between gap-3 bg-white/50 dark:bg-[#040a18]/60 flex-shrink-0">
+          {/* Left Title & Status Badges */}
+          <div className="flex items-center gap-3">
+            <div className="relative w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#00AFCB] via-cyan-500 to-blue-600 p-[1px] shadow-md shadow-cyan-500/25 flex-shrink-0">
+              <div className="w-full h-full bg-[#071328] rounded-[15px] flex items-center justify-center relative overflow-hidden">
+                <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
+                <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+              </div>
             </div>
 
             <div>
-              <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h2
                   id="ai-assistant-modal-title"
-                  className="font-display text-xs sm:text-base font-bold text-[#172B3A] dark:text-white"
+                  className="font-display text-sm sm:text-base font-bold text-[#172B3A] dark:text-white tracking-tight"
                 >
-                  {t.aiAssistant}
+                  SkyCast AI
                 </h2>
-                <span className="px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold bg-[#E6F8FA] dark:bg-cyan-500/20 text-[#007A8E] dark:text-cyan-300 border border-[#00AFCB]/30">
+                {/* Anonymous Privacy Badge */}
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                  <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                  <span>{lang === 'kn' ? '100% ಅನಾಮಧೇಯ' : '100% Anonymous'}</span>
+                </span>
+                <span className="hidden sm:inline-flex px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-[#E6F8FA] dark:bg-cyan-500/15 text-[#007A8E] dark:text-cyan-300 border border-[#00AFCB]/30">
                   Gemini 3.8 Flash
                 </span>
               </div>
-              <p className="text-[10px] text-[#526779] dark:text-slate-400 line-clamp-1">
-                {t.aiAssistantDesc}
+              <p className="text-[10px] sm:text-[11px] text-[#526779] dark:text-slate-400 line-clamp-1">
+                {lang === 'kn'
+                  ? 'ಖಚಿತ ಹಾಗೂ ನಿಖರ ಹವಾಮಾನ ಮುನ್ಸೂಚನೆ • ವೈಯಕ್ತಿಕ ವಿವರ ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ'
+                  : 'Definite & accurate weather intelligence with zero identity tracking'}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-1 sm:gap-2">
-            {/* Language Selection Buttons (Visible on Mobile & Desktop) */}
-            <div className="flex items-center p-0.5 rounded-full bg-slate-100/70 dark:bg-black/20 border border-white/20 text-[10px] font-semibold">
+          {/* Right Toolbar - Perfectly Aligned Buttons */}
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+            {/* Segmented Language Selector */}
+            <div className="flex items-center p-0.5 rounded-full bg-slate-100/80 dark:bg-black/30 border border-[#D8E4ED]/60 dark:border-white/10 text-[10px] font-semibold h-8 sm:h-9">
               <button
                 type="button"
                 onClick={() => setSelectedLangMode('auto')}
-                className={`water-droplet-pill px-2 py-1 rounded-full transition cursor-pointer ${
+                className={`px-2.5 h-7 sm:h-8 rounded-full transition cursor-pointer flex items-center justify-center ${
                   selectedLangMode === 'auto'
-                    ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200'
-                    : 'text-[#526779] dark:text-slate-400'
+                    ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-bold'
+                    : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
                 }`}
                 title="Auto-detect language"
               >
@@ -415,42 +435,43 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedLangMode('en')}
-                className={`water-droplet-pill px-2 py-1 rounded-full transition cursor-pointer ${
+                className={`px-2.5 h-7 sm:h-8 rounded-full transition cursor-pointer flex items-center justify-center ${
                   selectedLangMode === 'en'
-                    ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200'
-                    : 'text-[#526779] dark:text-slate-400'
+                    ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-bold'
+                    : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
                 }`}
               >
-                English
+                EN
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedLangMode('kn')}
-                className={`water-droplet-pill px-2 py-1 rounded-full transition cursor-pointer ${
+                className={`px-2.5 h-7 sm:h-8 rounded-full transition cursor-pointer flex items-center justify-center ${
                   selectedLangMode === 'kn'
-                    ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200'
-                    : 'text-[#526779] dark:text-slate-400'
+                    ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200 font-bold'
+                    : 'text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white'
                 }`}
               >
                 ಕನ್ನಡ
               </button>
             </div>
 
-            {/* Clear conversation */}
+            {/* Reset Chat Button */}
             <button
               type="button"
               onClick={handleClearChat}
-              className="water-droplet-btn p-2 rounded-full text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
+              className="water-droplet-btn w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-[#526779] dark:text-slate-300 hover:text-[#00AFCB] dark:hover:text-cyan-300 transition cursor-pointer"
               title="Reset conversation"
+              aria-label="Reset conversation"
             >
               <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
 
-            {/* Close */}
+            {/* Close Modal Button */}
             <button
               type="button"
               onClick={onClose}
-              className="water-droplet-btn p-2 rounded-full text-[#526779] dark:text-slate-400 hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
+              className="water-droplet-btn w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-[#526779] dark:text-slate-300 hover:text-[#172B3A] dark:hover:text-white transition cursor-pointer"
               title={t.close}
               aria-label={t.close}
             >
@@ -459,29 +480,33 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
           </div>
         </div>
 
-        {/* Status & Options sub-bar */}
-        <div className="px-3.5 sm:px-6 py-2 bg-[#F8FAFC]/80 dark:bg-slate-900/50 border-b border-[#D8E4ED] dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs flex-shrink-0">
-          {/* Grounding Telemetry Chip & Strict Weather Scope Label */}
-          <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-[#526779] dark:text-slate-400">
-            <Compass className="w-3.5 h-3.5 text-[#00AFCB]" />
-            <span className="font-semibold text-[#172B3A] dark:text-slate-200">
+        {/* Status Sub-bar: Grounding Telemetry & Mode Toggles */}
+        <div className="px-4 sm:px-6 py-2 bg-[#F8FAFC]/70 dark:bg-[#040c1a]/60 border-b border-[#D8E4ED]/60 dark:border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs flex-shrink-0">
+          {/* Grounding Telemetry Chip */}
+          <div className="flex items-center gap-1.5 text-[11px] text-[#526779] dark:text-slate-400 flex-wrap">
+            <span className="flex items-center gap-1 font-bold text-[#172B3A] dark:text-slate-200">
+              <MapPin className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400 shrink-0" />
               {currentLocation.name}
             </span>
-            <span className="hidden sm:inline">• 31 Districts Rain Radar Grounded</span>
-            <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-600/40">
-              {lang === 'kn' ? 'ಹವಾಮಾನ ವಿಷಯಗಳಿಗೆ ಮಾತ್ರ ಸೀಮಿತ' : 'Weather & SkyCast Focus Only'}
+            <span className="hidden sm:inline text-slate-300 dark:text-slate-700">•</span>
+            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-cyan-500/10 text-[#007A8E] dark:text-cyan-300 border border-cyan-500/20">
+              31 Districts Telemetry
+            </span>
+            <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+              {lang === 'kn' ? 'ಖಚಿತ ಫಲಿತಾಂಶಗಳು' : 'Definite Results'}
             </span>
           </div>
 
+          {/* Sub-bar Right Toggles with Neat Alignments */}
           <div className="flex items-center gap-2">
             {/* Live Voice Hands-free Toggle */}
             <button
               type="button"
               onClick={toggleLiveVoiceMode}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold transition cursor-pointer ${
+              className={`water-droplet-pill h-7 sm:h-8 flex items-center gap-1.5 px-3 rounded-full text-[11px] font-bold cursor-pointer transition ${
                 isLiveVoiceMode
-                  ? 'bg-rose-500 text-white animate-pulse shadow-md shadow-rose-500/30'
-                  : 'bg-slate-200/80 dark:bg-slate-800 text-[#526779] dark:text-slate-300 hover:bg-[#E6F8FA] dark:hover:bg-cyan-950/60'
+                  ? 'water-droplet-pill-active text-rose-500 dark:text-rose-400 animate-pulse'
+                  : 'text-[#526779] dark:text-slate-300'
               }`}
               title="Hands-free continuous voice conversation"
             >
@@ -493,10 +518,10 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
             <button
               type="button"
               onClick={() => setSpeakReplies(!speakReplies)}
-              className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold transition cursor-pointer ${
+              className={`water-droplet-pill h-7 sm:h-8 flex items-center gap-1.5 px-2.5 rounded-full text-[11px] font-semibold cursor-pointer transition ${
                 speakReplies
-                  ? 'text-[#00AFCB] dark:text-cyan-400'
-                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                  ? 'text-[#007A8E] dark:text-cyan-300'
+                  : 'text-slate-400'
               }`}
               title="Toggle automatic spoken replies"
             >
@@ -506,25 +531,25 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
           </div>
         </div>
 
-        {/* Live Voice Mode Banner if active */}
+        {/* Live Voice Active Banner */}
         {isLiveVoiceMode && (
-          <div className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white flex items-center justify-between text-xs flex-shrink-0 animate-in slide-in-from-top-1">
+          <div className="px-4 py-2 bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 text-white flex items-center justify-between text-xs flex-shrink-0 animate-in slide-in-from-top-1">
             <div className="flex items-center gap-2">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-85"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
               </span>
               <span className="font-bold">
-                {lang === 'kn' ? 'ನೈಜ ಧ್ವನಿ ಸಂವಾದ ಸಕ್ರಿಯವಾಗಿದೆ (Live Voice Active)' : 'Live Voice Conversation Active (Hands-free)'}
+                {lang === 'kn' ? 'ನೈಜ ಧ್ವನಿ ಸಂವಾದ ಸಕ್ರಿಯವಾಗಿದೆ (Live Voice Active)' : 'Live Hands-Free Voice Mode Active'}
               </span>
-              <span className="text-[10px] opacity-80 hidden sm:inline">
-                {isListening ? (lang === 'kn' ? 'ಕೇಳಿಸಿಕೊಳ್ಳುತ್ತಿದೆ...' : 'Listening to you...') : (lang === 'kn' ? 'ಉತ್ತರಿಸುತ್ತಿದೆ...' : 'Speaking reply...')}
+              <span className="text-[10px] opacity-85 hidden sm:inline">
+                {isListening ? (lang === 'kn' ? 'ಕೇಳಿಸಿಕೊಳ್ಳುತ್ತಿದೆ...' : 'Listening...') : (lang === 'kn' ? 'ಉತ್ತರಿಸುತ್ತಿದೆ...' : 'Speaking reply...')}
               </span>
             </div>
             <button
               type="button"
               onClick={() => setIsLiveVoiceMode(false)}
-              className="text-[10px] font-bold px-2 py-0.5 rounded bg-black/25 hover:bg-black/40 text-white cursor-pointer"
+              className="text-[10px] font-bold px-2 py-0.5 rounded bg-black/30 hover:bg-black/50 text-white cursor-pointer"
             >
               Exit Live Mode
             </button>
@@ -532,42 +557,59 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
         )}
 
         {/* Message Log */}
-        <div className="flex-1 overflow-y-auto p-3.5 sm:p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
           {messages.map((msg) => {
             const isUser = msg.role === 'user';
             const isSpeakingThis = speakingMessageId === msg.id;
+            const isCopied = copiedMessageId === msg.id;
 
             return (
               <div
                 key={msg.id}
-                className={`flex gap-2.5 sm:gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-2.5 sm:gap-3.5 ${isUser ? 'justify-end' : 'justify-start'}`}
               >
                 {!isUser && (
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-2xl bg-[#00AFCB]/15 text-[#00AFCB] dark:text-cyan-400 flex items-center justify-center shrink-0 mt-0.5 border border-[#00AFCB]/30">
-                    <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <div className="w-8 h-8 rounded-2xl bg-[#00AFCB]/15 text-[#00AFCB] dark:text-cyan-400 flex items-center justify-center shrink-0 mt-0.5 border border-[#00AFCB]/30 shadow-xs">
+                    <Bot className="w-4 h-4" />
                   </div>
                 )}
 
                 <div
-                  className={`max-w-[88%] sm:max-w-[78%] rounded-2xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-[13px] leading-relaxed shadow-sm transition-all ${
+                  className={`max-w-[88%] sm:max-w-[80%] rounded-2xl p-3.5 sm:p-4 text-xs sm:text-[13px] leading-relaxed shadow-sm transition-all ${
                     isUser
-                      ? 'bg-gradient-to-r from-[#00AFCB] to-[#0092AB] text-white rounded-br-xs font-medium'
-                      : 'bg-[#F4F8FC] dark:bg-slate-900/90 text-[#172B3A] dark:text-slate-100 rounded-bl-xs border border-[#D8E4ED] dark:border-slate-800'
+                      ? 'bg-gradient-to-r from-[#00AFCB] to-[#008DA4] text-white rounded-br-xs font-medium'
+                      : 'bg-white/80 dark:bg-slate-900/85 text-[#172B3A] dark:text-slate-100 rounded-bl-xs border border-[#D8E4ED] dark:border-slate-800'
                   } ${isSpeakingThis ? 'ring-2 ring-cyan-400 dark:ring-cyan-300' : ''}`}
                 >
+                  {/* Sender Header for AI */}
+                  {!isUser && (
+                    <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-200/70 dark:border-slate-800 text-[10px] text-[#526779] dark:text-slate-400">
+                      <span className="font-bold flex items-center gap-1 text-[#007A8E] dark:text-cyan-300">
+                        <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                        SkyCast AI • {lang === 'kn' ? 'ಅನಾಮಧೇಯ ವರದಿ' : 'Anonymous Verdict'}
+                      </span>
+                      <span className="opacity-75 font-mono">
+                        {new Date(msg.timestamp).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
+                  )}
+
                   {/* Message formatted body */}
                   <div className="whitespace-pre-wrap space-y-1.5 font-body">
                     {msg.text.split('\n').map((line, i) => {
                       if (!line.trim()) return <div key={i} className="h-1.5" />;
 
-                      // Render basic bold formatting
+                      // Render bold highlights
                       const parts = line.split(/(\*\*.*?\*\*)/g);
                       return (
                         <p key={i}>
                           {parts.map((p, j) => {
                             if (p.startsWith('**') && p.endsWith('**')) {
                               return (
-                                <strong key={j} className="font-bold">
+                                <strong key={j} className="font-bold text-[#0f2334] dark:text-white">
                                   {p.slice(2, -2)}
                                 </strong>
                               );
@@ -579,49 +621,67 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                     })}
                   </div>
 
-                  {/* Actions under AI message (Speak aloud button & timestamp) */}
+                  {/* Actions under AI message (Listen Aloud & Copy Report) */}
                   {!isUser && (
-                    <div className="mt-2.5 pt-2 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between text-[10px] text-[#687D8F] dark:text-slate-400">
+                    <div className="mt-3 pt-2.5 border-t border-slate-200/70 dark:border-slate-800 flex items-center justify-between text-[11px] text-[#687D8F] dark:text-slate-400">
                       <div className="flex items-center gap-2">
+                        {/* Listen Button */}
                         <button
                           type="button"
                           onClick={() => handleSpeakSingleMessage(msg)}
-                          className={`flex items-center gap-1 px-2 py-0.5 rounded-md hover:bg-[#E6F8FA] dark:hover:bg-cyan-950/60 transition cursor-pointer font-bold ${
-                            isSpeakingThis ? 'text-[#00AFCB] dark:text-cyan-300 animate-pulse' : ''
+                          className={`water-droplet-pill flex items-center gap-1 px-2.5 py-1 rounded-lg transition cursor-pointer font-semibold ${
+                            isSpeakingThis ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-300 animate-pulse' : ''
                           }`}
-                          title="Read message aloud"
+                          title="Read weather report aloud"
                         >
-                          <Volume2 className="w-3 h-3" />
+                          <Volume2 className="w-3.5 h-3.5" />
                           <span>{isSpeakingThis ? t.speaking : 'Listen'}</span>
+                        </button>
+
+                        {/* Copy Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleCopyMessage(msg.id, msg.text)}
+                          className="water-droplet-pill flex items-center gap-1 px-2.5 py-1 rounded-lg transition cursor-pointer font-semibold"
+                          title="Copy weather report to clipboard"
+                        >
+                          {isCopied ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-500" />
+                              <span className="text-emerald-600 dark:text-emerald-400">Copied</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>Copy</span>
+                            </>
+                          )}
                         </button>
                       </div>
 
-                      <span className="text-[10px] opacity-75">
-                        {new Date(msg.timestamp).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
+                      <span className="text-[10px] font-mono opacity-65">
+                        Definite Telemetry
                       </span>
                     </div>
                   )}
                 </div>
 
                 {isUser && (
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-2xl bg-slate-200 dark:bg-slate-800 text-[#172B3A] dark:text-white flex items-center justify-center shrink-0 mt-0.5">
-                    <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <div className="w-8 h-8 rounded-2xl bg-slate-200 dark:bg-slate-800 text-[#172B3A] dark:text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                    <User className="w-4 h-4" />
                   </div>
                 )}
               </div>
             );
           })}
 
-          {/* Loading indicator when waiting for Gemini 3.8 Flash */}
+          {/* Loading indicator when analyzing telemetry */}
           {isLoading && (
             <div className="flex gap-3 items-center text-xs text-[#00AFCB] dark:text-cyan-400">
               <div className="w-8 h-8 rounded-2xl bg-[#00AFCB]/15 text-[#00AFCB] dark:text-cyan-400 flex items-center justify-center shrink-0 border border-[#00AFCB]/30">
                 <Bot className="w-4 h-4 animate-bounce" />
               </div>
-              <div className="px-4 py-3 rounded-2xl bg-[#F4F8FC] dark:bg-slate-900/90 border border-[#D8E4ED] dark:border-slate-800 flex items-center gap-2">
+              <div className="px-4 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/90 border border-[#D8E4ED] dark:border-slate-800 flex items-center gap-2.5 shadow-xs">
                 <span className="flex space-x-1">
                   <span className="w-2 h-2 rounded-full bg-[#00AFCB] animate-bounce [animation-delay:-0.3s]"></span>
                   <span className="w-2 h-2 rounded-full bg-[#00AFCB] animate-bounce [animation-delay:-0.15s]"></span>
@@ -629,8 +689,8 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                 </span>
                 <span className="text-[11px] text-[#526779] dark:text-slate-400 font-medium">
                   {lang === 'kn'
-                    ? 'ಕರ್ನಾಟಕದ ಹವಾಮಾನ ಮತ್ತು ಉಪಗ್ರಹ ಡೇಟಾ ವಿಶ್ಲೇಷಿಸಲಾಗುತ್ತಿದೆ...'
-                    : 'Analyzing live Karnataka weather telemetry...'}
+                    ? 'ಅನಾಮಧೇಯವಾಗಿ ಹವಾಮಾನ ಮತ್ತು ಉಪಗ್ರಹ ಡೇಟಾ ವಿಶ್ಲೇಷಿಸಲಾಗುತ್ತಿದೆ...'
+                    : 'Analyzing live Karnataka weather telemetry anonymously...'}
                 </span>
               </div>
             </div>
@@ -639,11 +699,11 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Quick prompt suggestions */}
-        <div className="px-3.5 sm:px-6 py-2 border-t border-[#D8E4ED] dark:border-slate-800/80 bg-white/40 dark:bg-[#071328]/60 overflow-x-auto no-scrollbar flex items-center gap-2 flex-shrink-0">
-          <span className="text-[10px] uppercase font-bold text-[#687D8F] dark:text-slate-400 whitespace-nowrap flex items-center gap-1">
-            <HelpCircle className="w-3 h-3 text-[#00AFCB]" />
-            Suggestions:
+        {/* Quick prompt suggestions Carousel */}
+        <div className="px-4 sm:px-6 py-2 border-t border-[#D8E4ED]/60 dark:border-white/10 bg-white/40 dark:bg-[#071328]/60 overflow-x-auto no-scrollbar flex items-center gap-2 flex-shrink-0">
+          <span className="text-[10px] uppercase font-bold text-[#687D8F] dark:text-slate-400 whitespace-nowrap flex items-center gap-1 mr-1">
+            <HelpCircle className="w-3.5 h-3.5 text-[#00AFCB]" />
+            {lang === 'kn' ? 'ಪ್ರಶ್ನೆಗಳು:' : 'Quick Questions:'}
           </span>
           {[
             t.samplePrompt1,
@@ -656,15 +716,15 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
               key={idx}
               onClick={() => handleSendMessage(promptText)}
               disabled={isLoading}
-              className="water-droplet-pill px-3 py-1 rounded-full text-[11px] text-[#172B3A] dark:text-slate-200 whitespace-nowrap cursor-pointer shadow-xs"
+              className="water-droplet-pill px-3 py-1 rounded-full text-[11px] text-[#172B3A] dark:text-slate-200 whitespace-nowrap cursor-pointer hover:border-[#00AFCB]/40 transition"
             >
               {promptText}
             </button>
           ))}
         </div>
 
-        {/* Input Bar */}
-        <div className="p-3 sm:p-4 border-t border-[#D8E4ED]/60 dark:border-white/10 bg-white/60 dark:bg-[#071328]/60 backdrop-blur-md flex-shrink-0">
+        {/* Input Bar with Impeccable Button Alignments */}
+        <div className="p-3.5 sm:p-4 border-t border-[#D8E4ED]/60 dark:border-white/10 bg-white/60 dark:bg-[#071328]/60 backdrop-blur-md flex-shrink-0">
           {/* Active Voice Listening Banner if mic is recording */}
           {isListening && (
             <div className="mb-2 p-2 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-300 dark:border-cyan-500/40 flex items-center justify-between text-xs text-[#007A8E] dark:text-cyan-300 animate-pulse">
@@ -685,14 +745,15 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
             </div>
           )}
 
+          {/* Form Container with Exactly Aligned Centered Row */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSendMessage();
             }}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 sm:gap-2.5 h-11 sm:h-12"
           >
-            {/* Mic Button */}
+            {/* Mic Button - Circular Water Droplet */}
             <button
               type="button"
               onClick={() => {
@@ -702,7 +763,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                   startSpeechRecognition(false);
                 }
               }}
-              className={`water-droplet-btn p-2.5 sm:p-3 rounded-full transition cursor-pointer ${
+              className={`water-droplet-btn w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 transition cursor-pointer ${
                 isListening
                   ? 'bg-rose-500 text-white animate-pulse shadow-lg shadow-rose-500/30'
                   : 'text-[#00AFCB] dark:text-cyan-300'
@@ -713,36 +774,51 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
               {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
             </button>
 
-            {/* Input Field - Liquid Glass */}
-            <div className="water-droplet-search relative flex-1 px-3 py-1">
+            {/* Input Field - Liquid Glass Search Container */}
+            <div className="water-droplet-search h-11 sm:h-12 flex-1 flex items-center px-3.5 sm:px-4 gap-2">
               <input
                 type="text"
                 value={inputQuery}
                 onChange={(e) => setInputQuery(e.target.value)}
                 placeholder={t.typePromptPlaceholder}
-                className="w-full py-1.5 sm:py-2 bg-transparent border-none text-[#172B3A] dark:text-white placeholder-[#8B9EA8] dark:placeholder-slate-400 text-xs sm:text-sm focus:outline-none"
+                className="w-full h-full bg-transparent border-none text-[#172B3A] dark:text-white placeholder-[#8B9EA8] dark:placeholder-slate-400 text-xs sm:text-sm focus:outline-none"
               />
+              {inputQuery.trim() && (
+                <button
+                  type="button"
+                  onClick={() => setInputQuery('')}
+                  className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer"
+                  title="Clear input"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
 
-            {/* Send Button */}
+            {/* Send Button - Circular Water Droplet */}
             <button
               type="submit"
               disabled={!inputQuery.trim() || isLoading}
-              className={`water-droplet-btn p-2.5 sm:p-3 rounded-full font-bold transition flex items-center justify-center cursor-pointer ${
+              className={`water-droplet-btn w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 font-bold transition cursor-pointer ${
                 inputQuery.trim() && !isLoading
                   ? 'text-[#00AFCB] dark:text-cyan-300 shadow-md'
                   : 'opacity-40 cursor-not-allowed text-slate-400'
               }`}
-              title="Send question"
-              aria-label="Send question"
+              title="Send weather question"
+              aria-label="Send weather question"
             >
               <Send className="w-5 h-5" />
             </button>
           </form>
 
-          {/* Footer note with strict weather purpose disclosure */}
-          <div className="mt-2 text-center text-[10px] text-[#687D8F] dark:text-slate-400">
-            {t.aiDisclaimer} • {lang === 'kn' ? 'ಕೇವಲ ಹವಾಮಾನ ವಿಷಯಗಳಿಗೆ ಮಾತ್ರ ಉತ್ತರಿಸುತ್ತದೆ' : 'Strictly restricted to weather topics & SkyCast features'}
+          {/* Footer note with Anonymous & Definite Meteorological Assurance */}
+          <div className="mt-2.5 flex items-center justify-center gap-1.5 text-center text-[10px] text-[#687D8F] dark:text-slate-400">
+            <ShieldCheck className="w-3 h-3 text-emerald-500 shrink-0" />
+            <span>
+              {lang === 'kn'
+                ? '100% ಅನಾಮಧೇಯ ಮತ್ತು ಖಾಸಗಿ • ಹವಾಮಾನ ವಿಷಯಗಳಿಗೆ ಮಾತ್ರ ಸೀಮಿತ • ಲೈವ್ ಉಪಗ್ರಹ ಡೇಟಾ ಆಧಾರಿತ'
+                : '100% Anonymous & Private Inquiries • Strict Weather Focus • Live Satellite & Radar Grounded'}
+            </span>
           </div>
         </div>
       </div>

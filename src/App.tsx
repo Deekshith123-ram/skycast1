@@ -28,6 +28,7 @@ import { AIAssistantModal } from './components/AIAssistantModal';
 import { MobileActionBar } from './components/MobileActionBar';
 import { AndroidDownloadBanner } from './components/AndroidDownloadBanner';
 import { LoadingScreen } from './components/LoadingScreen';
+import { DynamicWeatherBackground } from './components/DynamicWeatherBackground';
 import { useAutoScrollControls } from './hooks/useAutoScrollControls';
 import { Loader2, AlertCircle } from 'lucide-react';
 
@@ -98,13 +99,20 @@ export default function App() {
         return JSON.parse(savedLoc);
       }
 
+      // Fallback to configured default locality in settings
+      if (userSettings.defaultLocalityId) {
+        const foundLoc = KARNATAKA_LOCALITIES.find((l) => l.id === userSettings.defaultLocalityId);
+        if (foundLoc) return foundLoc;
+      }
+
       // Fallback to saved default district
       const savedDefault = localStorage.getItem('skycast_default_district');
       if (savedDefault) {
         return JSON.parse(savedDefault);
       }
     } catch {}
-    return DEFAULT_LOCATION;
+    // Default to user's primary locality (Vasanth Nagar, Bengaluru Urban)
+    return KARNATAKA_LOCALITIES[0] || DEFAULT_LOCATION;
   });
 
   // Handler to set the user's default locality
@@ -179,11 +187,15 @@ export default function App() {
             const savedDefault = localStorage.getItem('skycast_default_district');
             if (savedDefault) {
               setCurrentLocation(JSON.parse(savedDefault));
-            } else if (settings.defaultLocation) {
-              setCurrentLocation(settings.defaultLocation);
-            } else if (settings.defaultDistrictId && settings.defaultDistrictId !== 'karnataka-all') {
-              const found = ALL_KARNATAKA_DISTRICTS.find((d) => d.id === settings.defaultDistrictId);
-              if (found) setCurrentLocation(found);
+            } else if (settings.defaultLocalityId) {
+              const foundLoc = KARNATAKA_LOCALITIES.find((l) => l.id === settings.defaultLocalityId);
+              if (foundLoc) {
+                setCurrentLocation(foundLoc);
+              } else {
+                setCurrentLocation(KARNATAKA_LOCALITIES[0]);
+              }
+            } else {
+              setCurrentLocation(KARNATAKA_LOCALITIES[0]);
             }
           } catch {}
         },
@@ -333,8 +345,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen app-ambient-background text-[#0F1D2E] dark:text-slate-100 flex flex-col font-body font-normal transition-colors duration-200 relative overflow-x-hidden">
-      {/* Abstract subtle stipple texture overlay (neutral, physical feel, non-cloud) */}
-      <div className="fixed inset-0 pointer-events-none z-0 app-texture-overlay" aria-hidden="true" />
+      {/* Dynamic Live Weather-Based Fixed Background (Rainy, Cloudy, Sunny, Night) */}
+      <DynamicWeatherBackground
+        weather={weatherData}
+        theme={theme}
+      />
 
       {/* Full-screen immersive Loading / Splash Screen with Satellite & Earth Background */}
       <LoadingScreen isLoading={isInitialLoading} />

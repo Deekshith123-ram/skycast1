@@ -211,47 +211,47 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
           </div>
 
           {/* Right: Sun Cycle & Atmospheric Summary */}
-          <div className="md:col-span-5 grid grid-cols-2 gap-3 pt-3 md:pt-0 md:border-l md:border-[#D8E4ED] dark:md:border-cyan-500/15 md:pl-6">
+          <div className="md:col-span-5 grid grid-cols-2 gap-3 pt-3 md:pt-0 md:border-l md:border-[#D8E4ED]/60 dark:md:border-cyan-500/15 md:pl-6">
             {/* Sunrise */}
-            <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-slate-900/50 border border-[#D8E4ED] dark:border-slate-800 flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-amber-100/90 text-amber-800 dark:bg-amber-500/15 dark:text-amber-400">
+            <div className="p-3 rounded-xl watery-sub-card flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400">
                 <Sunrise className="w-4 h-4" />
               </div>
               <div>
-                <span className="text-[10px] text-[#526779] dark:text-slate-400 uppercase tracking-wider block font-bold">{t.sunrise}</span>
+                <span className="text-[10px] text-[#526779] dark:text-slate-300 uppercase tracking-wider block font-bold">{t.sunrise}</span>
                 <span className="text-xs font-bold text-[#172B3A] dark:text-white font-mono">{today?.sunrise ?? '06:08 AM'}</span>
               </div>
             </div>
 
             {/* Sunset */}
-            <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-slate-900/50 border border-[#D8E4ED] dark:border-slate-800 flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-orange-100/90 text-orange-800 dark:bg-orange-500/15 dark:text-orange-400">
+            <div className="p-3 rounded-xl watery-sub-card flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-orange-500/15 text-orange-600 dark:text-orange-400">
                 <Sunset className="w-4 h-4" />
               </div>
               <div>
-                <span className="text-[10px] text-[#526779] dark:text-slate-400 uppercase tracking-wider block font-bold">{t.sunset}</span>
+                <span className="text-[10px] text-[#526779] dark:text-slate-300 uppercase tracking-wider block font-bold">{t.sunset}</span>
                 <span className="text-xs font-bold text-[#172B3A] dark:text-white font-mono">{today?.sunset ?? '06:18 PM'}</span>
               </div>
             </div>
 
             {/* Cloud Cover */}
-            <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-slate-900/50 border border-[#D8E4ED] dark:border-slate-800 flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-cyan-100/90 text-[#007A8E] dark:bg-cyan-500/15 dark:text-cyan-400">
+            <div className="p-3 rounded-xl watery-sub-card flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-cyan-500/15 text-[#007A8E] dark:text-cyan-400">
                 <Cloud className="w-4 h-4" />
               </div>
               <div>
-                <span className="text-[10px] text-[#526779] dark:text-slate-400 uppercase tracking-wider block font-bold">{t.cloudCover}</span>
+                <span className="text-[10px] text-[#526779] dark:text-slate-300 uppercase tracking-wider block font-bold">{t.cloudCover}</span>
                 <span className="text-xs font-bold text-[#172B3A] dark:text-white font-mono">{current.cloudCover}%</span>
               </div>
             </div>
 
             {/* Surface Pressure / Barometer */}
-            <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-slate-900/50 border border-[#D8E4ED] dark:border-slate-800 flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-100/90 text-[#2563EB] dark:bg-blue-500/15 dark:text-blue-400">
+            <div className="p-3 rounded-xl watery-sub-card flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-blue-500/15 text-[#2563EB] dark:text-blue-400">
                 <Wind className="w-4 h-4" />
               </div>
               <div>
-                <span className="text-[10px] text-[#526779] dark:text-slate-400 uppercase tracking-wider block font-bold">{t.barometer}</span>
+                <span className="text-[10px] text-[#526779] dark:text-slate-300 uppercase tracking-wider block font-bold">{t.barometer}</span>
                 <span className="text-xs font-bold text-[#172B3A] dark:text-white font-mono">{formattedPressure.value} {formattedPressure.unitLabel}</span>
               </div>
             </div>

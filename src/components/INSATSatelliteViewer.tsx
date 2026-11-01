@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { INSAT_PRODUCTS, INSATSectorProduct } from '../services/satelliteService';
-import { Radio, RefreshCw, ZoomIn, ZoomOut, Info, ShieldCheck, ExternalLink, Calendar, Satellite } from 'lucide-react';
+import { Radio, RefreshCw, Info, ShieldCheck, ExternalLink, Calendar, Satellite } from 'lucide-react';
 
 export const INSATSatelliteViewer: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<INSATSectorProduct>(INSAT_PRODUCTS[0]);
   const [currentImgUrl, setCurrentImgUrl] = useState<string>(INSAT_PRODUCTS[0]?.imageUrl || '');
-  const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [imgKey, setImgKey] = useState<number>(Date.now());
   const [isImgLoading, setIsImgLoading] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
@@ -14,7 +13,6 @@ export const INSATSatelliteViewer: React.FC = () => {
     setSelectedProduct(prod);
     setCurrentImgUrl(prod.imageUrl);
     setHasError(false);
-    setZoomLevel(1);
     setImgKey(Date.now());
   };
 
@@ -86,25 +84,6 @@ export const INSATSatelliteViewer: React.FC = () => {
           onClick={(e) => e.stopPropagation()}
           className="lg:col-span-3 relative rounded-xl overflow-hidden bg-[#030712] border border-cyan-500/20 min-h-[360px] md:min-h-[460px] flex items-center justify-center insat-image-viewport map-interaction-zone backdrop-blur-none"
         >
-          {/* Zoom controls overlay */}
-          <div className="water-droplet-pill absolute top-3 right-3 z-10 flex items-center gap-1.5 p-1 rounded-full">
-            <button
-              onClick={() => setZoomLevel((z) => Math.min(2.5, z + 0.25))}
-              className="water-droplet-btn p-1.5 rounded-full text-slate-300 hover:text-white cursor-pointer"
-              title="Zoom In"
-            >
-              <ZoomIn className="w-3.5 h-3.5" />
-            </button>
-            <span className="text-[10px] font-mono text-cyan-300 px-1 font-bold">{Math.round(zoomLevel * 100)}%</span>
-            <button
-              onClick={() => setZoomLevel((z) => Math.max(0.75, z - 0.25))}
-              className="water-droplet-btn p-1.5 rounded-full text-slate-300 hover:text-white cursor-pointer"
-              title="Zoom Out"
-            >
-              <ZoomOut className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
           {/* Timestamp and Channel Badge */}
           <div className="absolute top-3 left-3 z-10 flex items-center gap-2 bg-[#061022]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-cyan-500/25 text-[11px] text-cyan-300 font-mono">
             <Radio className="w-3 h-3 text-cyan-400 animate-pulse" />
@@ -128,8 +107,6 @@ export const INSATSatelliteViewer: React.FC = () => {
                   }
                 }}
                 style={{
-                  transform: `scale(${zoomLevel})`,
-                  transition: 'transform 0.2s ease-out',
                   maxWidth: '100%',
                   maxHeight: '520px',
                   objectFit: 'contain',

@@ -114,7 +114,10 @@ export async function fetchSatelliteRadarFrames(): Promise<{
     let res: Response;
     try {
       res = await fetch(proxyUrl);
-      if (!res.ok) res = await fetch(directUrl);
+      const ct = res.headers.get('content-type') || '';
+      if (!res.ok || !ct.includes('application/json')) {
+        res = await fetch(directUrl);
+      }
     } catch {
       res = await fetch(directUrl);
     }
@@ -170,16 +173,10 @@ export async function fetchSatelliteRadarFrames(): Promise<{
       }
     } catch {}
 
-    // Fallback with a stable genuine radar frame structure
+    // Fallback safely with empty frames so we don't attempt loading broken or expired hashes
     return {
       host: 'https://tilecache.rainviewer.com',
-      frames: [{
-        time: Math.floor(Date.now() / 1000),
-        path: '/v2/radar/5a2bb9512c16',
-        formattedTime: formatIST(Math.floor(Date.now() / 1000)),
-        relativeTime: 'Live Radar',
-        type: 'radar',
-      }],
+      frames: [],
       generatedTime: Math.floor(Date.now() / 1000),
     };
   }

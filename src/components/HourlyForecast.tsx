@@ -72,10 +72,10 @@ export const HourlyForecast: React.FC<HourlyForecastProps> = ({ hourly }) => {
         {hourly.map((item, idx) => (
           <div
             key={item.time}
-            className={`flex-shrink-0 w-32 p-3.5 rounded-xl border flex flex-col items-center justify-between transition-all shadow-sm backdrop-blur-md ${
+            className={`flex-shrink-0 w-32 p-3.5 rounded-xl border flex flex-col items-center justify-between transition-all shadow-sm watery-sub-card ${
               idx === 0
-                ? 'bg-[#E6F8FA]/70 dark:bg-cyan-950/45 border-[#00AFCB] dark:border-cyan-400/50 shadow-md ring-1 ring-[#00AFCB]'
-                : 'bg-white/45 dark:bg-slate-900/35 border-[#D8E4ED]/70 dark:border-slate-800/60 hover:border-[#00AFCB] dark:hover:border-cyan-500/40 hover:bg-white/60 dark:hover:bg-slate-900/50'
+                ? 'border-[#00AFCB] dark:border-cyan-400 shadow-md ring-1 ring-[#00AFCB] bg-[#00AFCB]/10'
+                : 'hover:border-[#00AFCB] dark:hover:border-cyan-500/50'
             }`}
           >
             {/* Hour time */}

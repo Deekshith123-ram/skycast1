@@ -85,7 +85,19 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
   const [showLegend, setShowLegend] = useState<boolean>(true);
   const [showDistrictRainPins, setShowDistrictRainPins] = useState<boolean>(defaultShowPins);
   const [districtsRainData, setDistrictsRainData] = useState<DistrictRainData[]>([]);
-  const [latestRadarPath, setLatestRadarPath] = useState<string>('');
+  const [latestRadarPath, setLatestRadarPath] = useState<string>(() => {
+    try {
+      const cached = localStorage.getItem('skycast_rainviewer_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        const radarFrames = (parsed.frames || []).filter((f: any) => f.path && f.path.startsWith('/v2/radar/'));
+        if (radarFrames.length > 0) {
+          return radarFrames[radarFrames.length - 1].path;
+        }
+      }
+    } catch {}
+    return '';
+  });
   const [tileHost, setTileHost] = useState<string>('https://tilecache.rainviewer.com');
   const [lastRefreshedTime, setLastRefreshedTime] = useState<string>('Live');
 
@@ -194,9 +206,8 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
         cloudLayer.addTo(map);
         cloudRef.current = cloudLayer;
 
-        if (showRadarOverClouds) {
-          const radarPath = latestRadarPath || '/v2/radar/3fb2c6f47f98';
-          const radarUrl = `${tileHost}${radarPath}/256/{z}/{x}/{y}/2/1_1.png`;
+        if (showRadarOverClouds && latestRadarPath) {
+          const radarUrl = `${tileHost}${latestRadarPath}/256/{z}/{x}/{y}/2/1_1.png`;
           const radarLayer = L.tileLayer(radarUrl, {
             maxNativeZoom: 12,
             maxZoom: 18,
@@ -207,16 +218,17 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
           radarRef.current = radarLayer;
         }
       } else if (activeLayer === 'radar_rain') {
-        const radarPath = latestRadarPath || '/v2/radar/bc219f2d9518';
-        const radarUrl = `${tileHost}${radarPath}/256/{z}/{x}/{y}/2/1_1.png`;
-        const radarLayer = L.tileLayer(radarUrl, {
-          maxNativeZoom: 12,
-          maxZoom: 18,
-          minZoom: 4,
-          opacity: layerOpacity,
-          tileSize: 256,
-        }).addTo(map);
-        radarRef.current = radarLayer;
+        if (latestRadarPath) {
+          const radarUrl = `${tileHost}${latestRadarPath}/256/{z}/{x}/{y}/2/1_1.png`;
+          const radarLayer = L.tileLayer(radarUrl, {
+            maxNativeZoom: 12,
+            maxZoom: 18,
+            minZoom: 4,
+            opacity: layerOpacity,
+            tileSize: 256,
+          }).addTo(map);
+          radarRef.current = radarLayer;
+        }
       }
     },
     [activeLayer, layerOpacity, showRadarOverClouds, latestRadarPath, tileHost]
