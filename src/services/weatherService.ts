@@ -212,6 +212,8 @@ export async function fetchWeatherData(location: LocationData): Promise<WeatherD
       lastUpdated: now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) + ' IST',
       isStale: false,
       isEstimate: location.isEstimate ?? false,
+      dataSource: location.isEstimate ? 'estimated' : 'live',
+      cachedAt: now.getTime(),
     };
 
     // Cache locally
@@ -231,18 +233,24 @@ export async function fetchWeatherData(location: LocationData): Promise<WeatherD
       if (cached) {
         const parsed = JSON.parse(cached) as WeatherData;
         parsed.isStale = true;
-        parsed.isEstimate = true;
+        parsed.dataSource = 'cached';
+        if (!parsed.cachedAt) {
+          parsed.cachedAt = Date.now();
+        }
         return parsed;
       }
     } catch {
       // ignore
     }
 
-    // Default fallback values if network fails on first run
+    // Explicit fallback values if network and cache fail on first run
     const now = new Date();
     return {
       location,
       isEstimate: true,
+      isStale: true,
+      dataSource: 'estimated',
+      cachedAt: undefined,
       current: {
         temperature: 28,
         apparentTemperature: 29,
@@ -317,8 +325,7 @@ export async function fetchWeatherData(location: LocationData): Promise<WeatherD
         sunset: '06:18 PM',
         uvIndexMax: 7.5,
       })),
-      lastUpdated: now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }) + ' IST (Cached)',
-      isStale: true,
+      lastUpdated: now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }) + ' IST (Offline Estimate)',
     };
   }
 }
@@ -344,6 +351,7 @@ export async function fetchAllKarnatakaDistrictsRain(): Promise<DistrictRainData
 
     const data = await res.json();
     const results: DistrictRainData[] = [];
+    const nowTimestamp = Date.now();
 
     // When multiple coordinates are requested, Open-Meteo returns an Array of result objects matching the order of requested coordinates
     const items = Array.isArray(data) ? data : [data];
@@ -384,11 +392,19 @@ export async function fetchAllKarnatakaDistrictsRain(): Promise<DistrictRainData
         weatherCode: wCode,
         weatherDescription: getWeatherDescription(wCode).description,
         region: dist.region,
+        dataSource: 'live',
+        cachedAt: nowTimestamp,
+        isEstimate: false,
+        isStale: false,
       };
 
       // Store in individual per-district cache so each district's data is isolated
       try {
-        localStorage.setItem(`skycast_district_weather_${dist.id}`, JSON.stringify(districtResult));
+        localStorage.setItem(`skycast_district_weather_${dist.id}`, JSON.stringify({
+          ...districtResult,
+          dataSource: 'cached',
+          isStale: true,
+        }));
       } catch {}
 
       results.push(districtResult);
@@ -396,7 +412,11 @@ export async function fetchAllKarnatakaDistrictsRain(): Promise<DistrictRainData
 
     // Cache overall list
     try {
-      localStorage.setItem(KARNATAKA_RAIN_CACHE_KEY, JSON.stringify(results));
+      localStorage.setItem(KARNATAKA_RAIN_CACHE_KEY, JSON.stringify(results.map(r => ({
+        ...r,
+        dataSource: 'cached',
+        isStale: true,
+      }))));
     } catch {}
 
     return results;
@@ -412,7 +432,13 @@ export async function fetchAllKarnatakaDistrictsRain(): Promise<DistrictRainData
         if (itemCache) {
           const parsed = JSON.parse(itemCache);
           if (parsed && typeof parsed.latitude === 'number' && parsed.id === dist.id) {
-            fallbackResults.push(parsed);
+            fallbackResults.push({
+              ...parsed,
+              dataSource: 'cached',
+              isStale: true,
+              isEstimate: parsed.isEstimate ?? false,
+              cachedAt: parsed.cachedAt || Date.now(),
+            });
             continue;
           }
         }
@@ -442,6 +468,9 @@ export async function fetchAllKarnatakaDistrictsRain(): Promise<DistrictRainData
         weatherCode: isCoastal ? 61 : 2,
         weatherDescription: isCoastal ? 'Slight Rain' : 'Partly Cloudy',
         region: dist.region,
+        dataSource: 'estimated',
+        isEstimate: true,
+        isStale: true,
       });
     }
 

@@ -29,6 +29,16 @@ import {
   formatPressure,
 } from '../services/settingsService';
 
+function formatCacheAge(timestamp?: number): string {
+  if (!timestamp) return '';
+  const sec = Math.floor((Date.now() - timestamp) / 1000);
+  if (sec < 60) return 'just now';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.floor(min / 60);
+  return `${hr}h ago`;
+}
+
 interface CurrentWeatherProps {
   data: WeatherData;
   onRefresh?: () => void;
@@ -144,7 +154,7 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
               </span>
               <span>•</span>
               <span className="font-semibold">{t.elevation}: ~{location.elevation ?? 650} m</span>
-              {(location.isEstimate || data.isEstimate) && (
+              {(location.isEstimate || data.isEstimate || data.dataSource === 'estimated') && (
                 <>
                   <span>•</span>
                   <span className="text-amber-700 dark:text-amber-400 font-bold">
@@ -152,12 +162,25 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
                   </span>
                 </>
               )}
+              {data.dataSource === 'cached' && !data.isEstimate && (
+                <>
+                  <span>•</span>
+                  <span className="text-blue-700 dark:text-blue-400 font-bold">
+                    ({lang === 'kn' ? 'ಸಂಗ್ರಹಿಸಿದ ಹವಾಮಾನ' : 'Cached Data'}{data.cachedAt ? ` • ${formatCacheAge(data.cachedAt)}` : ''})
+                  </span>
+                </>
+              )}
             </div>
           </div>
 
           <div className="flex items-center gap-2.5">
-            {(location.isEstimate || data.isEstimate) ? (
-              <span className="water-droplet-pill flex items-center gap-1.5 px-3 py-1 rounded-full text-amber-800 dark:text-amber-300 text-xs font-bold shadow-sm" title="Weather data estimated from closest meteorological station/model">
+            {data.dataSource === 'cached' || (data.isStale && !data.isEstimate && data.dataSource !== 'estimated') ? (
+              <span className="water-droplet-pill flex items-center gap-1.5 px-3 py-1 rounded-full text-blue-800 dark:text-blue-300 text-xs font-bold shadow-sm" title={data.cachedAt ? `Cached telemetry from ${formatCacheAge(data.cachedAt)}` : 'Cached weather telemetry'}>
+                <span className="h-2 w-2 rounded-full bg-blue-500" />
+                <span>{lang === 'kn' ? 'ಸಂಗ್ರಹಿಸಿದ ಮಾಹಿತಿ' : 'Cached'}{data.cachedAt ? ` (${formatCacheAge(data.cachedAt)})` : ''}</span>
+              </span>
+            ) : (location.isEstimate || data.isEstimate || data.dataSource === 'estimated') ? (
+              <span className="water-droplet-pill flex items-center gap-1.5 px-3 py-1 rounded-full text-amber-800 dark:text-amber-300 text-xs font-bold shadow-sm" title="Weather data estimated from climatological models">
                 <span className="h-2 w-2 rounded-full bg-amber-500" />
                 <span>{lang === 'kn' ? 'ಅಂದಾಜು' : 'Estimate'}</span>
               </span>
@@ -190,7 +213,7 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
             <div>
               <div className="flex items-baseline gap-2">
                 <span className="font-display text-5xl md:text-6xl font-extrabold text-[#172B3A] dark:text-white tracking-tighter">
-                  {mainTemp.value}°
+                  {(data.isEstimate || data.dataSource === 'estimated') ? `~${mainTemp.value}` : mainTemp.value}°
                 </span>
                 <span className="font-display text-2xl font-bold text-slate-700 dark:text-slate-300">
                   {tempUnit === 'fahrenheit' ? 'F' : 'C'}

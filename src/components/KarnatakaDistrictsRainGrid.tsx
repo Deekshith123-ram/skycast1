@@ -9,6 +9,16 @@ import {
 
 import { DistrictCardAtmosphereAnimation } from './DistrictCardAtmosphereAnimation';
 
+function formatTimeAgo(timestamp?: number): string {
+  if (!timestamp) return '';
+  const sec = Math.floor((Date.now() - timestamp) / 1000);
+  if (sec < 60) return 'just now';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.floor(min / 60);
+  return `${hr}h ago`;
+}
+
 interface KarnatakaDistrictsRainGridProps {
   districts: DistrictRainData[];
   selectedLocation: LocationData;
@@ -48,6 +58,8 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
 
   // Summary counts
   const highRiskCount = districts.filter((d) => d.rainProbability >= 60).length;
+  const isEstimated = districts.some((d) => d.dataSource === 'estimated' || d.isEstimate);
+  const isCached = !isEstimated && districts.some((d) => d.dataSource === 'cached' || d.isStale);
 
   return (
     <div className="w-full glass-panel rounded-2xl p-5 md:p-6 transition-colors duration-200">
@@ -75,8 +87,23 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
               {highRiskCount} Districts High Rain Risk (&ge;60%)
             </span>
           )}
-          <span className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-[#D8E4ED] dark:border-slate-700 text-xs font-mono font-semibold">
-            31 Districts Active
+          <span className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-[#D8E4ED] dark:border-slate-700 text-xs font-mono font-semibold flex items-center gap-1.5">
+            {isEstimated ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                <span>31 Districts (Offline Est.)</span>
+              </>
+            ) : isCached ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                <span>31 Districts (Cached)</span>
+              </>
+            ) : (
+              <>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>31 Districts Live</span>
+              </>
+            )}
           </span>
         </div>
       </div>
@@ -206,7 +233,22 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
                       <MapPin className={`w-3 h-3 ${isSelected ? 'text-[#00AFCB] dark:text-cyan-400' : 'text-[#00AFCB]'}`} />
                       <span>{d.district}</span>
                     </h4>
-                    <span className="text-[10px] text-slate-700 dark:text-slate-300 block mt-0.5 font-semibold">{d.region}</span>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[10px] text-slate-700 dark:text-slate-300 font-semibold">{d.region}</span>
+                      {d.dataSource === 'estimated' || d.isEstimate ? (
+                        <span className="text-[9px] px-1 py-0.2 rounded bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-bold border border-amber-300/40">
+                          Est.
+                        </span>
+                      ) : d.dataSource === 'cached' || d.isStale ? (
+                        <span className="text-[9px] px-1 py-0.2 rounded bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 font-bold border border-blue-300/40" title={d.cachedAt ? `Cached ${formatTimeAgo(d.cachedAt)}` : 'Cached'}>
+                          Cached{d.cachedAt ? ` (${formatTimeAgo(d.cachedAt)})` : ''}
+                        </span>
+                      ) : (
+                        <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-300/40">
+                          Live
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Rain Probability Pill */}
@@ -245,10 +287,17 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
                   </span>
                   <span className="text-slate-700 dark:text-slate-300 font-mono font-medium">
                     {typeof d.temp === 'number' ? (
-                      <>
-                        <strong className="text-slate-900 dark:text-white font-bold">{d.temp}°C</strong>{' '}
-                        <span className="text-[10px] text-slate-600 dark:text-slate-400">({d.tempMin}°/{d.tempMax}°)</span>
-                      </>
+                      (d.dataSource === 'estimated' || d.isEstimate) ? (
+                        <>
+                          <strong className="text-amber-800 dark:text-amber-300 font-bold" title="Climatological estimate">~{d.temp}°C</strong>{' '}
+                          <span className="text-[10px] text-amber-700 dark:text-amber-400 font-medium">(Est.)</span>
+                        </>
+                      ) : (
+                        <>
+                          <strong className="text-slate-900 dark:text-white font-bold">{d.temp}°C</strong>{' '}
+                          <span className="text-[10px] text-slate-600 dark:text-slate-400">({d.tempMin}°/{d.tempMax}°)</span>
+                        </>
+                      )
                     ) : (
                       <>{d.tempMin}° / <strong className="text-slate-900 dark:text-white font-bold">{d.tempMax}°C</strong></>
                     )}

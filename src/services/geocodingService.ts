@@ -563,7 +563,20 @@ export async function searchLocations(query: string): Promise<LocationData[]> {
       const omUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
         cleanQuery
       )}&count=8&language=en&format=json`;
-      const omRes = await fetch(omUrl, { signal: controller.signal });
+      const proxyOmUrl = omUrl.replace('https://geocoding-api.open-meteo.com', '/api/geocoding-open-meteo');
+
+      let omRes: Response;
+      try {
+        const res = await fetch(proxyOmUrl, { signal: controller.signal });
+        const contentType = res.headers.get('content-type') || '';
+        if (res.ok && contentType.includes('application/json')) {
+          omRes = res;
+        } else {
+          omRes = await fetch(omUrl, { signal: controller.signal });
+        }
+      } catch {
+        omRes = await fetch(omUrl, { signal: controller.signal });
+      }
       if (omRes.ok) {
         const omData = await omRes.json();
         if (omData.results && Array.isArray(omData.results)) {

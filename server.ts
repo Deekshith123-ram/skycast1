@@ -1,4 +1,5 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import type { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -353,11 +354,24 @@ app.get('/api/rainviewer/public/weather-maps.json', async (_req: Request, res: R
   }
 });
 
+// Health check endpoint for Cloud Run and container readiness
+app.get('/api/health', (_req: Request, res: Response) => {
+  res.json({ status: 'ok', service: 'skycast', timestamp: new Date().toISOString() });
+});
+
 // GET /api/open-meteo/* endpoint to proxy queries to Open-Meteo API
-app.get('/api/open-meteo/*', async (req: Request, res: Response) => {
+// Uses RegExp to guarantee full compatibility with both Express 4 and Express 5 (where un-named wildcards throw)
+app.get(/^\/api\/open-meteo(?:\/(.*))?$/, async (req: Request, res: Response) => {
   try {
-    const targetPath = req.url.replace(/^\/api\/open-meteo/, '');
+    const rawUrl = req.originalUrl || req.url;
+    let targetPath = rawUrl.replace(/^\/api\/open-meteo/, '');
+    if (!targetPath.startsWith('/')) {
+      targetPath = '/' + targetPath;
+    }
+    // Prevent protocol-relative URL overrides (e.g. //attacker.com) while keeping upstream host strictly fixed
+    targetPath = targetPath.replace(/^\/{2,}/, '/');
     const upstreamUrl = `https://api.open-meteo.com${targetPath}`;
+
     const upstreamRes = await fetch(upstreamUrl, {
       headers: {
         'User-Agent': 'SkyCastWeatherApp/2.5 (Karnataka-Live-Weather)',
@@ -378,10 +392,18 @@ app.get('/api/open-meteo/*', async (req: Request, res: Response) => {
 });
 
 // GET /api/geocoding-open-meteo/* endpoint to proxy queries to Geocoding Open-Meteo API
-app.get('/api/geocoding-open-meteo/*', async (req: Request, res: Response) => {
+// Uses RegExp to guarantee full compatibility with both Express 4 and Express 5
+app.get(/^\/api\/geocoding-open-meteo(?:\/(.*))?$/, async (req: Request, res: Response) => {
   try {
-    const targetPath = req.url.replace(/^\/api\/geocoding-open-meteo/, '');
+    const rawUrl = req.originalUrl || req.url;
+    let targetPath = rawUrl.replace(/^\/api\/geocoding-open-meteo/, '');
+    if (!targetPath.startsWith('/')) {
+      targetPath = '/' + targetPath;
+    }
+    // Prevent protocol-relative URL overrides while keeping upstream host strictly fixed
+    targetPath = targetPath.replace(/^\/{2,}/, '/');
     const upstreamUrl = `https://geocoding-api.open-meteo.com${targetPath}`;
+
     const upstreamRes = await fetch(upstreamUrl, {
       headers: {
         'User-Agent': 'SkyCastWeatherApp/2.5 (Karnataka-Live-Weather)',

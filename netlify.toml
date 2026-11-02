@@ -2,3 +2,31 @@
   command = "npm run build"
   publish = "dist"
 
+# Proxy Open-Meteo weather forecast requests to fixed upstream host
+[[redirects]]
+  from = "/api/open-meteo/*"
+  to = "https://api.open-meteo.com/:splat"
+  status = 200
+  force = true
+
+# Proxy Geocoding Open-Meteo requests to fixed upstream host
+[[redirects]]
+  from = "/api/geocoding-open-meteo/*"
+  to = "https://geocoding-api.open-meteo.com/:splat"
+  status = 200
+  force = true
+
+# Proxy RainViewer telemetry
+[[redirects]]
+  from = "/api/rainviewer/*"
+  to = "https://api.rainviewer.com/:splat"
+  status = 200
+  force = true
+
+# SPA client routing fallback
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+

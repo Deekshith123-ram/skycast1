@@ -13,6 +13,8 @@ export interface LocationData {
   isEstimate?: boolean;
 }
 
+export type WeatherDataSource = 'live' | 'cached' | 'estimated' | 'unavailable';
+
 export interface DistrictRainData {
   id: string;
   name: string;
@@ -29,6 +31,10 @@ export interface DistrictRainData {
   weatherCode: number;
   weatherDescription: string;
   region: 'Coastal' | 'Malnad (Ghats)' | 'North Interior' | 'South Interior';
+  dataSource?: WeatherDataSource;
+  cachedAt?: number;
+  isEstimate?: boolean;
+  isStale?: boolean;
 }
 
 export interface CurrentWeather {
@@ -96,6 +102,8 @@ export interface WeatherData {
   lastUpdated: string;
   isStale?: boolean;
   isEstimate?: boolean;
+  dataSource?: WeatherDataSource;
+  cachedAt?: number;
 }
 
 export type MapLayerType =
