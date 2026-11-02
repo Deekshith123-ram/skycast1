@@ -237,10 +237,20 @@ export default function App() {
     }
   }, [weatherData, error]);
 
-  // Theme state: dark default, syncs with html class & localStorage
+  // Theme state: dark mode as default when opening the web
   const [theme, setThemeState] = useState<'dark' | 'light'>(() => {
-    const saved = localStorage.getItem('skycast_theme');
-    return (saved === 'light' || saved === 'dark') ? saved : 'dark';
+    try {
+      const sessionSaved = sessionStorage.getItem('skycast_theme');
+      if (sessionSaved === 'light' || sessionSaved === 'dark') {
+        return sessionSaved;
+      }
+    } catch {}
+    // Whenever user opens the web, default to dark mode
+    try {
+      localStorage.setItem('skycast_theme', 'dark');
+      sessionStorage.setItem('skycast_theme', 'dark');
+    } catch {}
+    return 'dark';
   });
 
   const applyTheme = useCallback((tMode: 'dark' | 'light') => {
@@ -259,7 +269,10 @@ export default function App() {
 
   const setTheme = (tMode: 'dark' | 'light') => {
     setThemeState(tMode);
-    localStorage.setItem('skycast_theme', tMode);
+    try {
+      localStorage.setItem('skycast_theme', tMode);
+      sessionStorage.setItem('skycast_theme', tMode);
+    } catch {}
     applyTheme(tMode);
   };
 

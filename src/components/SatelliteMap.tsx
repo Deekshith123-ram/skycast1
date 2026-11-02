@@ -577,17 +577,17 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
 
         {/* Top Floating Bar: Status, Layer Switcher, and Fit Button */}
         <div className="absolute top-3 inset-x-3 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
-          {/* Left: Live Status Chip */}
-          <div className="water-droplet-pill pointer-events-auto flex items-center gap-2 px-3 py-1.5 rounded-full text-xs shadow-md">
-            <span className="relative flex h-2 w-2">
+          {/* Left: Live Status Chip - Bold Line & Crystal-Clear Visibility */}
+          <div className="pointer-events-auto flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold shadow-lg border-2 border-[#009BB2] dark:border-cyan-400 bg-white/95 dark:bg-[#071328]/95 backdrop-blur-md ring-1 ring-[#00AFCB]/40 dark:ring-cyan-400/40 text-[#07101C] dark:text-white transition">
+            <span className="relative flex h-2 w-2 shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span className="font-bold text-[#172B3A] dark:text-white flex items-center gap-1.5">
-              <Satellite className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
+            <span className="font-extrabold text-[#07101C] dark:text-white flex items-center gap-1.5 tracking-tight">
+              <Satellite className="w-4 h-4 text-[#008DA5] dark:text-cyan-300 stroke-[2.5]" />
               {lang === 'kn' ? 'ಕರ್ನಾಟಕ ಉಪಗ್ರಹ ಮೋಡಗಳು' : 'Karnataka Satellite Clouds'}
             </span>
-            <span className="text-[10px] text-slate-700 dark:text-slate-300 border-l border-slate-300 dark:border-slate-700 pl-2 font-mono font-medium hidden sm:inline">
+            <span className="text-[10px] text-slate-800 dark:text-slate-200 border-l-2 border-[#009BB2]/50 dark:border-cyan-400/50 pl-2 font-mono font-bold hidden sm:inline">
               {lastRefreshedTime}
             </span>
           </div>
@@ -620,15 +620,15 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
               <span className="hidden sm:inline">{t.pins31}</span>
             </button>
 
-            {/* Map Layers Button */}
+            {/* Map Layers Button - Bold Line & High Visibility */}
             <button
               type="button"
               onClick={() => setShowLayerMenu(true)}
-              className="water-droplet-btn flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-[#172B3A] dark:text-white shadow-md cursor-pointer transition"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold text-[#07101C] dark:text-white border-2 border-[#009BB2] dark:border-cyan-400 bg-white/95 dark:bg-[#071328]/95 hover:bg-[#E6F8FA] dark:hover:bg-cyan-950/70 shadow-lg ring-1 ring-[#00AFCB]/40 dark:ring-cyan-400/40 cursor-pointer transition active:scale-95"
               title={t.layers}
             >
-              <Layers className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
-              <span>{t.layers}</span>
+              <Layers className="w-4 h-4 text-[#008DA5] dark:text-cyan-300 stroke-[2.5]" />
+              <span className="font-extrabold">{t.layers}</span>
             </button>
 
             {/* Fullscreen Map Button (Arrow Symbol) */}
@@ -713,13 +713,13 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
                 <div>
-                  <h3 className="font-display text-xs sm:text-sm font-bold text-[#172B3A] dark:text-white flex items-center gap-1.5">
-                    <Satellite className="w-4 h-4 text-[#00AFCB] dark:text-cyan-400" />
-                    <span>
+                  <div className="flex items-center gap-2 px-3 py-1 rounded-full border-2 border-[#009BB2] dark:border-cyan-400 bg-white/95 dark:bg-[#071328]/95 shadow-sm">
+                    <Satellite className="w-4 h-4 text-[#008DA5] dark:text-cyan-300 stroke-[2.5]" />
+                    <h3 className="font-display text-xs sm:text-sm font-extrabold text-[#07101C] dark:text-white tracking-tight">
                       {lang === 'kn' ? 'ಕರ್ನಾಟಕ ಉಪಗ್ರಹ ಮೋಡಗಳು — ಪೂರ್ಣ ಪರದೆ' : 'Karnataka Satellite Clouds & Radar — Fullscreen'}
-                    </span>
-                  </h3>
-                  <p className="text-[10px] text-[#526779] dark:text-slate-400 hidden sm:block">
+                    </h3>
+                  </div>
+                  <p className="text-[10px] text-slate-800 dark:text-slate-300 font-semibold hidden sm:block mt-0.5 ml-1">
                     {lastRefreshedTime} • {t.satelliteMapSubtitle}
                   </p>
                 </div>
@@ -753,15 +753,15 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                   <span className="hidden sm:inline">{t.pins31}</span>
                 </button>
 
-                {/* Layers Switcher */}
+                {/* Layers Switcher - Bold Line & High Visibility */}
                 <button
                   type="button"
                   onClick={() => setShowLayerMenu(true)}
-                  className="water-droplet-btn flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-[#172B3A] dark:text-white shadow-md cursor-pointer transition"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold text-[#07101C] dark:text-white border-2 border-[#009BB2] dark:border-cyan-400 bg-white/95 dark:bg-[#071328]/95 hover:bg-[#E6F8FA] dark:hover:bg-cyan-950/70 shadow-lg ring-1 ring-[#00AFCB]/40 dark:ring-cyan-400/40 cursor-pointer transition active:scale-95"
                   title={t.layers}
                 >
-                  <Layers className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
-                  <span>{t.layers}</span>
+                  <Layers className="w-4 h-4 text-[#008DA5] dark:text-cyan-300 stroke-[2.5]" />
+                  <span className="font-extrabold">{t.layers}</span>
                 </button>
 
                 {/* Exit Fullscreen Button */}
@@ -900,27 +900,27 @@ export const SatelliteMap: React.FC<SatelliteMapProps> = ({
                         onClick={() => {
                           setActiveLayer(opt.id);
                         }}
-                        className={`water-droplet-pill w-full text-left p-3.5 rounded-2xl cursor-pointer flex items-start justify-between gap-3 ${
+                        className={`w-full text-left p-3.5 rounded-2xl cursor-pointer flex items-start justify-between gap-3 transition ${
                           isCurrent
-                            ? 'water-droplet-pill-active ring-2 ring-[#00AFCB]/40'
-                            : ''
+                            ? 'border-2 border-[#009BB2] dark:border-cyan-400 bg-[#E6F8FA] dark:bg-cyan-950/40 shadow-md ring-2 ring-[#00AFCB]/40'
+                            : 'border-2 border-[#D8E4ED] dark:border-slate-800 bg-white/90 dark:bg-slate-900/60 hover:border-[#009BB2]/60 dark:hover:border-cyan-500/60'
                         }`}
                       >
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-bold text-xs sm:text-sm text-[#172B3A] dark:text-white">
+                            <span className="font-extrabold text-xs sm:text-sm text-[#07101C] dark:text-white">
                               {opt.name}
                             </span>
-                            <span className="px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-[#00AFCB]/15 text-[#007A8E] dark:text-cyan-300 border border-[#00AFCB]/30">
+                            <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-[#00AFCB]/20 text-[#007A8E] dark:text-cyan-300 border border-[#00AFCB]/40">
                               {opt.tag}
                             </span>
                           </div>
-                          <p className="text-[11px] text-slate-700 dark:text-slate-300 font-medium mt-1 leading-relaxed">
+                          <p className="text-[11px] text-slate-800 dark:text-slate-200 font-medium mt-1 leading-relaxed">
                             {opt.description}
                           </p>
                         </div>
                         {isCurrent && (
-                          <div className="p-1 rounded-full bg-[#00AFCB] text-white flex-shrink-0 mt-0.5 shadow-sm">
+                          <div className="p-1 rounded-full bg-[#009BB2] dark:bg-cyan-400 text-white dark:text-slate-950 flex-shrink-0 mt-0.5 shadow-sm">
                             <Check className="w-3.5 h-3.5 stroke-[3]" />
                           </div>
                         )}
