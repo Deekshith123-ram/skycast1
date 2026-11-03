@@ -1,98 +1,80 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
 }
 
+const isRunningStandalone = (): boolean => {
+  if (typeof window === 'undefined') return false;
+
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.matchMedia('(display-mode: fullscreen)').matches ||
+    (window.navigator as Navigator & { standalone?: boolean }).standalone === true
+  );
+};
+
 export function usePWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [isInstalled, setIsInstalled] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    const isStandalone =
-      window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as unknown as { standalone?: boolean }).standalone === true ||
-      document.referrer.includes('android-app://') ||
-      localStorage.getItem('skycast_app_downloaded') === 'true' ||
-      localStorage.getItem('skycast_app_installed') === 'true';
-    return isStandalone;
-  });
-
-  const [isAndroid, setIsAndroid] = useState<boolean>(false);
-  const [isIOS, setIsIOS] = useState<boolean>(false);
+  const [isInstalled, setIsInstalled] = useState<boolean>(isRunningStandalone);
+  const [isAndroid, setIsAndroid] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
-    // Detect standalone mode (already installed & running as app)
-    const checkInstalled = () => {
-      const standalone =
-        window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as unknown as { standalone?: boolean }).standalone === true ||
-        document.referrer.includes('android-app://') ||
-        localStorage.getItem('skycast_app_downloaded') === 'true' ||
-        localStorage.getItem('skycast_app_installed') === 'true';
-      setIsInstalled(standalone);
-    };
+    const userAgent = window.navigator.userAgent || '';
+    setIsAndroid(/android/i.test(userAgent));
+    setIsIOS(/iphone|ipad|ipod/i.test(userAgent));
 
-    checkInstalled();
+    const standaloneQuery = window.matchMedia('(display-mode: standalone)');
+    const updateInstalledState = () => setIsInstalled(isRunningStandalone());
 
-    // Detect device OS
-    const userAgent = (window.navigator?.userAgent || '').toLowerCase();
-    const isAndroidDevice = /android/i.test(userAgent);
-    const isIOSDevice = /iphone|ipad|ipod/i.test(userAgent);
-    setIsAndroid(isAndroidDevice);
-    setIsIOS(isIOSDevice);
-
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setDeferredPrompt(event as BeforeInstallPromptEvent);
     };
 
     const handleAppInstalled = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
-      localStorage.setItem('skycast_app_downloaded', 'true');
-      localStorage.setItem('skycast_app_installed', 'true');
     };
 
+    standaloneQuery.addEventListener?.('change', updateInstalledState);
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
+      standaloneQuery.removeEventListener?.('change', updateInstalledState);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
-  const markAsDownloaded = useCallback(() => {
-    setIsInstalled(true);
-    localStorage.setItem('skycast_app_downloaded', 'true');
-    localStorage.setItem('skycast_app_installed', 'true');
-  }, []);
-
-  const install = async (): Promise<boolean> => {
+  const install = useCallback(async (): Promise<boolean> => {
     if (!deferredPrompt) return false;
+
     try {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
+      setDeferredPrompt(null);
+
       if (outcome === 'accepted') {
-        markAsDownloaded();
-        setDeferredPrompt(null);
+        // appinstalled / standalone mode is the source of truth for installed state.
         return true;
       }
-    } catch (err) {
-      console.warn('Install prompt error:', err);
+    } catch (error) {
+      console.warn('SkyCast install prompt failed:', error);
     }
+
     return false;
-  };
+  }, [deferredPrompt]);
 
   return {
-    isInstallable: !!deferredPrompt,
+    isInstallable: Boolean(deferredPrompt),
     isInstalled,
     isAndroid,
     isIOS,
     install,
-    markAsDownloaded,
-    deferredPrompt,
   };
 }
 

@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig, Plugin } from 'vite';
 import { fileURLToPath } from 'node:url';
+import { VitePWA } from 'vite-plugin-pwa';
 import { handleGeminiChat } from './src/server/geminiApiHandler.ts';
 
 const __dirname = typeof import.meta.dirname !== 'undefined' ? import.meta.dirname : path.dirname(fileURLToPath(import.meta.url));
@@ -20,7 +21,26 @@ function geminiApiPlugin(): Plugin {
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss(), geminiApiPlugin()],
+    plugins: [
+      react(),
+      tailwindcss(),
+      geminiApiPlugin(),
+      VitePWA({
+        // The project already owns public/manifest.json; do not generate a second manifest.
+        manifest: false,
+        registerType: 'autoUpdate',
+        injectRegister: 'auto',
+        includeAssets: ['icon.svg', 'apple-touch-icon.png'],
+        workbox: {
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2,ttf}'],
+          cleanupOutdatedCaches: true,
+          clientsClaim: true,
+          skipWaiting: true,
+          // Keep live weather/API responses out of the precache so updated data is fetched online.
+        },
+      }),
+    ],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
