@@ -74,8 +74,10 @@ export default function App() {
         if (savedDefaultLocality) {
           return JSON.parse(savedDefaultLocality);
         }
-        const foundLoc = KARNATAKA_LOCALITIES.find((l) => l.id === userSettings.defaultLocalityId);
-        if (foundLoc) return foundLoc;
+        if (userSettings.defaultLocalityId) {
+          const foundLoc = KARNATAKA_LOCALITIES.find((l) => l.id === userSettings.defaultLocalityId);
+          if (foundLoc) return foundLoc;
+        }
       }
 
       // If user configured fixed default district, start directly at that default district!
@@ -87,33 +89,89 @@ export default function App() {
         if (found) return found;
       }
 
-      // If user prefers current live location, load cached position first so initial render is instant
+      // If user prefers current live location, load cached position for this device if previously saved
       const cached = localStorage.getItem('skycast_user_location');
       if (cached) {
         return JSON.parse(cached);
       }
 
-      // Fallback to saved default locality
+      // Fallback to user-saved default locality if previously explicitly chosen
       const savedLoc = localStorage.getItem('skycast_default_locality');
       if (savedLoc) {
         return JSON.parse(savedLoc);
       }
 
-      // Fallback to configured default locality in settings
-      if (userSettings.defaultLocalityId) {
-        const foundLoc = KARNATAKA_LOCALITIES.find((l) => l.id === userSettings.defaultLocalityId);
-        if (foundLoc) return foundLoc;
-      }
-
-      // Fallback to saved default district
+      // Fallback to user-saved default district if previously explicitly chosen
       const savedDefault = localStorage.getItem('skycast_default_district');
       if (savedDefault) {
         return JSON.parse(savedDefault);
       }
     } catch {}
-    // Default to user's primary locality (Vasanth Nagar, Bengaluru Urban)
-    return KARNATAKA_LOCALITIES[0] || DEFAULT_LOCATION;
+    // Natural fallback: Whole Karnataka State Overview (id: 'karnataka-all')
+    // No hardcoded single city/locality for all users!
+    return DEFAULT_LOCATION;
   });
+
+  // High-accuracy live GPS detection with two-tier fallback and distance change verification
+  const detectLiveLocation = useCallback(
+    (force = false) => {
+      if (typeof navigator === 'undefined' || !navigator.geolocation) return;
+
+      const handleSuccess = async (pos: GeolocationPosition) => {
+        try {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+
+          setCurrentLocation((prevLoc) => {
+            const dist = Math.hypot(lat - prevLoc.latitude, lon - prevLoc.longitude);
+            // If movement is negligible (< ~300m / 0.003 deg) and already has a specific location, avoid unnecessary refetch
+            if (!force && dist < 0.003 && prevLoc.id !== 'karnataka-all' && !prevLoc.isEstimate) {
+              return prevLoc;
+            }
+
+            // Reverse geocode the new coordinates
+            reverseGeocodeLocation(lat, lon)
+              .then((newLoc) => {
+                setCurrentLocation(newLoc);
+                try {
+                  localStorage.setItem('skycast_user_location', JSON.stringify(newLoc));
+                  localStorage.setItem('skycast_location_approved', 'true');
+                } catch {}
+              })
+              .catch((err) => {
+                console.warn('Reverse geocode error during live location detection:', err);
+              });
+
+            return prevLoc;
+          });
+        } catch (err) {
+          console.warn('Live location processing error:', err);
+        }
+      };
+
+      const handleError = (err: GeolocationPositionError) => {
+        // If high accuracy times out (code 3), retry once with standard accuracy (cellular/Wi-Fi assisted)
+        if (err.code === 3) {
+          navigator.geolocation.getCurrentPosition(
+            handleSuccess,
+            (fallbackErr) => {
+              console.log('Location unavailable after fallback:', fallbackErr.message);
+            },
+            { enableHighAccuracy: false, timeout: 6000, maximumAge: 30000 }
+          );
+          return;
+        }
+        console.log('Location access not granted or unavailable:', err.message);
+      };
+
+      navigator.geolocation.getCurrentPosition(handleSuccess, handleError, {
+        enableHighAccuracy: true,
+        timeout: 8000,
+        maximumAge: force ? 0 : 15000,
+      });
+    },
+    []
+  );
 
   // Startup Location Detection:
   // Starts at user's default locality if mode is 'default_locality'.
@@ -131,10 +189,12 @@ export default function App() {
         setCurrentLocation(JSON.parse(savedLoc));
         return;
       }
-      const foundLoc = KARNATAKA_LOCALITIES.find((l) => l.id === settings.defaultLocalityId);
-      if (foundLoc) {
-        setCurrentLocation(foundLoc);
-        return;
+      if (settings.defaultLocalityId) {
+        const foundLoc = KARNATAKA_LOCALITIES.find((l) => l.id === settings.defaultLocalityId);
+        if (foundLoc) {
+          setCurrentLocation(foundLoc);
+          return;
+        }
       }
     }
 
@@ -150,48 +210,15 @@ export default function App() {
     }
 
     // 3. Startup mode is 'current_location' (Live GPS)
-    if (typeof navigator !== 'undefined' && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          try {
-            const detectedLocation = await reverseGeocodeLocation(
-              pos.coords.latitude,
-              pos.coords.longitude
-            );
-            setCurrentLocation(detectedLocation);
-            localStorage.setItem('skycast_user_location', JSON.stringify(detectedLocation));
-            localStorage.setItem('skycast_location_approved', 'true');
-          } catch (err) {
-            console.warn('Auto-location detection error:', err);
-          }
-        },
-        (err) => {
-          console.log('Location permission was not granted; will fallback to default locality or district.', err);
-          try {
-            const savedLoc = localStorage.getItem('skycast_default_locality');
-            if (savedLoc) {
-              setCurrentLocation(JSON.parse(savedLoc));
-              return;
-            }
-            const savedDefault = localStorage.getItem('skycast_default_district');
-            if (savedDefault) {
-              setCurrentLocation(JSON.parse(savedDefault));
-            } else if (settings.defaultLocalityId) {
-              const foundLoc = KARNATAKA_LOCALITIES.find((l) => l.id === settings.defaultLocalityId);
-              if (foundLoc) {
-                setCurrentLocation(foundLoc);
-              } else {
-                setCurrentLocation(KARNATAKA_LOCALITIES[0]);
-              }
-            } else {
-              setCurrentLocation(KARNATAKA_LOCALITIES[0]);
-            }
-          } catch {}
-        },
-        { enableHighAccuracy: true, timeout: 8000, maximumAge: 300000 }
-      );
-    }
-  }, [settings.startupLocationMode, settings.defaultDistrictId, settings.defaultLocalityId, settings.defaultLocation, settings.autoDetectLocation]);
+    detectLiveLocation(true);
+  }, [
+    settings.startupLocationMode,
+    settings.defaultDistrictId,
+    settings.defaultLocalityId,
+    settings.defaultLocation,
+    settings.autoDetectLocation,
+    detectLiveLocation,
+  ]);
 
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [districtsRainData, setDistrictsRainData] = useState<DistrictRainData[]>([]);
@@ -308,33 +335,51 @@ export default function App() {
 
   // Continuous LIVE telemetry sync: based on settings.refreshInterval & settings.syncOnAppResume
   useEffect(() => {
-    if (settings.refreshInterval <= 0) return;
+    const liveInterval = settings.refreshInterval > 0
+      ? setInterval(() => {
+          if (!document.hidden) {
+            console.log(`Auto-refreshing live telemetry (${settings.refreshInterval / 60000}m interval)...`);
+            loadWeather(currentLocation);
+            loadDistrictsRain();
+          }
+        }, settings.refreshInterval)
+      : null;
 
-    const liveInterval = setInterval(() => {
+    const handleAppWake = () => {
       if (!document.hidden) {
-        console.log(`Auto-refreshing live telemetry (${settings.refreshInterval / 60000}m interval)...`);
-        loadWeather(currentLocation);
-        loadDistrictsRain();
-      }
-    }, settings.refreshInterval);
+        // If user is in current location mode, check GPS to verify if user moved to a new village or town
+        if (settings.startupLocationMode === 'current_location' && settings.autoDetectLocation) {
+          detectLiveLocation(false);
+        }
 
-    const handleVisibilityChange = () => {
-      if (!document.hidden && settings.syncOnAppResume) {
-        // If user was away for more than 2 minutes, immediately sync live values
-        if (Date.now() - lastSyncTimestampRef.current > 120000) {
-          loadWeather(currentLocation);
-          loadDistrictsRain();
+        if (settings.syncOnAppResume) {
+          // If user was away for more than 2 minutes, immediately sync live values
+          if (Date.now() - lastSyncTimestampRef.current > 120000) {
+            loadWeather(currentLocation);
+            loadDistrictsRain();
+          }
         }
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleAppWake);
+    window.addEventListener('focus', handleAppWake);
 
     return () => {
-      clearInterval(liveInterval);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (liveInterval) clearInterval(liveInterval);
+      document.removeEventListener('visibilitychange', handleAppWake);
+      window.removeEventListener('focus', handleAppWake);
     };
-  }, [currentLocation, loadWeather, loadDistrictsRain, settings.refreshInterval, settings.syncOnAppResume]);
+  }, [
+    currentLocation,
+    loadWeather,
+    loadDistrictsRain,
+    settings.refreshInterval,
+    settings.syncOnAppResume,
+    settings.startupLocationMode,
+    settings.autoDetectLocation,
+    detectLiveLocation,
+  ]);
 
   // Handle location selection (only scrolls to top for search/grid, never for map pin clicks)
   const handleSelectLocation = (loc: LocationData, shouldScrollToTop: boolean = false) => {

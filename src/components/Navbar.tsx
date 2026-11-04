@@ -107,34 +107,50 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
 
     setIsLocating(true);
+    const onLocationSuccess = async (pos: GeolocationPosition) => {
+      setIsLocating(false);
+      try {
+        const userLoc = await reverseGeocodeLocation(pos.coords.latitude, pos.coords.longitude);
+        onSelectLocation(userLoc);
+        localStorage.setItem('skycast_location_approved', 'true');
+        localStorage.setItem('skycast_user_location', JSON.stringify(userLoc));
+      } catch {
+        const userLoc: LocationData = {
+          id: `custom-coords-${pos.coords.latitude.toFixed(3)}`,
+          name: lang === 'kn' ? 'ಪ್ರಸ್ತುತ ಸ್ಥಳ' : 'Current Location',
+          district: lang === 'kn' ? 'ಪತ್ತೆಯಾದ ಸ್ಥಳ' : 'Detected Location',
+          state: 'Karnataka',
+          country: 'India',
+          latitude: Number(pos.coords.latitude.toFixed(4)),
+          longitude: Number(pos.coords.longitude.toFixed(4)),
+        };
+        onSelectLocation(userLoc);
+        localStorage.setItem('skycast_location_approved', 'true');
+        localStorage.setItem('skycast_user_location', JSON.stringify(userLoc));
+      }
+    };
+
+    const onLocationError = (err: GeolocationPositionError) => {
+      // If high accuracy times out, retry once with cellular/Wi-Fi assisted standard accuracy
+      if (err.code === 3) {
+        navigator.geolocation.getCurrentPosition(
+          onLocationSuccess,
+          (fallbackErr) => {
+            setIsLocating(false);
+            console.warn('Fallback location failed:', fallbackErr);
+          },
+          { enableHighAccuracy: false, timeout: 6000, maximumAge: 30000 }
+        );
+        return;
+      }
+      setIsLocating(false);
+      console.warn('Location permission denied or unavailable:', err);
+    };
+
     navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        setIsLocating(false);
-        try {
-          const userLoc = await reverseGeocodeLocation(pos.coords.latitude, pos.coords.longitude);
-          onSelectLocation(userLoc);
-          localStorage.setItem('skycast_location_approved', 'true');
-          localStorage.setItem('skycast_user_location', JSON.stringify(userLoc));
-        } catch {
-          const userLoc: LocationData = {
-            id: `custom-coords-${pos.coords.latitude.toFixed(3)}`,
-            name: lang === 'kn' ? 'ಪ್ರಸ್ತುತ ಸ್ಥಳ' : 'Current Location',
-            district: lang === 'kn' ? 'ಪತ್ತೆಯಾದ ಸ್ಥಳ' : 'Detected Location',
-            state: 'Karnataka',
-            country: 'India',
-            latitude: Number(pos.coords.latitude.toFixed(4)),
-            longitude: Number(pos.coords.longitude.toFixed(4)),
-          };
-          onSelectLocation(userLoc);
-          localStorage.setItem('skycast_location_approved', 'true');
-          localStorage.setItem('skycast_user_location', JSON.stringify(userLoc));
-        }
-      },
-      (err) => {
-        setIsLocating(false);
-        console.warn('Location permission denied, retaining Karnataka focus.', err);
-      },
-      { timeout: 8000, enableHighAccuracy: true, maximumAge: 60000 }
+      onLocationSuccess,
+      onLocationError,
+      { timeout: 8000, enableHighAccuracy: true, maximumAge: 15000 }
     );
   };
 

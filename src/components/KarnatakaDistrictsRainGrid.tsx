@@ -3,6 +3,9 @@ import { DistrictRainData, LocationData } from '../types/weather';
 import {
   Droplets,
   CloudRain,
+  CloudDrizzle,
+  CloudSun,
+  Cloud,
   ArrowUpDown,
   MapPin,
 } from 'lucide-react';
@@ -25,6 +28,8 @@ interface RainFilterOption {
   id: RainFilterCategory;
   fullLabel: string;
   shortLabel: string;
+  Icon: React.ElementType;
+  iconColor: string;
   activeTextColor: string;
   activeBorder: string;
   activeRing: string;
@@ -35,8 +40,10 @@ interface RainFilterOption {
 const RAIN_FILTER_OPTIONS: RainFilterOption[] = [
   {
     id: 'all',
-    fullLabel: 'All Probability',
+    fullLabel: 'All Prob (0–100%)',
     shortLabel: 'All Prob',
+    Icon: Cloud,
+    iconColor: 'text-[#00AFCB] dark:text-cyan-300',
     activeTextColor: 'text-[#007A8E] dark:text-cyan-200',
     activeBorder: 'border-[#00AFCB]/50 dark:border-cyan-400/50',
     activeRing: 'ring-1 ring-[#00AFCB]/30',
@@ -45,8 +52,10 @@ const RAIN_FILTER_OPTIONS: RainFilterOption[] = [
   },
   {
     id: 'high',
-    fullLabel: '🌧️ High (≥60%)',
-    shortLabel: '🌧️ High (≥60%)',
+    fullLabel: 'High (≥60%)',
+    shortLabel: 'High (≥60%)',
+    Icon: CloudRain,
+    iconColor: 'text-blue-600 dark:text-blue-400',
     activeTextColor: 'text-[#1E40AF] dark:text-blue-300',
     activeBorder: 'border-blue-500/50 dark:border-blue-400/50',
     activeRing: 'ring-1 ring-blue-500/40',
@@ -55,8 +64,10 @@ const RAIN_FILTER_OPTIONS: RainFilterOption[] = [
   },
   {
     id: 'moderate',
-    fullLabel: '🌦️ Moderate (30–59%)',
-    shortLabel: '🌦️ Mod (30–59%)',
+    fullLabel: 'Mod (30–59%)',
+    shortLabel: 'Mod (30–59%)',
+    Icon: CloudDrizzle,
+    iconColor: 'text-[#007A8E] dark:text-cyan-300',
     activeTextColor: 'text-[#007A8E] dark:text-cyan-300',
     activeBorder: 'border-[#00AFCB]/50 dark:border-cyan-400/50',
     activeRing: 'ring-1 ring-[#00AFCB]/40',
@@ -65,8 +76,10 @@ const RAIN_FILTER_OPTIONS: RainFilterOption[] = [
   },
   {
     id: 'low',
-    fullLabel: '🌤️ Low (<30%)',
-    shortLabel: '🌤️ Low (<30%)',
+    fullLabel: 'Low (<30%)',
+    shortLabel: 'Low (<30%)',
+    Icon: CloudSun,
+    iconColor: 'text-emerald-600 dark:text-emerald-400',
     activeTextColor: 'text-emerald-800 dark:text-emerald-300',
     activeBorder: 'border-emerald-500/50 dark:border-emerald-400/50',
     activeRing: 'ring-1 ring-emerald-500/40',
@@ -141,39 +154,48 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
           </p>
         </div>
 
-        {/* Quick status pill */}
-        <div className="flex items-center gap-2">
-          {highRiskCount > 0 && (
-            <span className="px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/80 text-[#1E40AF] dark:text-blue-300 border border-blue-200 dark:border-blue-500/30 text-xs font-bold flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#2563EB] dark:bg-blue-400 animate-pulse"></span>
-              {highRiskCount} Districts High Rain Risk (&ge;60%)
+        {/* Quick status pills: Rain risk option and 31 Districts Live option beside each other with matching size, shape, and design */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Rain Risk Option */}
+          <span className="px-2.5 py-1 sm:px-3 sm:py-1 rounded-full bg-blue-50 dark:bg-blue-950/80 text-[#1E40AF] dark:text-blue-300 border border-blue-200 dark:border-blue-500/30 text-xs font-bold flex items-center gap-1.5 shadow-xs">
+            <span className={`w-2 h-2 rounded-full ${highRiskCount > 0 ? 'bg-[#2563EB] dark:bg-blue-400 animate-pulse' : 'bg-blue-400'} shrink-0`}></span>
+            <span>
+              {highRiskCount > 0
+                ? `${highRiskCount} Districts High Rain Risk (≥60%)`
+                : '0 Districts High Rain Risk (≥60%)'}
             </span>
-          )}
-          <span className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-[#D8E4ED] dark:border-slate-700 text-xs font-mono font-semibold flex items-center gap-1.5">
-            {isEstimated ? (
-              <>
-                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                <span>31 Districts (Offline Est.)</span>
-              </>
-            ) : isCached ? (
-              <>
-                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                <span>31 Districts (Cached)</span>
-              </>
-            ) : (
-              <>
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>31 Districts Live</span>
-              </>
-            )}
+          </span>
+
+          {/* 31 District Live Option: matching design, size, shape, and typography */}
+          <span className={`px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-bold flex items-center gap-1.5 border shadow-xs transition-colors ${
+            isEstimated
+              ? 'bg-amber-50 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-500/30'
+              : isCached
+              ? 'bg-sky-50 dark:bg-sky-950/80 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-500/30'
+              : 'bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/30'
+          }`}>
+            <span className={`w-2 h-2 rounded-full shrink-0 ${
+              isEstimated
+                ? 'bg-amber-500'
+                : isCached
+                ? 'bg-sky-500'
+                : 'bg-emerald-500 animate-pulse'
+            }`}></span>
+            <span>
+              {isEstimated
+                ? '31 Districts (Offline Est.)'
+                : isCached
+                ? '31 Districts (Cached)'
+                : '31 Districts Live'}
+            </span>
           </span>
         </div>
       </div>
 
-      {/* Filter and Sort Controls (Search completely removed as requested) */}
+      {/* Filter and Sort Controls */}
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-        {/* Connected Interactive Water-Bubble Selector - All 4 visible without horizontal scrolling */}
-        <div className="w-full sm:w-auto sm:min-w-[460px] sm:max-w-xl">
+        {/* Connected Interactive Water-Bubble Selector - All 4 visible with cloud icons and completely fitting text */}
+        <div className="w-full sm:w-auto sm:min-w-[480px] md:min-w-[520px] lg:min-w-[560px]">
           <div className="relative grid grid-cols-4 p-1 rounded-full bg-white/[0.04] dark:bg-black/20 backdrop-blur-md border border-white/15 dark:border-white/[0.08] shadow-[inset_0_1px_2px_rgba(255,255,255,0.15),0_2px_8px_rgba(0,0,0,0.12)] select-none">
             {/* Sliding Active Water-Bubble - Perfectly fills the exact 1/4 bubble border with seamless liquid float */}
             <div
@@ -199,19 +221,21 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
             {/* All Four Filter Bubbles in a Single Horizontal Row (No Horizontal Scroll) */}
             {RAIN_FILTER_OPTIONS.map((option) => {
               const isActive = filterRainCategory === option.id;
+              const IconComponent = option.Icon;
               return (
-                <div key={option.id} className="relative z-10 p-0.5 flex items-center justify-center">
+                <div key={option.id} className="relative z-10 p-0.5 flex items-center justify-center min-w-0">
                   <button
                     type="button"
                     onClick={() => setFilterRainCategory(option.id)}
-                    className={`w-full py-1.5 px-1 rounded-full text-[10px] xs:text-[11px] sm:text-xs font-bold transition-all duration-200 cursor-pointer flex items-center justify-center text-center select-none ${
+                    className={`w-full py-1.5 px-1 sm:px-2 rounded-full text-[10px] xs:text-[11px] sm:text-xs font-bold transition-all duration-200 cursor-pointer flex items-center justify-center gap-1 sm:gap-1.5 text-center select-none min-w-0 overflow-hidden ${
                       isActive
-                        ? option.activeTextColor
+                        ? `${option.activeTextColor} font-extrabold`
                         : 'text-slate-800 dark:text-slate-200 hover:text-[#007A8E] dark:hover:text-cyan-200 border border-white/10 dark:border-white/[0.06] bg-white/[0.03] dark:bg-white/[0.015] hover:bg-white/[0.08]'
                     }`}
                   >
-                    <span className="hidden sm:inline whitespace-nowrap">{option.fullLabel}</span>
-                    <span className="sm:hidden whitespace-nowrap">{option.shortLabel}</span>
+                    <IconComponent className={`w-3.5 h-3.5 shrink-0 ${option.iconColor} ${isActive ? 'scale-110 drop-shadow' : 'opacity-85'}`} />
+                    <span className="hidden sm:inline whitespace-nowrap overflow-hidden text-ellipsis">{option.fullLabel}</span>
+                    <span className="sm:hidden whitespace-nowrap overflow-hidden text-ellipsis">{option.shortLabel}</span>
                   </button>
                 </div>
               );
@@ -308,11 +332,7 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
                         <span className="text-[9px] px-1 py-0.2 rounded bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 font-bold border border-blue-300/40" title={d.cachedAt ? `Cached ${formatTimeAgo(d.cachedAt)}` : 'Cached'}>
                           Cached{d.cachedAt ? ` (${formatTimeAgo(d.cachedAt)})` : ''}
                         </span>
-                      ) : (
-                        <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-300/40">
-                          Live
-                        </span>
-                      )}
+                      ) : null}
                     </div>
                   </div>
 

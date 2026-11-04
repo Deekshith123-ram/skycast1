@@ -116,11 +116,19 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
                 {location.name}
               </h1>
               <span className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs font-semibold border border-[#D8E4ED] dark:border-slate-700 shadow-sm">
-                {location.state}, {location.country}
+                {location.district && location.district.toLowerCase() !== location.name.toLowerCase() ? `${location.district}, ` : ''}{location.state}, {location.country}
               </span>
             </div>
 
             <div className="flex items-center gap-2 mt-1.5 text-xs text-slate-700 dark:text-slate-300 font-medium flex-wrap">
+              {location.taluk && location.taluk.toLowerCase() !== location.name.toLowerCase() && (
+                <>
+                  <span className="font-semibold text-[#007A8E] dark:text-cyan-300">
+                    {location.taluk}
+                  </span>
+                  <span>•</span>
+                </>
+              )}
               <span className="flex items-center gap-1 font-mono font-semibold">
                 <Compass className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
                 {location.latitude.toFixed(2)}°N, {location.longitude.toFixed(2)}°E

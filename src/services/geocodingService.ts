@@ -686,13 +686,13 @@ export async function reverseGeocodeLocation(lat: number, lon: number): Promise<
 
     clearTimeout(timeout);
 
-    if (data && data.address) {
-      const addr = data.address;
+    if (data && (data.address || data.display_name)) {
+      const addr = data.address || {};
 
       // Extract the most specific locality or village name
       const isVillage = Boolean(addr.village || addr.hamlet || addr.isolated_dwelling);
       const isTown = Boolean(addr.town || addr.municipality);
-      const localityName =
+      let localityName =
         addr.village ||
         addr.hamlet ||
         addr.isolated_dwelling ||
@@ -703,24 +703,32 @@ export async function reverseGeocodeLocation(lat: number, lon: number): Promise<
         addr.city_district ||
         addr.town ||
         addr.municipality ||
-        addr.city ||
-        data.name;
+        addr.city;
+
+      if (!localityName && data.display_name) {
+        localityName = data.display_name.split(',')[0]?.trim();
+      }
+      if (!localityName) {
+        localityName = data.name;
+      }
 
       // Taluk / Subdistrict
-      const talukName = addr.county || addr.subdistrict || undefined;
+      const rawTaluk = addr.county || addr.subdistrict || undefined;
+      const talukName = rawTaluk ? rawTaluk.replace(/\s+taluk$/i, '').trim() + ' Taluk' : undefined;
       const gramPanchayat = addr.gram_panchayat || addr.village_panchayat || undefined;
 
       // Determine parent district and city
-      const districtName =
+      const rawDistrict =
         addr.state_district ||
         addr.county ||
         closestDistrict.district ||
         addr.city ||
         'Karnataka';
+      const districtName = rawDistrict.replace(/\s+district$/i, '').trim();
 
       const stateName = addr.state || 'Karnataka';
       const countryName = addr.country || 'India';
-      const isLocality = Boolean(localityName && localityName !== districtName);
+      const isLocality = Boolean(localityName && localityName.toLowerCase() !== districtName.toLowerCase());
 
       return {
         id: `detected-locality-${lat.toFixed(4)}-${lon.toFixed(4)}`,
