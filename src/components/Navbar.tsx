@@ -102,7 +102,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const handleRequestUserLocation = () => {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser.');
+      console.warn('Geolocation is not supported by this browser/environment.');
       return;
     }
 
@@ -246,6 +246,25 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {isSearching && <span className="text-[#00AFCB] dark:text-cyan-400 animate-pulse">{t.syncing}</span>}
                 </div>
 
+                {/* 1. Quick One-Click 'My Current Location' GPS Button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleRequestUserLocation();
+                    setDropdownOpen(false);
+                    setSearchQuery('');
+                  }}
+                  className="w-full text-left px-3 py-2 rounded-xl bg-[#00AFCB]/10 hover:bg-[#00AFCB]/20 dark:bg-cyan-500/15 dark:hover:bg-cyan-500/25 border border-[#00AFCB]/30 text-xs font-bold text-[#007A8E] dark:text-cyan-300 flex items-center justify-between transition cursor-pointer mb-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <Navigation className={`w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400 ${isLocating ? 'animate-spin' : ''}`} />
+                    <span>{t.myCurrentLocation}</span>
+                  </div>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/70 dark:bg-black/30 font-semibold border border-[#00AFCB]/20">
+                    GPS
+                  </span>
+                </button>
+
                 <div className="mt-1.5 space-y-1">
                   {searchResults.map((loc) => {
                     const isSelected =
@@ -269,14 +288,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         <div className="flex items-center gap-2.5">
                           <MapPin className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-[#00AFCB] dark:text-cyan-400' : 'text-slate-400 dark:text-slate-400'}`} />
                           <div>
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="font-display font-semibold block text-[#0F1D2E] dark:text-slate-100">{loc.name}</span>
-                              {loc.isLocality && (
-                                <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-[#E6F8FA] text-[#007A8E] dark:bg-cyan-950/80 dark:text-cyan-300 font-bold border border-[#00AFCB]/30">
-                                  {lang === 'kn' ? 'ಸ್ಥಳೀಯ' : 'Locality'}
-                                </span>
-                              )}
-                            </div>
+                            <span className="font-display font-semibold block text-[#0F1D2E] dark:text-slate-100">{loc.name}</span>
                             <span className="text-[10px] text-slate-700 dark:text-slate-300 font-medium">
                               {loc.district && loc.district !== loc.name ? `${loc.district}, ` : ''}{loc.state}
                             </span>

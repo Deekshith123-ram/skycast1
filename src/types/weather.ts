@@ -1,3 +1,14 @@
+export type LocationType =
+  | 'village'
+  | 'hamlet'
+  | 'town'
+  | 'locality'
+  | 'gram_panchayat'
+  | 'taluk'
+  | 'district'
+  | 'state'
+  | 'city';
+
 export interface LocationData {
   id: string;
   name: string;
@@ -11,9 +22,51 @@ export interface LocationData {
   locality?: string;
   isLocality?: boolean;
   isEstimate?: boolean;
+  type?: LocationType;
+  taluk?: string;
+  gramPanchayat?: string;
+  distanceKm?: number;
+}
+
+export interface NearbyVillageWeather {
+  location: LocationData;
+  distanceKm: number;
+  bearing: string; // e.g. "NW", "E", "SSE"
+  temperature: number;
+  apparentTemperature: number;
+  weatherCode: number;
+  weatherDescription: string;
+  rainProbability: number;
+  precipitation: number;
+  humidity?: number;
+  windSpeed?: number;
+  tempMax?: number;
+  tempMin?: number;
+  dataSource?: WeatherDataSource;
+  isEstimate?: boolean;
+}
+
+export interface NearbyAreaReport {
+  minTemp: number;
+  maxTemp: number;
+  representativeTemp: number;
+  representativeFeelsLike: number;
+  dominantWeatherCode: number;
+  dominantWeatherDesc: string;
+  maxRainProbability: number;
+  avgRainProbability: number;
+  avgHumidity: number;
+  avgWindSpeed: number;
+  conditionVariance: 'uniform' | 'microclimates';
+  microclimateNote: string;
+  microclimateNoteKn?: string;
+  radiusKm: number;
+  villagesCount: number;
+  timestamp: number;
 }
 
 export type WeatherDataSource = 'live' | 'cached' | 'estimated' | 'unavailable';
+export type ForecastType = 'coordinate_model' | 'station_observation';
 
 export interface DistrictRainData {
   id: string;
@@ -104,6 +157,9 @@ export interface WeatherData {
   isEstimate?: boolean;
   dataSource?: WeatherDataSource;
   cachedAt?: number;
+  forecastType?: ForecastType;
+  nearbyVillages?: NearbyVillageWeather[];
+  nearbyAreaReport?: NearbyAreaReport;
 }
 
 export type MapLayerType =

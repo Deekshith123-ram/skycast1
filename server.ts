@@ -463,23 +463,43 @@ app.get('/api/search-localities', async (req: Request, res: Response) => {
   }
 
   try {
-    const queryTerm = q.toLowerCase().includes('karnataka') ? q : `${q}, Karnataka`;
+    const isKannada = /[\u0C80-\u0CFF]/.test(q);
+    const queryTerm = isKannada
+      ? `${q}, ಕರ್ನಾಟಕ`
+      : q.toLowerCase().includes('karnataka') ? q : `${q}, Karnataka`;
+
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
       queryTerm
-    )}&format=json&addressdetails=1&limit=10&countrycodes=in`;
+    )}&format=json&addressdetails=1&limit=12&countrycodes=in&viewbox=74.0,18.5,78.6,11.5`;
 
+    let data: any[] = [];
     const osmRes = await fetch(url, {
       headers: {
         'User-Agent': 'SkyCastWeatherApp/2.5 (Karnataka-Live-Weather)',
-        'Accept-Language': 'en',
+        'Accept-Language': isKannada ? 'kn,en;q=0.8' : 'en',
       },
     });
 
-    if (!osmRes.ok) {
-      throw new Error(`Nominatim search returned status ${osmRes.status}`);
+    if (osmRes.ok) {
+      data = await osmRes.json();
     }
 
-    const data = await osmRes.json();
+    // Fallback: If no results with appended state name, search query directly in India biased to Karnataka box
+    if (!Array.isArray(data) || data.length === 0) {
+      const fallbackUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+        q
+      )}&format=json&addressdetails=1&limit=12&countrycodes=in&viewbox=74.0,18.5,78.6,11.5`;
+      const fallbackRes = await fetch(fallbackUrl, {
+        headers: {
+          'User-Agent': 'SkyCastWeatherApp/2.5 (Karnataka-Live-Weather)',
+          'Accept-Language': isKannada ? 'kn,en;q=0.8' : 'en',
+        },
+      });
+      if (fallbackRes.ok) {
+        data = await fallbackRes.json();
+      }
+    }
+
     res.json(data);
   } catch (err: any) {
     console.warn('Server locality search notice:', err?.message || err);

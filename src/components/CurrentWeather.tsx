@@ -19,6 +19,7 @@ import {
   Star,
   Moon,
   CloudMoon,
+  Navigation,
 } from 'lucide-react';
 import { WeatherAtmosphereAnimation } from './WeatherAtmosphereAnimation';
 import { Language, TRANSLATIONS, translateWeatherDesc } from '../services/languageService';
@@ -47,8 +48,6 @@ interface CurrentWeatherProps {
   tempUnit?: TemperatureUnit;
   pressureUnit?: PressureUnit;
   showAtmosphereAnimation?: boolean;
-  isDefaultLocality?: boolean;
-  onSetDefaultLocality?: () => void;
 }
 
 export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
@@ -59,8 +58,6 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
   tempUnit = 'celsius',
   pressureUnit = 'hpa',
   showAtmosphereAnimation = true,
-  isDefaultLocality = false,
-  onSetDefaultLocality,
 }) => {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
   const { current, daily, location, lastUpdated } = data;
@@ -118,39 +115,15 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
               <h1 className="font-display text-2xl md:text-3xl font-bold text-[#172B3A] dark:text-white tracking-tight">
                 {location.name}
               </h1>
-              {location.isLocality && (
-                <span className="px-2.5 py-0.5 rounded-full bg-[#E6F8FA] dark:bg-cyan-950/80 text-[#007A8E] dark:text-cyan-300 text-xs font-bold border border-[#00AFCB]/40 dark:border-cyan-500/30 shadow-xs flex items-center gap-1">
-                  <MapPin className="w-3 h-3 text-[#00AFCB] dark:text-cyan-400" />
-                  <span>{lang === 'kn' ? 'ಸ್ಥಳೀಯ ಪ್ರದೇಶ' : 'Locality'}</span>
-                </span>
-              )}
-              {onSetDefaultLocality && (
-                <button
-                  type="button"
-                  onClick={onSetDefaultLocality}
-                  className={`water-droplet-btn px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm ${
-                    isDefaultLocality
-                      ? 'water-droplet-pill-active text-amber-800 dark:text-amber-300 ring-1 ring-amber-400/40'
-                      : 'text-slate-800 dark:text-slate-200 hover:text-[#007A8E] dark:hover:text-cyan-300'
-                  }`}
-                  title={isDefaultLocality ? (lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಸ್ಥಳ' : 'Default Locality') : (lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಸ್ಥಳವಾಗಿ ಹೊಂದಿಸಿ' : 'Set as Default Locality')}
-                >
-                  <Star className={`w-3.5 h-3.5 ${isDefaultLocality ? 'fill-amber-400 text-amber-500' : 'text-slate-600 dark:text-slate-300'}`} />
-                  <span>
-                    {isDefaultLocality
-                      ? (lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಸ್ಥಳ' : 'Default Locality')
-                      : (lang === 'kn' ? 'ಡೀಫಾಲ್ಟ್ ಮಾಡಿ' : 'Set as Default')}
-                  </span>
-                </button>
-              )}
               <span className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs font-semibold border border-[#D8E4ED] dark:border-slate-700 shadow-sm">
-                {location.district && location.district !== location.name ? `${location.district}, ` : ''}{location.state}, {location.country}
+                {location.state}, {location.country}
               </span>
             </div>
-            <div className="flex items-center gap-2 mt-1 text-xs text-slate-700 dark:text-slate-300 font-medium flex-wrap">
+
+            <div className="flex items-center gap-2 mt-1.5 text-xs text-slate-700 dark:text-slate-300 font-medium flex-wrap">
               <span className="flex items-center gap-1 font-mono font-semibold">
                 <Compass className="w-3.5 h-3.5 text-[#00AFCB] dark:text-cyan-400" />
-                {location.latitude.toFixed(4)}°N, {location.longitude.toFixed(4)}°E
+                {location.latitude.toFixed(2)}°N, {location.longitude.toFixed(2)}°E
               </span>
               <span>•</span>
               <span className="font-semibold">{t.elevation}: ~{location.elevation ?? 650} m</span>

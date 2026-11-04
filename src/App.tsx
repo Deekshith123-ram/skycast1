@@ -9,7 +9,7 @@ import { DEFAULT_LOCATION, ALL_KARNATAKA_DISTRICTS, KARNATAKA_LOCALITIES, revers
 import { fetchWeatherData, fetchAllKarnatakaDistrictsRain } from './services/weatherService';
 import { evaluateWeatherAlerts } from './services/alertService';
 import { Language, TRANSLATIONS } from './services/languageService';
-import { UserSettings, loadUserSettings, saveUserSettings, saveDefaultLocality } from './services/settingsService';
+import { UserSettings, loadUserSettings, saveUserSettings } from './services/settingsService';
 import { Navbar } from './components/Navbar';
 import { CurrentWeather } from './components/CurrentWeather';
 import { SatelliteMap } from './components/SatelliteMap';
@@ -114,17 +114,6 @@ export default function App() {
     // Default to user's primary locality (Vasanth Nagar, Bengaluru Urban)
     return KARNATAKA_LOCALITIES[0] || DEFAULT_LOCATION;
   });
-
-  // Handler to set the user's default locality
-  const handleSetDefaultLocality = (loc: LocationData) => {
-    saveDefaultLocality(loc);
-    updateSettings({
-      defaultLocalityId: loc.id,
-      defaultLocalityName: loc.name,
-      defaultLocation: loc,
-      startupLocationMode: 'default_locality',
-    });
-  };
 
   // Startup Location Detection:
   // Starts at user's default locality if mode is 'default_locality'.
@@ -350,6 +339,9 @@ export default function App() {
   // Handle location selection (only scrolls to top for search/grid, never for map pin clicks)
   const handleSelectLocation = (loc: LocationData, shouldScrollToTop: boolean = false) => {
     setCurrentLocation(loc);
+    try {
+      localStorage.setItem('skycast_user_location', JSON.stringify(loc));
+    } catch {}
     if (shouldScrollToTop) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       showHeader();
@@ -428,18 +420,14 @@ export default function App() {
         {weatherData ? (
           <CurrentWeather
             data={weatherData}
-            onRefresh={() => loadWeather(currentLocation)}
+            onRefresh={() => {
+              loadWeather(currentLocation);
+            }}
             isLoading={isLoading}
             lang={lang}
             tempUnit={settings.tempUnit}
             pressureUnit={settings.pressureUnit}
             showAtmosphereAnimation={settings.showAtmosphereAnimation}
-            isDefaultLocality={
-              settings.defaultLocalityId === currentLocation.id ||
-              settings.defaultLocation?.id === currentLocation.id ||
-              Boolean(settings.startupLocationMode === 'default_locality' && settings.defaultLocalityName === currentLocation.name)
-            }
-            onSetDefaultLocality={() => handleSetDefaultLocality(currentLocation)}
           />
         ) : (
           <div className="h-44 rounded-2xl glass-panel animate-pulse flex items-center justify-center text-[#00AFCB] dark:text-cyan-400">

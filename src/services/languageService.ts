@@ -132,6 +132,23 @@ export interface Translations {
   samplePrompt2: string;
   samplePrompt3: string;
   samplePrompt4: string;
+
+  // Hyperlocal, Village & Nearby Area Translations
+  nearbyVillagesTitle: string;
+  nearbyVillagesSubtitle: string;
+  nearbyAreaReportTitle: string;
+  nearbyAreaReportBadge: string;
+  tempRange: string;
+  representativeTemp: string;
+  viewWeather: string;
+  myCurrentLocation: string;
+  detectGPSLocation: string;
+  village: string;
+  town: string;
+  locality: string;
+  taluk: string;
+  modelForecastNotice: string;
+  groundObservationNotice: string;
 }
 
 export const TRANSLATIONS: Record<Language, Translations> = {
@@ -267,6 +284,23 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     samplePrompt2: 'Current weather condition & rain chance here?',
     samplePrompt3: 'How are the monsoon clouds moving across Karnataka?',
     samplePrompt4: 'Will it rain in Bengaluru or Tumakuru this evening?',
+
+    // Hyperlocal, Village & Nearby Area Translations
+    nearbyVillagesTitle: 'Nearby Villages & Localities',
+    nearbyVillagesSubtitle: 'Hyperlocal coordinate-based weather telemetry',
+    nearbyAreaReportTitle: 'Combined Nearby-Area Summary',
+    nearbyAreaReportBadge: 'Estimated Nearby-Area Summary (Model Derived)',
+    tempRange: 'Temperature Span',
+    representativeTemp: 'Representative Temperature',
+    viewWeather: 'View Weather',
+    myCurrentLocation: 'My Current Location (GPS)',
+    detectGPSLocation: 'Detect GPS Location',
+    village: 'Village',
+    town: 'Town',
+    locality: 'Locality',
+    taluk: 'Taluk',
+    modelForecastNotice: 'Coordinate-Based High-Resolution Forecast',
+    groundObservationNotice: 'Ground Station Observation',
   },
   kn: {
     appName: 'ಸ್ಕೈಕಾಸ್ಟ್ (SkyCast)',
@@ -400,6 +434,23 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     samplePrompt2: 'ಪ್ರಸ್ತುತ ಸ್ಥಳದ ಹವಾಮಾನ ಸ್ಥಿತಿ ಮತ್ತು ಮಳೆಯ ಸಂಭವನೀಯತೆ ಏನು?',
     samplePrompt3: 'ಕರ್ನಾಟಕದಾದ್ಯಂತ ಮಾನ್ಸೂನ್ ಮೋಡಗಳ ಚಲನೆ ಹೇಗಿದೆ?',
     samplePrompt4: 'ಇಂದು ಸಂಜೆ ಬೆಂಗಳೂರು ಅಥವಾ ತುಮಕೂರಿನಲ್ಲಿ ಮಳೆಯಾಗುತ್ತದೆಯೇ?',
+
+    // Hyperlocal, Village & Nearby Area Translations in Kannada
+    nearbyVillagesTitle: 'ಸುತ್ತಮುತ್ತಲಿನ ಗ್ರಾಮಗಳು ಮತ್ತು ಸ್ಥಳೀಯ ಪ್ರದೇಶಗಳು',
+    nearbyVillagesSubtitle: 'ಹೈಪರ್‌ಲೋಕಲ್ ಭೌಗೋಳಿಕ ನಿರ್ದೇಶಾಂಕ ಆಧಾರಿತ ಹವಾಮಾನ ಮಾಹಿತಿ',
+    nearbyAreaReportTitle: 'ಸುತ್ತಮುತ್ತಲಿನ ಪ್ರದೇಶದ ಒಟ್ಟಾರೆ ಸಾರಾಂಶ',
+    nearbyAreaReportBadge: 'ಅಂದಾಜು ಸುತ್ತಮುತ್ತಲಿನ ಸಾರಾಂಶ (ಮಾದರಿ ಆಧರಿತ)',
+    tempRange: 'ತಾಪಮಾನದ ವ್ಯಾಪ್ತಿ',
+    representativeTemp: 'ಕ್ಲಸ್ಟರ್ ಪ್ರತಿನಿಧಿ ತಾಪಮಾನ',
+    viewWeather: 'ಹವಾಮಾನ ವೀಕ್ಷಿಸಿ',
+    myCurrentLocation: 'ನನ್ನ ಪ್ರಸ್ತುತ ಸ್ಥಳ (GPS)',
+    detectGPSLocation: 'ಜಿಪಿಎಸ್ ಸ್ಥಳ ಪತ್ತೆಮಾಡಿ',
+    village: 'ಗ್ರಾಮ',
+    town: 'ಪಟ್ಟಣ',
+    locality: 'ಸ್ಥಳೀಯ ಪ್ರದೇಶ',
+    taluk: 'ತಾಲೂಕು',
+    modelForecastNotice: 'ಭೌಗೋಳಿಕ ಮಾದರಿ ಆಧಾರಿತ ಹೆಚ್ಚಿನ ನಿಖರತೆಯ ಮುನ್ಸೂಚನೆ',
+    groundObservationNotice: 'ಸ್ಥಳೀಯ ಮಾಪನ ಕೇಂದ್ರದ ವೀಕ್ಷಣೆ',
   },
 };
 

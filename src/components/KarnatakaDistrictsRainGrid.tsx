@@ -19,6 +19,62 @@ function formatTimeAgo(timestamp?: number): string {
   return `${hr}h ago`;
 }
 
+type RainFilterCategory = 'all' | 'high' | 'moderate' | 'low';
+
+interface RainFilterOption {
+  id: RainFilterCategory;
+  fullLabel: string;
+  shortLabel: string;
+  activeTextColor: string;
+  activeBorder: string;
+  activeRing: string;
+  bubbleBackground: string;
+  bubbleShadow: string;
+}
+
+const RAIN_FILTER_OPTIONS: RainFilterOption[] = [
+  {
+    id: 'all',
+    fullLabel: 'All Probability',
+    shortLabel: 'All Prob',
+    activeTextColor: 'text-[#007A8E] dark:text-cyan-200',
+    activeBorder: 'border-[#00AFCB]/50 dark:border-cyan-400/50',
+    activeRing: 'ring-1 ring-[#00AFCB]/30',
+    bubbleBackground: 'radial-gradient(130% 120% at 50% 0%, rgba(0, 175, 203, 0.16) 0%, rgba(0, 175, 203, 0.08) 60%, rgba(0, 175, 203, 0.02) 100%)',
+    bubbleShadow: '0 4px 14px -1px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 175, 203, 0.2), inset 0 1px 1px 0 rgba(255, 255, 255, 0.35)',
+  },
+  {
+    id: 'high',
+    fullLabel: '🌧️ High (≥60%)',
+    shortLabel: '🌧️ High (≥60%)',
+    activeTextColor: 'text-[#1E40AF] dark:text-blue-300',
+    activeBorder: 'border-blue-500/50 dark:border-blue-400/50',
+    activeRing: 'ring-1 ring-blue-500/40',
+    bubbleBackground: 'radial-gradient(130% 120% at 50% 0%, rgba(37, 99, 235, 0.18) 0%, rgba(37, 99, 235, 0.08) 60%, rgba(37, 99, 235, 0.02) 100%)',
+    bubbleShadow: '0 4px 14px -1px rgba(0, 0, 0, 0.3), 0 0 10px rgba(37, 99, 235, 0.2), inset 0 1px 1px 0 rgba(255, 255, 255, 0.35)',
+  },
+  {
+    id: 'moderate',
+    fullLabel: '🌦️ Moderate (30–59%)',
+    shortLabel: '🌦️ Mod (30–59%)',
+    activeTextColor: 'text-[#007A8E] dark:text-cyan-300',
+    activeBorder: 'border-[#00AFCB]/50 dark:border-cyan-400/50',
+    activeRing: 'ring-1 ring-[#00AFCB]/40',
+    bubbleBackground: 'radial-gradient(130% 120% at 50% 0%, rgba(0, 175, 203, 0.18) 0%, rgba(0, 175, 203, 0.09) 60%, rgba(0, 175, 203, 0.02) 100%)',
+    bubbleShadow: '0 4px 14px -1px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 175, 203, 0.2), inset 0 1px 1px 0 rgba(255, 255, 255, 0.35)',
+  },
+  {
+    id: 'low',
+    fullLabel: '🌤️ Low (<30%)',
+    shortLabel: '🌤️ Low (<30%)',
+    activeTextColor: 'text-emerald-800 dark:text-emerald-300',
+    activeBorder: 'border-emerald-500/50 dark:border-emerald-400/50',
+    activeRing: 'ring-1 ring-emerald-500/40',
+    bubbleBackground: 'radial-gradient(130% 120% at 50% 0%, rgba(16, 185, 129, 0.18) 0%, rgba(16, 185, 129, 0.08) 60%, rgba(16, 185, 129, 0.02) 100%)',
+    bubbleShadow: '0 4px 14px -1px rgba(0, 0, 0, 0.3), 0 0 10px rgba(16, 185, 129, 0.2), inset 0 1px 1px 0 rgba(255, 255, 255, 0.35)',
+  },
+];
+
 interface KarnatakaDistrictsRainGridProps {
   districts: DistrictRainData[];
   selectedLocation: LocationData;
@@ -33,8 +89,14 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
   theme = 'dark',
 }) => {
   const [filterRegion, setFilterRegion] = useState<string>('all');
-  const [filterRainCategory, setFilterRainCategory] = useState<'all' | 'high' | 'moderate' | 'low'>('all');
+  const [filterRainCategory, setFilterRainCategory] = useState<RainFilterCategory>('all');
   const [sortBy, setSortBy] = useState<'prob_desc' | 'rain_desc' | 'name_asc'>('prob_desc');
+
+  const activeIndex = Math.max(
+    0,
+    RAIN_FILTER_OPTIONS.findIndex((opt) => opt.id === filterRainCategory)
+  );
+  const activeOption = RAIN_FILTER_OPTIONS[activeIndex];
 
   // Filter logic
   const filteredDistricts = districts.filter((d) => {
@@ -110,48 +172,51 @@ export const KarnatakaDistrictsRainGrid: React.FC<KarnatakaDistrictsRainGridProp
 
       {/* Filter and Sort Controls (Search completely removed as requested) */}
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-        {/* Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
-          <button
-            onClick={() => setFilterRainCategory('all')}
-            className={`water-droplet-pill px-3 py-1 rounded-full font-bold transition cursor-pointer ${
-              filterRainCategory === 'all'
-                ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-200'
-                : 'text-slate-800 dark:text-slate-200'
-            }`}
-          >
-            All Probabilities
-          </button>
-          <button
-            onClick={() => setFilterRainCategory('high')}
-            className={`water-droplet-pill px-3 py-1 rounded-full font-bold transition cursor-pointer ${
-              filterRainCategory === 'high'
-                ? 'water-droplet-pill-active text-[#1E40AF] dark:text-blue-300 ring-1 ring-blue-500/40'
-                : 'text-slate-800 dark:text-slate-200'
-            }`}
-          >
-            🌧️ High (&ge;60%)
-          </button>
-          <button
-            onClick={() => setFilterRainCategory('moderate')}
-            className={`water-droplet-pill px-3 py-1 rounded-full font-bold transition cursor-pointer ${
-              filterRainCategory === 'moderate'
-                ? 'water-droplet-pill-active text-[#007A8E] dark:text-cyan-300 ring-1 ring-[#00AFCB]/40'
-                : 'text-slate-800 dark:text-slate-200'
-            }`}
-          >
-            🌦️ Moderate (30–59%)
-          </button>
-          <button
-            onClick={() => setFilterRainCategory('low')}
-            className={`water-droplet-pill px-3 py-1 rounded-full font-bold transition cursor-pointer ${
-              filterRainCategory === 'low'
-                ? 'water-droplet-pill-active text-emerald-800 dark:text-emerald-300 ring-1 ring-emerald-500/40'
-                : 'text-slate-800 dark:text-slate-200'
-            }`}
-          >
-            🌤️ Low (&lt;30%)
-          </button>
+        {/* Connected Interactive Water-Bubble Selector - All 4 visible without horizontal scrolling */}
+        <div className="w-full sm:w-auto sm:min-w-[460px] sm:max-w-xl">
+          <div className="relative grid grid-cols-4 p-1 rounded-full bg-white/[0.04] dark:bg-black/20 backdrop-blur-md border border-white/15 dark:border-white/[0.08] shadow-[inset_0_1px_2px_rgba(255,255,255,0.15),0_2px_8px_rgba(0,0,0,0.12)] select-none">
+            {/* Sliding Active Water-Bubble - Perfectly fills the exact 1/4 bubble border with seamless liquid float */}
+            <div
+              className="absolute top-0 bottom-0 left-0 w-1/4 p-1 pointer-events-none transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform z-0"
+              style={{
+                transform: `translate3d(${activeIndex * 100}%, 0, 0)`,
+              }}
+            >
+              <div
+                className={`w-full h-full rounded-full transition-all duration-300 border ${activeOption.activeBorder} ${activeOption.activeRing} relative overflow-hidden backdrop-blur-[6px]`}
+                style={{
+                  background: activeOption.bubbleBackground,
+                  boxShadow: activeOption.bubbleShadow,
+                }}
+              >
+                {/* Curved Liquid Meniscus Dome Highlight */}
+                <div className="absolute top-0 inset-x-[12%] h-[35%] rounded-full bg-gradient-to-b from-white/45 via-white/10 to-transparent pointer-events-none" />
+                {/* Refractive Liquid Radial Sheen */}
+                <div className="absolute inset-0 bg-radial-[at_50%_0%] from-white/20 via-transparent to-transparent pointer-events-none" />
+              </div>
+            </div>
+
+            {/* All Four Filter Bubbles in a Single Horizontal Row (No Horizontal Scroll) */}
+            {RAIN_FILTER_OPTIONS.map((option) => {
+              const isActive = filterRainCategory === option.id;
+              return (
+                <div key={option.id} className="relative z-10 p-0.5 flex items-center justify-center">
+                  <button
+                    type="button"
+                    onClick={() => setFilterRainCategory(option.id)}
+                    className={`w-full py-1.5 px-1 rounded-full text-[10px] xs:text-[11px] sm:text-xs font-bold transition-all duration-200 cursor-pointer flex items-center justify-center text-center select-none ${
+                      isActive
+                        ? option.activeTextColor
+                        : 'text-slate-800 dark:text-slate-200 hover:text-[#007A8E] dark:hover:text-cyan-200 border border-white/10 dark:border-white/[0.06] bg-white/[0.03] dark:bg-white/[0.015] hover:bg-white/[0.08]'
+                    }`}
+                  >
+                    <span className="hidden sm:inline whitespace-nowrap">{option.fullLabel}</span>
+                    <span className="sm:hidden whitespace-nowrap">{option.shortLabel}</span>
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Sort Selector */}

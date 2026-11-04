@@ -504,12 +504,15 @@ export async function searchLocations(query: string): Promise<LocationData[]> {
         throw new Error('Proxy status ' + proxyRes.status);
       }
     } catch {
-      // Direct client fallback to Nominatim
+      // Direct client fallback to Nominatim with Karnataka bounding box
       try {
-        const queryTerm = cleanQuery.includes('karnataka') ? cleanQuery : `${cleanQuery}, Karnataka`;
+        const isKannada = /[\u0C80-\u0CFF]/.test(cleanQuery);
+        const queryTerm = isKannada
+          ? `${cleanQuery}, ಕರ್ನಾಟಕ`
+          : cleanQuery.includes('karnataka') ? cleanQuery : `${cleanQuery}, Karnataka`;
         const directUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
           queryTerm
-        )}&format=json&addressdetails=1&limit=8&countrycodes=in`;
+        )}&format=json&addressdetails=1&limit=12&countrycodes=in&viewbox=74.0,18.5,78.6,11.5`;
         const directRes = await fetch(directUrl, {
           headers: { 'User-Agent': 'SkyCastWeatherApp/2.5' },
           signal: controller.signal,
@@ -527,18 +530,22 @@ export async function searchLocations(query: string): Promise<LocationData[]> {
         const lon = parseFloat(item.lon);
         if (isNaN(lat) || isNaN(lon)) continue;
 
-        // Extract most specific locality name
+        // Extract most specific locality or village name
+        const isVillage = Boolean(addr.village || addr.hamlet || addr.isolated_dwelling);
+        const isTown = Boolean(addr.town || addr.municipality);
         const localityName =
+          addr.village ||
+          addr.hamlet ||
+          addr.isolated_dwelling ||
           addr.suburb ||
           addr.neighbourhood ||
           addr.residential ||
           addr.quarter ||
           addr.city_district ||
-          addr.village ||
-          addr.hamlet ||
           addr.town ||
           item.name;
 
+        const talukName = addr.county || addr.subdistrict || undefined;
         const closestDist = findClosestKarnatakaDistrict(lat, lon);
         const districtName = addr.state_district || addr.county || addr.city || closestDist.district;
         const stateName = addr.state || 'Karnataka';
@@ -554,6 +561,8 @@ export async function searchLocations(query: string): Promise<LocationData[]> {
           longitude: Number(lon.toFixed(4)),
           elevation: closestDist.elevation ?? 750,
           isLocality: true,
+          type: isVillage ? 'village' : isTown ? 'town' : 'locality',
+          taluk: talukName,
         });
       }
     }
@@ -680,20 +689,26 @@ export async function reverseGeocodeLocation(lat: number, lon: number): Promise<
     if (data && data.address) {
       const addr = data.address;
 
-      // Extract the most specific locality name (e.g. Vasanth Nagar, Maragondanahalli, Indiranagar)
+      // Extract the most specific locality or village name
+      const isVillage = Boolean(addr.village || addr.hamlet || addr.isolated_dwelling);
+      const isTown = Boolean(addr.town || addr.municipality);
       const localityName =
+        addr.village ||
+        addr.hamlet ||
+        addr.isolated_dwelling ||
         addr.suburb ||
         addr.neighbourhood ||
         addr.residential ||
         addr.quarter ||
         addr.city_district ||
-        addr.village ||
-        addr.hamlet ||
-        addr.isolated_dwelling ||
         addr.town ||
         addr.municipality ||
         addr.city ||
         data.name;
+
+      // Taluk / Subdistrict
+      const talukName = addr.county || addr.subdistrict || undefined;
+      const gramPanchayat = addr.gram_panchayat || addr.village_panchayat || undefined;
 
       // Determine parent district and city
       const districtName =
@@ -719,6 +734,9 @@ export async function reverseGeocodeLocation(lat: number, lon: number): Promise<
         elevation: closestDistrict.elevation ?? 750,
         isLocality,
         isEstimate: false,
+        type: isVillage ? 'village' : isTown ? 'town' : isLocality ? 'locality' : 'district',
+        taluk: talukName,
+        gramPanchayat,
       };
     }
   } catch (err) {

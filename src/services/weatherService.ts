@@ -73,7 +73,7 @@ async function fetchOpenMeteo(url: string): Promise<Response> {
 }
 
 export async function fetchWeatherData(location: LocationData): Promise<WeatherData> {
-  const cacheKey = `${CACHE_PREFIX}${location.latitude.toFixed(3)}_${location.longitude.toFixed(3)}`;
+  const cacheKey = `${CACHE_PREFIX}${location.latitude.toFixed(4)}_${location.longitude.toFixed(4)}`;
 
   // Construct URL to Open-Meteo
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}` +
@@ -214,6 +214,7 @@ export async function fetchWeatherData(location: LocationData): Promise<WeatherD
       isEstimate: location.isEstimate ?? false,
       dataSource: location.isEstimate ? 'estimated' : 'live',
       cachedAt: now.getTime(),
+      forecastType: 'coordinate_model',
     };
 
     // Cache locally
