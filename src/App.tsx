@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { LocationData, WeatherData, WeatherAlert, DistrictRainData } from './types/weather';
-import { DEFAULT_LOCATION, ALL_KARNATAKA_DISTRICTS, KARNATAKA_LOCALITIES, reverseGeocodeLocation } from './services/geocodingService';
+import { DEFAULT_LOCATION, ALL_KARNATAKA_DISTRICTS, KARNATAKA_LOCALITIES, reverseGeocodeLocation, findClosestKarnatakaDistrict } from './services/geocodingService';
 import { fetchWeatherData, fetchAllKarnatakaDistrictsRain } from './services/weatherService';
 import { evaluateWeatherAlerts } from './services/alertService';
 import { Language, TRANSLATIONS } from './services/languageService';
@@ -112,52 +112,75 @@ export default function App() {
     return DEFAULT_LOCATION;
   });
 
-  // High-accuracy live GPS detection with two-tier fallback and distance change verification
+  const currentLocationRef = useRef<LocationData>(currentLocation);
+  useEffect(() => {
+    currentLocationRef.current = currentLocation;
+  }, [currentLocation]);
+
+  const isDetectingLocationRef = useRef<boolean>(false);
+
+  // High-accuracy live GPS detection with two-tier fallback and reliable state updating
   const detectLiveLocation = useCallback(
     (force = false) => {
       if (typeof navigator === 'undefined' || !navigator.geolocation) return;
+      if (isDetectingLocationRef.current && !force) return;
+
+      isDetectingLocationRef.current = true;
 
       const handleSuccess = async (pos: GeolocationPosition) => {
+        isDetectingLocationRef.current = false;
         try {
           const lat = pos.coords.latitude;
           const lon = pos.coords.longitude;
 
-          setCurrentLocation((prevLoc) => {
-            const dist = Math.hypot(lat - prevLoc.latitude, lon - prevLoc.longitude);
-            // If movement is negligible (< ~300m / 0.003 deg) and already has a specific location, avoid unnecessary refetch
-            if (!force && dist < 0.003 && prevLoc.id !== 'karnataka-all' && !prevLoc.isEstimate) {
-              return prevLoc;
-            }
+          const current = currentLocationRef.current;
+          const dist = Math.hypot(lat - current.latitude, lon - current.longitude);
 
-            // Reverse geocode the new coordinates
-            reverseGeocodeLocation(lat, lon)
-              .then((newLoc) => {
-                setCurrentLocation(newLoc);
-                try {
-                  localStorage.setItem('skycast_user_location', JSON.stringify(newLoc));
-                  localStorage.setItem('skycast_location_approved', 'true');
-                } catch {}
-              })
-              .catch((err) => {
-                console.warn('Reverse geocode error during live location detection:', err);
-              });
+          // If not forced and user is in the exact same spot (<100m) with an already loaded specific location, retain it
+          if (!force && dist < 0.001 && current.id !== 'karnataka-all' && !current.isEstimate) {
+            return;
+          }
 
-            return prevLoc;
-          });
+          // Reverse geocode the new coordinates using CORS-enabled Photon (OSM) / Nominatim / server
+          const newLoc = await reverseGeocodeLocation(lat, lon);
+          newLoc.latitude = Number(lat.toFixed(4));
+          newLoc.longitude = Number(lon.toFixed(4));
+          newLoc.isEstimate = false;
+
+          setCurrentLocation(newLoc);
+          try {
+            localStorage.setItem('skycast_user_location', JSON.stringify(newLoc));
+            localStorage.setItem('skycast_location_approved', 'true');
+          } catch {}
         } catch (err) {
-          console.warn('Live location processing error:', err);
+          console.warn('Live location detection notice:', err);
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          const closest = findClosestKarnatakaDistrict(lat, lon);
+          const fallbackLoc: LocationData = {
+            ...closest,
+            id: `gps-loc-${lat.toFixed(4)}-${lon.toFixed(4)}`,
+            latitude: Number(lat.toFixed(4)),
+            longitude: Number(lon.toFixed(4)),
+            isEstimate: false,
+          };
+          setCurrentLocation(fallbackLoc);
+          try {
+            localStorage.setItem('skycast_user_location', JSON.stringify(fallbackLoc));
+          } catch {}
         }
       };
 
       const handleError = (err: GeolocationPositionError) => {
-        // If high accuracy times out (code 3), retry once with standard accuracy (cellular/Wi-Fi assisted)
-        if (err.code === 3) {
+        isDetectingLocationRef.current = false;
+        // If high accuracy times out (code 3) or position unavailable (code 2), retry once with network-assisted standard accuracy
+        if (err.code === 3 || err.code === 2) {
           navigator.geolocation.getCurrentPosition(
             handleSuccess,
             (fallbackErr) => {
-              console.log('Location unavailable after fallback:', fallbackErr.message);
+              console.log('Location unavailable after standard fallback:', fallbackErr.message);
             },
-            { enableHighAccuracy: false, timeout: 6000, maximumAge: 30000 }
+            { enableHighAccuracy: false, timeout: 6000, maximumAge: 60000 }
           );
           return;
         }
@@ -219,6 +242,29 @@ export default function App() {
     settings.autoDetectLocation,
     detectLiveLocation,
   ]);
+
+  // Proactively check Geolocation permission status on mount / change
+  // In installed PWA (standalone mode), if permission is granted, immediately refresh to accurate GPS position
+  useEffect(() => {
+    if (typeof navigator !== 'undefined' && 'permissions' in navigator && navigator.permissions?.query) {
+      navigator.permissions
+        .query({ name: 'geolocation' as PermissionName })
+        .then((permissionStatus) => {
+          if (permissionStatus.state === 'granted') {
+            const hasApprovedLoc = localStorage.getItem('skycast_location_approved') === 'true';
+            if (settings.startupLocationMode === 'current_location' || settings.autoDetectLocation || hasApprovedLoc) {
+              detectLiveLocation(true);
+            }
+          }
+          permissionStatus.onchange = () => {
+            if (permissionStatus.state === 'granted') {
+              detectLiveLocation(true);
+            }
+          };
+        })
+        .catch(() => {});
+    }
+  }, [detectLiveLocation, settings.autoDetectLocation, settings.startupLocationMode]);
 
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [districtsRainData, setDistrictsRainData] = useState<DistrictRainData[]>([]);
@@ -347,15 +393,14 @@ export default function App() {
 
     const handleAppWake = () => {
       if (!document.hidden) {
-        // If user is in current location mode, check GPS to verify if user moved to a new village or town
-        if (settings.startupLocationMode === 'current_location' && settings.autoDetectLocation) {
-          detectLiveLocation(false);
+        // When the user resumes or returns to the installed app, refresh to accurate GPS position
+        const hasApprovedLoc = localStorage.getItem('skycast_location_approved') === 'true';
+        if (settings.startupLocationMode === 'current_location' || settings.autoDetectLocation || hasApprovedLoc) {
+          detectLiveLocation(true);
         }
 
         if (settings.syncOnAppResume) {
-          // If user was away for more than 2 minutes, immediately sync live values
-          if (Date.now() - lastSyncTimestampRef.current > 120000) {
-            loadWeather(currentLocation);
+          if (Date.now() - lastSyncTimestampRef.current > 60000) {
             loadDistrictsRain();
           }
         }
@@ -380,6 +425,23 @@ export default function App() {
     settings.autoDetectLocation,
     detectLiveLocation,
   ]);
+
+  // Unified Full App & Location Refresh:
+  // Re-queries accurate GPS location and refreshes live weather telemetry
+  const handleRefresh = useCallback(() => {
+    loadDistrictsRain();
+
+    // Query live GPS location if auto detect is enabled, startup mode is current_location, or previously approved
+    if (typeof navigator !== 'undefined' && navigator.geolocation) {
+      const hasApprovedLoc = localStorage.getItem('skycast_location_approved') === 'true';
+      const isCurrentLocMode = settings.startupLocationMode === 'current_location';
+      if (isCurrentLocMode || hasApprovedLoc || settings.autoDetectLocation) {
+        detectLiveLocation(true);
+      }
+    }
+
+    loadWeather(currentLocationRef.current);
+  }, [detectLiveLocation, loadDistrictsRain, loadWeather, settings.autoDetectLocation, settings.startupLocationMode]);
 
   // Handle location selection (only scrolls to top for search/grid, never for map pin clicks)
   const handleSelectLocation = (loc: LocationData, shouldScrollToTop: boolean = false) => {
@@ -411,10 +473,7 @@ export default function App() {
       <Navbar
         currentLocation={currentLocation}
         onSelectLocation={(loc) => handleSelectLocation(loc, true)}
-        onRefresh={() => {
-          loadWeather(currentLocation);
-          loadDistrictsRain();
-        }}
+        onRefresh={handleRefresh}
         isLoading={isLoading}
         theme={theme}
         setTheme={setTheme}
@@ -450,10 +509,7 @@ export default function App() {
               <span>{error}</span>
             </div>
             <button
-              onClick={() => {
-                loadWeather(currentLocation);
-                loadDistrictsRain();
-              }}
+              onClick={handleRefresh}
               className="px-2.5 py-1 rounded bg-rose-600 hover:bg-rose-500 text-white font-semibold cursor-pointer"
             >
               Retry
@@ -465,9 +521,7 @@ export default function App() {
         {weatherData ? (
           <CurrentWeather
             data={weatherData}
-            onRefresh={() => {
-              loadWeather(currentLocation);
-            }}
+            onRefresh={handleRefresh}
             isLoading={isLoading}
             lang={lang}
             tempUnit={settings.tempUnit}
@@ -562,10 +616,7 @@ export default function App() {
       <MobileActionBar
         theme={theme}
         setTheme={setTheme}
-        onRefresh={() => {
-          loadWeather(currentLocation);
-          loadDistrictsRain();
-        }}
+        onRefresh={handleRefresh}
         isLoading={isLoading}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenAI={() => setIsAIOpen(true)}

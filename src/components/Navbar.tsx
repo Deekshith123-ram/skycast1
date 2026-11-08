@@ -109,20 +109,26 @@ export const Navbar: React.FC<NavbarProps> = ({
     setIsLocating(true);
     const onLocationSuccess = async (pos: GeolocationPosition) => {
       setIsLocating(false);
+      const lat = Number(pos.coords.latitude.toFixed(4));
+      const lon = Number(pos.coords.longitude.toFixed(4));
       try {
-        const userLoc = await reverseGeocodeLocation(pos.coords.latitude, pos.coords.longitude);
+        const userLoc = await reverseGeocodeLocation(lat, lon);
+        userLoc.latitude = lat;
+        userLoc.longitude = lon;
+        userLoc.isEstimate = false;
         onSelectLocation(userLoc);
         localStorage.setItem('skycast_location_approved', 'true');
         localStorage.setItem('skycast_user_location', JSON.stringify(userLoc));
       } catch {
         const userLoc: LocationData = {
-          id: `custom-coords-${pos.coords.latitude.toFixed(3)}`,
+          id: `custom-coords-${lat.toFixed(3)}`,
           name: lang === 'kn' ? 'ಪ್ರಸ್ತುತ ಸ್ಥಳ' : 'Current Location',
           district: lang === 'kn' ? 'ಪತ್ತೆಯಾದ ಸ್ಥಳ' : 'Detected Location',
           state: 'Karnataka',
           country: 'India',
-          latitude: Number(pos.coords.latitude.toFixed(4)),
-          longitude: Number(pos.coords.longitude.toFixed(4)),
+          latitude: lat,
+          longitude: lon,
+          isEstimate: false,
         };
         onSelectLocation(userLoc);
         localStorage.setItem('skycast_location_approved', 'true');
@@ -131,15 +137,15 @@ export const Navbar: React.FC<NavbarProps> = ({
     };
 
     const onLocationError = (err: GeolocationPositionError) => {
-      // If high accuracy times out, retry once with cellular/Wi-Fi assisted standard accuracy
-      if (err.code === 3) {
+      // If high accuracy times out (code 3) or is temporarily unavailable (code 2), retry with network/Wi-Fi standard accuracy
+      if (err.code === 3 || err.code === 2) {
         navigator.geolocation.getCurrentPosition(
           onLocationSuccess,
           (fallbackErr) => {
             setIsLocating(false);
             console.warn('Fallback location failed:', fallbackErr);
           },
-          { enableHighAccuracy: false, timeout: 6000, maximumAge: 30000 }
+          { enableHighAccuracy: false, timeout: 6000, maximumAge: 60000 }
         );
         return;
       }
@@ -150,7 +156,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     navigator.geolocation.getCurrentPosition(
       onLocationSuccess,
       onLocationError,
-      { timeout: 8000, enableHighAccuracy: true, maximumAge: 15000 }
+      { timeout: 8000, enableHighAccuracy: true, maximumAge: 0 }
     );
   };
 

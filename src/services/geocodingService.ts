@@ -514,7 +514,6 @@ export async function searchLocations(query: string): Promise<LocationData[]> {
           queryTerm
         )}&format=json&addressdetails=1&limit=12&countrycodes=in&viewbox=74.0,18.5,78.6,11.5`;
         const directRes = await fetch(directUrl, {
-          headers: { 'User-Agent': 'SkyCastWeatherApp/2.5' },
           signal: controller.signal,
         });
         if (directRes.ok) {
@@ -654,14 +653,14 @@ export async function searchLocations(query: string): Promise<LocationData[]> {
 export async function reverseGeocodeLocation(lat: number, lon: number): Promise<LocationData> {
   const closestDistrict = findClosestKarnatakaDistrict(lat, lon);
 
-  // 1. Try high-accuracy reverse geocoding via server endpoint or OpenStreetMap Nominatim
+  // 1. Try high-accuracy reverse geocoding via Server proxy, CORS-enabled Photon (OSM), or Nominatim
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 4500);
 
     let data: any = null;
 
-    // A. Query server proxy
+    // A. Query server proxy if available
     try {
       const proxyUrl = `/api/reverse-geocode?lat=${lat}&lon=${lon}`;
       const res = await fetch(proxyUrl, { signal: controller.signal });
@@ -670,14 +669,26 @@ export async function reverseGeocodeLocation(lat: number, lon: number): Promise<
       }
     } catch {}
 
-    // B. Direct client fallback if proxy failed
-    if (!data || !data.address) {
+    // B. Direct client CORS-enabled Photon reverse geocoding (OpenStreetMap database)
+    // Photon supports CORS (Access-Control-Allow-Origin: *) and resolves villages, hamlets, taluks & towns
+    if (!data || (!data.address && !data.features)) {
+      try {
+        const photonUrl = `https://photon.komoot.io/reverse?lat=${lat}&lon=${lon}`;
+        const photonRes = await fetch(photonUrl, { signal: controller.signal });
+        if (photonRes.ok) {
+          const photonData = await photonRes.json();
+          if (photonData?.features && photonData.features.length > 0) {
+            data = photonData;
+          }
+        }
+      } catch {}
+    }
+
+    // C. Direct client fallback to OpenStreetMap Nominatim (without forbidden headers)
+    if (!data || (!data.address && !data.features)) {
       try {
         const directUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1&zoom=18`;
-        const directRes = await fetch(directUrl, {
-          headers: { 'User-Agent': 'SkyCastWeatherApp/2.5' },
-          signal: controller.signal,
-        });
+        const directRes = await fetch(directUrl, { signal: controller.signal });
         if (directRes.ok) {
           data = await directRes.json();
         }
@@ -686,6 +697,39 @@ export async function reverseGeocodeLocation(lat: number, lon: number): Promise<
 
     clearTimeout(timeout);
 
+    // Parse Photon GeoJSON response if returned
+    if (data && Array.isArray(data.features) && data.features.length > 0) {
+      const p = data.features[0].properties || {};
+      const isVillage = p.osm_value === 'village' || p.osm_value === 'hamlet' || p.osm_value === 'isolated_dwelling';
+      const isTown = p.osm_value === 'town' || p.osm_value === 'municipality';
+      const localityName =
+        p.locality ||
+        p.district ||
+        (isVillage || isTown || p.osm_value === 'suburb' || p.osm_value === 'neighbourhood' ? p.name : (p.city || p.name));
+      const districtName = p.city || p.district || (p.county ? p.county.replace(/\s+taluk$/i, '').trim() : closestDistrict.district);
+      const talukName = p.county ? p.county.replace(/\s+taluk$/i, '').trim() + ' Taluk' : undefined;
+      const stateName = p.state || 'Karnataka';
+      const countryName = p.country || 'India';
+      const isLocality = Boolean(localityName && localityName.toLowerCase() !== districtName.toLowerCase());
+
+      return {
+        id: `detected-locality-${lat.toFixed(4)}-${lon.toFixed(4)}`,
+        name: localityName || closestDistrict.name,
+        locality: localityName || undefined,
+        district: districtName,
+        state: stateName,
+        country: countryName,
+        latitude: Number(lat.toFixed(4)),
+        longitude: Number(lon.toFixed(4)),
+        elevation: closestDistrict.elevation ?? 750,
+        isLocality,
+        isEstimate: false,
+        type: isVillage ? 'village' : isTown ? 'town' : isLocality ? 'locality' : 'district',
+        taluk: talukName,
+      };
+    }
+
+    // Parse standard Nominatim JSON response if returned
     if (data && (data.address || data.display_name)) {
       const addr = data.address || {};
 
